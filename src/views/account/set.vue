@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     账号修改
-     <el-form label-width="120px">
+     <el-form style="width:450px" label-width="120px">
       <el-form-item label="用户名">
         <el-input v-model="user.uname"/>
       </el-form-item>

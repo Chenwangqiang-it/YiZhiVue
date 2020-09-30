@@ -12,12 +12,13 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import router from './router'
 import store from './store'
+import CollapseTransition from 'element-ui/lib/transitions/collapse-transition'
 
 import '@/icons' // icon
 import '@/permission' // permission control
 
 Vue.use(ElementUI, { locale })
-
+Vue.component(CollapseTransition.name, CollapseTransition)
 Vue.config.productionTip = false
 new Vue({
   el: '#app',

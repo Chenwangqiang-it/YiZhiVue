@@ -14,7 +14,7 @@
                   <el-input v-model="flowQuery.brandName" placeholder="品牌名称"></el-input>
               </el-form-item>
               <el-form-item>
-                  <el-select v-model="flowQuery.schedule" placeholder="流程进度">
+                  <el-select v-model="flowQuery.schedule" placeholder="撤案进度">
                       <el-option label="财务审核" value="1"></el-option>
                       <el-option label="流程分案" value="2"></el-option>
                       <el-option label="清单上传" value="3"></el-option>
@@ -75,49 +75,7 @@
               :data="list"
               v-loading="loading"
               element-loading-text="数据加载中"
-              style="width: 100%">
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-form label-position="left" style="margin-left:50px" class="demo-table-expand">
-                      <el-form-item style="margin: 0px;" label="流程状态:">
-                        <span v-if="props.row.schedules==1">财务审核</span>
-                        <span v-if="props.row.schedules==2">流程分案</span>
-                        <span v-if="props.row.schedules==3">清单上传</span>
-                        <span v-if="props.row.schedules==4">申报材料提供</span>
-                        <span v-if="props.row.schedules==5">材料制作</span>
-                        <span v-if="props.row.schedules==6">盖章材料提供</span>
-                        <span v-if="props.row.schedules==7&&props.row.type!=1">盖章材料审核</span>
-                        <span v-if="props.row.schedules==7&&props.row.type==1">管理部门审核</span>
-                        <span v-if="props.row.schedules==8&&props.row.type!=1">待商务局审查</span>
-                        <span v-if="props.row.schedules==8&&props.row.type==1">材料审核</span>
-                        <span v-if="props.row.schedules==9">流程确认</span>
-                        <span v-if="props.row.schedules==10">顾问确认</span>
-                        <span v-if="props.row.schedules==11">尾款确认</span>
-                        <span v-if="props.row.schedules==12">已交付</span>
-                      </el-form-item>
-                      <el-form-item style="margin: 0px" label="报件人姓名:">
-                        <span>{{ props.row.uname }}</span>
-                      </el-form-item>
-                      <el-form-item style="margin: 0px" label="代理人:" v-if="props.row.schedules>2">
-                        <span>{{ props.row.agentName }}</span>
-                      </el-form-item>
-                      <!-- <el-form-item label="尾款金额" v-if="props.row.schedules>4">
-                        <span>{{ props.row.lastAmount }}</span>
-                      </el-form-item> -->
-                      <el-form-item style="margin: 0px" label="创建时间:">
-                        <span>{{ props.row.gmtCreate }}</span>
-                      </el-form-item>
-                      <el-form-item style="margin: 0px" label="附件下载:" v-if="props.row.inventory!=''&&props.row.inventory!=null">
-                        <a :href="item.url"  v-for="(item) in props.row.inventory" target="blank" :key="item.value" style="text-decoration:underline;color:#4d90fe;">{{ item.name }}<span style="margin-left:30px"></span></a>
-                        <!-- <a >{{props.row.inventory[0].name}}</span> -->
-                        
-                      </el-form-item>
-                      <el-form-item style="margin: 0px" label="申报材料下载:" v-if="props.row.declaration!=''&&props.row.declaration!=null">
-                        <span>{{ props.row.declaration }}</span>
-                      </el-form-item>
-                  </el-form>
-                </template>
-              </el-table-column>
+              style="width: 1200px;margin:0 auto">
               <el-table-column
                 label="序号"
                 align="center"
@@ -127,7 +85,7 @@
                 </tempate>
             </el-table-column>
               <el-table-column
-                width="150" 
+                width="130" 
                 align="center"
                 label="合同编号">
                 <template slot-scope="scope">
@@ -136,7 +94,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                width="250" 
+                width="230" 
                 align="center"
                 label="客户名称">
                 <template slot-scope="scope">
@@ -145,7 +103,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                width="150" 
+                width="120" 
                 align="center"
                 label="品牌名称">
                 <template slot-scope="scope">
@@ -156,48 +114,33 @@
               <el-table-column
                 width="80" 
                 align="center"
-                label="顾问"
-                prop="uname">
-              </el-table-column>
-              <el-table-column
-                width="80" 
-                align="center"
-                label="代理人"
-                >
-                <template slot-scope="scope">
-                  <span v-if="scope.row.agentName!=null">{{scope.row.agentName}}</span>
-                  <span v-else>暂无</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                width="80" 
-                align="center"
-                label="全款金额">
-                <template slot-scope="scope">
-                    <span  v-if="scope.row.type!=1">{{scope.row.fullAmount}}</span>
-                    <span  v-if="scope.row.type==1">{{scope.row.price}}</span>
-                </template>
-              </el-table-column>
-              <el-table-column
-                width="120" 
-                align="center"
-                label="付款方式"
-                >
-                <tempate slot-scope="scope">
-                  <span v-if="scope.row.lastAmount==0">全款支付</span>
-                  <span v-if="scope.row.lastAmount!=0">分期支付</span>
-                </tempate>
-              </el-table-column>
-              <el-table-column
-                width="80" 
-                align="center"
                 label="已付金额"
                 >
                 <tempate slot-scope="scope">
                     {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
                 </tempate>
               </el-table-column>
-              <el-table-column width="130" align="center" prop="schedule" label="流程状态" >
+              <el-table-column
+                width="80" 
+                align="center"
+                label="是否退款"
+                >
+                <tempate slot-scope="scope">
+                    <span v-if="scope.row.reAmount!=null"><i class="el-icon-check"></i></span>
+                    <span v-else><i class="el-icon-close"></i></span>
+                </tempate>
+              </el-table-column>
+              <el-table-column
+                width="80" 
+                align="center"
+                label="退款金额"
+                >
+                <tempate slot-scope="scope">
+                    <span v-if="scope.row.reAmount!=null">{{scope.row.reAmount}}</span>
+                    <span v-else>0</span>
+                </tempate>
+              </el-table-column>
+              <el-table-column width="110" align="center" prop="schedule" label="撤案状态" >
                 <template slot-scope="scope">
                     <span v-if="scope.row.schedules==1" style="color:#17a05d">财务审核</span>
                     <span v-if="scope.row.schedules==2" style="color:#17a05d">流程分案</span>
@@ -221,48 +164,25 @@
                     <span v-if="scope.row.schedules==12" style="color:#00a74a">已交付</span>
                 </template>
               </el-table-column>
-              <el-table-column
-                width="100" 
-                align="center"
-                label="立案时间"
-                prop="onRecord">
-              </el-table-column>
-              <el-table-column width="100" align="center" prop="schedule" label="处理人" >
+              <el-table-column width="80" align="center" prop="schedule" label="处理人" >
                 <template slot-scope="scope">
-                  <span v-if="scope.row.schedules==40">{{scope.row.uname}}</span>
+                    <span v-if="scope.row.schedules==40">{{scope.row.uname}}</span>
                     <span v-if="scope.row.schedules==41">{{scope.row.agentName}}</span>
                     <span v-if="scope.row.schedules==42">欧平安</span>
                     <span v-if="scope.row.schedules==43">吴燕</span>
                     <span v-if="scope.row.schedules==44">吴燕</span>
                     <span v-if="scope.row.schedules==45">无</span>
-                    <span v-if="scope.row.schedules==1" >吴燕</span>
-                    <span v-if="scope.row.schedules==2" >吴燕</span>
-                    <span v-if="scope.row.schedules==3" >{{scope.row.agentName}}</span>
-                    <span v-if="scope.row.schedules==4" >{{scope.row.uname}}</span>
-                    <span v-if="scope.row.schedules==5" >{{scope.row.agentName}}</span>
-                    <span v-if="scope.row.schedules==6" >{{scope.row.uname}}</span>
-                    <span v-if="scope.row.schedules==7" >{{scope.row.agentName}}</span>
-                    <span v-if="scope.row.schedules==8">{{scope.row.agentName}}</span>
-                    <span v-if="scope.row.schedules==9" >吴燕</span>
-                    <span v-if="scope.row.schedules==10" >{{scope.row.uname}}</span>
-                    <span v-if="scope.row.schedules==11" >吴燕</span>
-                    <span v-if="scope.row.schedules==12" >无</span>
+                    <span v-if="scope.row.schedules<40" >无</span>
                 </template>
               </el-table-column>
-              <el-table-column width="260px" align="right" label="操作">
+              <el-table-column  align="right" label="操作">
                 <template slot-scope="scope">
-                  <el-button  
-                    type="primary" 
-                    size="mini"  
-                    @click="select(scope.row.fid,(page-1)*limit+scope.$index+1)" 
-                    v-if="scope.row.disposeshow">
-                      处理
-                  </el-button>
                   <!-- <el-button type="primary" size="mini">申报书上传</el-button> -->
-                  <el-button type="primary" size="mini"  @click="updated(scope.row.fid,(page-1)*limit+scope.$index+1,roles.jurisdiction)" >记录</el-button>
-                  <el-button type="danger" size="mini" icon="el-icon-delete" @click="removeDataById(scope.row.fid,scope.row.cid)" v-if="roles.jurisdiction==3&&scope.row.schedules<12">删除</el-button>
+                   <el-button type="warning" size="mini" icon="el-icon-edit-outline"  @click="updated(scope.row.fid,(page-1)*limit+scope.$index+1,roles.jurisdiction)" v-if="scope.row.disposeshow">撤案</el-button>
+                  <el-button type="primary" size="mini" icon="el-icon-time" @click="records(scope.row.fid,(page-1)*limit+scope.$index+1,roles.jurisdiction)" >记录</el-button>
                 </template>
               </el-table-column>
+              
             </el-table>
             <el-pagination
                 :current-page="page"
@@ -428,16 +348,6 @@ export default {//定义变量和初始值
     },
     created() {//页面渲染之前执行，调用methods定义的方法
           this.init()
-    },
-    watch:{//监听
-        $route(to,from){//路由变化的方式，路由一变化就执行
-            console.log('watch $route')
-            if(to.path=="/flow/index"){
-              this.$route.params.id==''
-              this.flowQuery={}
-            }
-            this.init()
-        }
     },
     methods:{
       projectInfo(id){
@@ -941,7 +851,7 @@ export default {//定义变量和初始值
       },
       updated(fid,index,update){
         let routeData = this.$router.resolve({
-            path: '/flow/record/'+fid  // 路由的路径
+            path: '/flow/revocationOperation/'+fid  // 路由的路径
         })
         if(this.win2!=null){
           this.win2.close()
@@ -951,18 +861,16 @@ export default {//定义变量和初始值
                 this.getList()
             }
       },
-      select(fid,index){
+      records(fid,index,update){
         let routeData = this.$router.resolve({
-            path: '/flow/operation/'+fid  // 路由的路径
+            path: '/flow/record/'+fid  // 路由的路径
         })
-        if(this.win1!=null){
-          this.win1.close()
+        if(this.win3!=null){
+          this.win3.close()
         }
-       this.win1=window.open(routeData.href,'win1','width=692px,height=420px,top=300px,left=700px,resizable=yes,scrollbars,z-look=yes',false) 
+        this.win3=window.open(routeData.href,'win3','width=692px,height=420px,top=300px,left=700px,resizable=yes,scrollbars',false)
         window['logoClickBtn'] = (url) => {
-          // Toast({ message: url, position: 'bottom', duration: 5000 });
-          //将init方法公示到window 子页面可以调用该方法
-          this.init()
+            this.getList()
         }
       },
       listToform(index){
@@ -1121,68 +1029,45 @@ export default {//定义变量和初始值
             
         },
       getList(page =1){
-        let id=this.$route.params.id;
-        if(id!=undefined&&id.length==19){
           this.getUntreated(page)
-        }else{
-            this.page=page
-            this.loading=true
-            if(this.roles.jurisdiction==3){
-                this.flowQuery.uid=this.roles.uid
-            }else if(this.roles.jurisdiction==4){
-                this.flowQuery.agentId=this.roles.uid
-            }
-            this.flowQuery.pname=this.flowQuery.brandName
-            flow.getFlowListPage(this.page,this.limit,this.flowQuery)
-                .then(res=>{
-                    //res返回的数据
-                    this.list=res.data.rows
-                    for(let i=0;i<this.list.length;i++){
-                       this.list[i].inventory=JSON.parse(this.list[i].inventory)
-                       this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
-                    }
-                    this.total=res.data.total
-                    this.loading=false
-                })//请求成功
-                .catch(error=>{
-                    console.log(error)
-                })//请求失败
-          }
         },
         disposeShow(s){//判断处理按钮是否存在
           let j=this.roles.jurisdiction
-          if(s>11){
+          if(s>44){
             return false
           }
           if(j==6){
-            if(s==1||s==2||s==9||s==11){
+            if(s==44||s==43){
               return true
             }
             return false
           }
           if(j==5){
-            if(s==1||s==11){
-              return true
-            }
-            if(s==11){
+            if(s==44){
               return true
             }
             return false
           }
           if(j==4){
-            if(s==3||s==5||s==7||s==8){
+            if(s==41){
               return true
             }
             return false
           }
           if(j==3){
-            if(s==4||s==10||s==6){
+            if(s<41){
               return true
             }
             return false
           }
           if(j==2){
-            if(s==2||s==9){
+            if(s==43){
+              return true
+            }
+            return false
+          }
+          if(j==1){
+            if(s==42){
               return true
             }
             return false

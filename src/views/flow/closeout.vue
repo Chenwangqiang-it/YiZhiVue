@@ -427,17 +427,7 @@ export default {//定义变量和初始值
         }
     },
     created() {//页面渲染之前执行，调用methods定义的方法
-          this.init()
-    },
-    watch:{//监听
-        $route(to,from){//路由变化的方式，路由一变化就执行
-            console.log('watch $route')
-            if(to.path=="/flow/index"){
-              this.$route.params.id==''
-              this.flowQuery={}
-            }
-            this.init()
-        }
+        this.init()
     },
     methods:{
       projectInfo(id){
@@ -1121,33 +1111,29 @@ export default {//定义变量和初始值
             
         },
       getList(page =1){
-        let id=this.$route.params.id;
-        if(id!=undefined&&id.length==19){
-          this.getUntreated(page)
-        }else{
-            this.page=page
-            this.loading=true
-            if(this.roles.jurisdiction==3){
-                this.flowQuery.uid=this.roles.uid
-            }else if(this.roles.jurisdiction==4){
-                this.flowQuery.agentId=this.roles.uid
-            }
-            this.flowQuery.pname=this.flowQuery.brandName
-            flow.getFlowListPage(this.page,this.limit,this.flowQuery)
-                .then(res=>{
-                    //res返回的数据
-                    this.list=res.data.rows
-                    for(let i=0;i<this.list.length;i++){
-                       this.list[i].inventory=JSON.parse(this.list[i].inventory)
-                       this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
-                    }
-                    this.total=res.data.total
-                    this.loading=false
-                })//请求成功
-                .catch(error=>{
-                    console.log(error)
-                })//请求失败
-          }
+        this.page=page
+        this.loading=true
+        if(this.roles.jurisdiction==3){
+            this.flowQuery.uid=this.roles.uid
+        }else if(this.roles.jurisdiction==4){
+            this.flowQuery.agentId=this.roles.uid
+        }
+        this.flowQuery.pname=this.flowQuery.brandName
+        this.flowQuery.schedule=12
+        flow.getFlowListPage(this.page,this.limit,this.flowQuery)
+            .then(res=>{
+                //res返回的数据
+                this.list=res.data.rows
+                for(let i=0;i<this.list.length;i++){
+                    this.list[i].inventory=JSON.parse(this.list[i].inventory)
+                    this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
+                }
+                this.total=res.data.total
+                this.loading=false
+            })//请求成功
+            .catch(error=>{
+                console.log(error)
+            })//请求失败
         },
         disposeShow(s){//判断处理按钮是否存在
           let j=this.roles.jurisdiction

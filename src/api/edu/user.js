@@ -14,13 +14,13 @@ export default{
             // params
           })
     },
-    // delteteacherId(id){//删除
-    //     return request({
-    //         url: `/eduservice/teacher/${id}`,
-    //         method: 'delete',
-    //         // params
-    //       })
-    // },
+    delteteacherId(id){//删除
+        return request({
+            url: `/eduservice/user/deleteUser/${id}`,
+            method: 'delete',
+            // params
+          })
+    },
     // addTeacher(teacher){//添加讲师
     //     return request({
     //         url: '/eduservice/teacher/addTeacher',
@@ -33,6 +33,13 @@ export default{
             url: `eduservice/user/getUser/${id}`,
             method: 'get',
             async: false
+        })
+    },
+    ChangeUser(user){
+        return request({
+            url: `/eduservice/user/getChangeUser`,
+            method: 'post',
+            data: user
         })
     },
     updateUser(user){//修改

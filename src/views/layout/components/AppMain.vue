@@ -76,6 +76,7 @@ export default {
       }
       let remind=document.getElementsByClassName("remind")[i]
       let main=document.getElementsByClassName("app-main")[0]
+      let that=this
       if(!!window.ActiveXObject||"ActiveXObject" in window){//ie浏览器不支持动画
         that.messages.splice(i,1)
         var timeout=setTimeout(function(){
@@ -83,7 +84,6 @@ export default {
         },36000)
       }else{
         remind.style="transform: translateY(200px);"
-        let that=this
         setTimeout(function(){
           that.messages.splice(i,1)
         },300)

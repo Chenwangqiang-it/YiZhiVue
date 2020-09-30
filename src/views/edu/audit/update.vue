@@ -2,494 +2,670 @@
     <div class="container2">
             <el-form  ref="state" :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px" v-if="isaudit==1">
                 <!-- :inline="true" -->
-                <div class="li"> 
-                <h3 >合同审核</h3>
+                <div class="top">
+                    <img src="../../../assets/icon.png"/>
+                    合同审核
                 </div>
                  <el-form :inline="true" ref="contract" :model="contract" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px" >                  
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px">特许人基本信息</h3>
-                    </div>
-                    <el-form-item label="公司全称"  prop="companyName" style="width:270px">
-                        <el-input name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="经办人姓名" prop="respName" style="width:280px">
-                        <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系电话" prop="phone" style="width:270px">
-                        <el-input name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
-                    </el-form-item>
-                    <el-form-item label="传真" style="width:270px">
-                        <el-input name="tax" v-model="contract.tax" placeholder="传真"></el-input>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item label="公司座机" style="width:270px">
-                        <el-input name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
-                    </el-form-item>
-                    <el-form-item label="经办人职位" prop="respPost" style="width:280px">
-                        <el-input name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
-                    </el-form-item>
-                    <el-form-item label="电子邮件" prop="email" style="width:270px">
-                        <el-input name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
-                    </el-form-item>
-                    <el-form-item label="网址" style="width:250px">
-                        <el-input name="url" v-model="contract.url" placeholder="网址"></el-input>
-                    </el-form-item>
-                    <!-- <div></div> -->
-                    <el-form-item label="备案项目名称" prop="trade" style="width:300px">
-                        <el-input name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
-                    </el-form-item>
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px">基本信息</h3>
-                    </div>
-                    <el-form-item label="预计月数" prop="anticMonths">
-                    <el-input-number name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
-                    </el-form-item>
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px">金额</h3>
-                    </div>
-                    <el-form-item label="付款方式" >
-                    <el-select  v-model="paymentType" placeholder="请选择付款方式">
-                        <el-option label="全额付款" :value="1"></el-option>
-                        <el-option label="分期付款" :value="2"></el-option>
-                    </el-select>
-                    </el-form-item>
-                    <el-form-item label="全款金额" prop="fullAmount">
-                        <el-input name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
-                    </el-form-item>
-                    <el-form-item label="首款金额" v-if="paymentType==2" prop="firstAmount">
-                        <el-input name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
-                    </el-form-item>
-                    <el-form-item label="尾款金额" v-if="paymentType==2" prop="lastAmount">
-                        <el-input name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
-                    </el-form-item>
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px;color:#fff">直营店情况</h3>
-                    </div>
-                    <h4 style="margin-bottom:15px;color:#fff">直营店1</h4>
-                    <el-form-item label="直营店全称" prop="dssOne">
-                        <el-input name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="成立日期" prop="estabDateOne">
-                        <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="manual"
-                        v-model="visible1">
-                        <i class="el-icon-info"></i>
-                        <p>您所选年限距今不满足1年，是否继续？</p>
-                        <el-button type="primary" size="mini" @click="visible1=false" style="float:right">确认</el-button>
-                            <el-date-picker
-                            slot="reference"
-                            v-model="contract.estabDateOne"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            name="estabDateOne"
-                            style=" border:1px solid orange;"
-                            @change="vis1()"
-                            v-if="visible1"
-                            >
-                            </el-date-picker>
-                            <el-date-picker
-                            slot="reference"
-                            v-model="contract.estabDateOne"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            name="estabDateOne"
-                            @change="vis1()"
-                            v-else
-                            >
-                            </el-date-picker>
-                        </el-popover>
-                                        <!-- <el-input v-model="contract.estadateone" placeholder="成立日期"></el-input> -->
-                    </el-form-item>
-                    <el-form-item label="经营地址" prop="addressOne">
-                        <el-input name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
-                    </el-form-item>
-                    <h4 style="margin-bottom:15px;color:#fff">直营店2</h4>
-                    <el-form-item label="直营店全称" prop="dssTwo">
-                        <el-input name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="成立日期" prop="estabDateTwo">
-                        <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="manual"
-                        v-model="visible2">
-                        <i class="el-icon-info"></i>
-                        <p>您所选年限距今不满足1年，是否继续？</p>
-                        <el-button type="primary" size="mini" @click="visible2=false" style="float:right">确认</el-button>
-                            <el-date-picker
-                            name="estabDateTwo"
-                            slot="reference"
-                            v-model="contract.estabDateTwo"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            style=" border:1px solid orange;"
-                            v-if="visible2"
-                            @change="vis2()"
-                            />
-                            <el-date-picker
-                            name="estabDateTwo"
-                            slot="reference"
-                            v-model="contract.estabDateTwo"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            @change="vis2()"
-                            v-else
-                            />
-                        </el-popover>
-                        <!-- <el-input v-model="contract.estadatetwo" placeholder="成立日期"></el-input> -->
-                    </el-form-item>
-                    <el-form-item label="经营地址" prop="addressTwo">
-                        <el-input name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
-                    </el-form-item>
-                    <div class="li" >
-                    <h3 style="margin-bottom:15px">知识产权</h3>
-                    </div>
-                    <el-form-item label="权利类别">
-                        <div>
-                            <el-checkbox v-model="checked1" label="商标权" ></el-checkbox>
-                            <div v-if="checked1">
-                                <el-input 
-                                    v-for="(city,i) in brand" 
-                                    :key="city"
-                                    name="brand" 
-                                    class="rightNum"
-                                    v-model="brand[i].value"
-                                    placeholder="商标号">
-                                </el-input>
-                                <el-button @click="removeLi(brand)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addBrand()" size="mini" type="warning" icon="el-icon-plus" circle></el-button>
-                            </div>
-                            <el-checkbox v-model="checked2" label="著作权" ></el-checkbox>
-                            <div v-if="checked2">
-                                <el-input 
-                                    v-for="(city,i) in work" 
-                                    :key="city"
-                                    name="work" 
-                                    class="rightNum"
-                                    v-model="work[i].value"
-                                    placeholder="著作号">
-                                </el-input>
-                                <el-button @click="removeLi(work)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addWork()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
-                            </div>
-                            <el-checkbox v-model="checked3" label="专利权" ></el-checkbox>
-                            <div v-if="checked3">
-                                <el-input 
-                                    v-for="(city,i) in right" 
-                                    :key="city"
-                                    name="right" 
-                                    class="rightNum"
-                                    v-model="right[i].value"
-                                    placeholder="权利号">
-                                </el-input>
-                                <el-button @click="removeLi(right)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addRight()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
-                            </div>
+                    <div class="libox">
+                        <div class="li">
+                            <h3 >特许人基本信息
+                                <div class="show" @click="isShow(0)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
                         </div>
-                    </el-form-item>
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px;color:#fff">合同原件</h3>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.info">
+                                <el-form-item label="公司全称"  prop="companyName" >
+                                    <el-input  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人姓名" prop="respName" >
+                                    <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
+                                </el-form-item>
+                                <el-form-item label="联系电话" prop="phone" >
+                                    <el-input   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                </el-form-item>
+                                <el-form-item label="电子邮件" prop="email" >
+                                    <el-input  name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
+                                </el-form-item>
+                                <el-form-item label="项目名称" prop="trade" >
+                                    <el-input  name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人职位" prop="respPost" >
+                                    <el-input  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                </el-form-item>
+                                <el-form-item label="公司传真" >
+                                    <el-input  name="tax" v-model="contract.tax" placeholder="公司传真"></el-input>
+                                </el-form-item>
+                                <!-- <div></div> -->
+                                <el-form-item label="公司座机" >
+                                    <el-input  name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
+                                </el-form-item>
+                                <el-form-item label="公司网址" >
+                                    <el-input  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
+                                </el-form-item>
+                            <!-- <div></div> -->
+                            </div>
+                        </el-collapse-transition>
                     </div>
-                    <el-form-item >
-                        <el-button type="warning" round @click="browse(contract.src)">浏览<i class="el-icon-view"></i></el-button>
-                    </el-form-item>
-                    <el-form-item >
-                        <el-link :href="contract.src" type="warning" :underline="false">点击下载<i class="el-icon-download"></i></el-link>
-                    </el-form-item>
-                    <div class="li"> 
-                    <h3 style="margin-bottom:15px;color:#fff">审核</h3>
+                    <div class="libox">
+                        <div class="li">
+                            <h3>时间
+                                <div class="show" @click="isShow(1)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <!-- <el-form-item label="品牌名称" prop="brandName">
+                            <el-input  name="brandName" v-model="contract.brandName"  placeholder="品牌名称"></el-input>
+                        </el-form-item> -->
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.time">
+                                <el-form-item label="预计月数" prop="anticMonths">
+                                <el-input-number  name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
                     </div>
-                    <h4 style="margin-bottom:15px;color:aliceblue">描述信息</h4>
-                    <el-form-item style="margin:0px;margin-left:32px">
-                        <el-input
-                        style="width:300px"
-                        type="textarea"
-                        placeholder="请输入描述信息"
-                        v-model="contract.msg">
-                        </el-input>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item >
-                        <el-button class="upload" @click.native.prevent="commit3" v-if="!loading2">同意</el-button>
-                        <el-button disabled  v-if="loading2">同意</el-button>
-                        <el-button type="danger"  @click.native.prevent="open" v-if="!loading2">驳回</el-button>
-                        <el-button disabled  v-if="loading2">驳回</el-button>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item v-if="loading2" style="color:#fff">
-                        正在上传
-                        <i class="el-icon-loading" style="color:#fff"></i>
-                    </el-form-item>
+                    <div class="libox">
+                        <div class="li">
+                        <h3>金额
+                            <div class="show" @click="isShow(2)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.money">
+                                <el-form-item label="付款方式" >
+                                <el-select   v-model="paymentType" placeholder="请选择付款方式">
+                                    <el-option label="全额付款" :value="1"></el-option>
+                                    <el-option label="分期付款" :value="2"></el-option>
+                                </el-select>
+                                </el-form-item>
+                                <el-form-item label="全款金额" prop="fullAmount">
+                                    <el-input  name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
+                                </el-form-item>
+                                <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
+                                    <el-input  name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
+                                </el-form-item>
+                                <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
+                                    <el-input  name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li">
+                            <h3 style="margin-bottom:15px">直营店情况
+                                <div class="show" @click="isShow(3)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.shop">
+                                <h4 style="margin-bottom:15px;">直营店1</h4>
+                                <el-form-item label="直营店全称" prop="dssOne">
+                                    <el-input  name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="成立日期" prop="estabDateOne">
+                                    <el-popover
+                                    placement="bottom"
+                                    width="200"
+                                    trigger="manual"
+                                    v-model="visible1">
+                                    <p><i class="el-icon-info"></i>您所选年限距今不满足1年，是否继续？</p>
+                                    <el-button class="upload" size="mini" @click="visible1=false" style="float:right">确认</el-button>
+                                        <el-date-picker
+                                            
+                                            slot="reference"
+                                            v-model="contract.estabDateOne"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            name="estabDateOne"
+                                            style=" border:1px solid orange;"
+                                            @change="vis1()"
+                                            v-if="visible1"
+                                            >
+                                            </el-date-picker>
+                                            <el-date-picker
+                                            
+                                            slot="reference"
+                                            v-model="contract.estabDateOne"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            name="estabDateOne"
+                                            @change="vis1()"
+                                            v-else
+                                            >
+                                            </el-date-picker>
+                                    </el-popover>
+                                                    <!-- <el-input v-model="contract.estadateone" placeholder="成立日期"></el-input> -->
+                                </el-form-item>
+                                <el-form-item label="经营地址" prop="addressOne">
+                                    <el-input   name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
+                                </el-form-item>
+                                <h4 style="margin-bottom:15px;">直营店2</h4>
+                                <el-form-item label="直营店全称" prop="dssTwo">
+                                    <el-input  name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="成立日期" prop="estabDateTwo">
+                                    <el-popover
+                                    placement="bottom"
+                                    width="200"
+                                    trigger="manual"
+                                    v-model="visible2">
+                                    <i class="el-icon-info"></i>
+                                    <p>您所选年限距今不满足1年，是否继续？</p>
+                                    <el-button class="upload" size="mini" @click="visible2=false" style="float:right">确认</el-button>
+                                        <el-date-picker
+                                            
+                                            name="estabDateTwo"
+                                            slot="reference"
+                                            v-model="contract.estabDateTwo"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            style=" border:1px solid orange;"
+                                            v-if="visible2"
+                                            @change="vis2()"
+                                            />
+                                            <el-date-picker
+                                            
+                                            name="estabDateTwo"
+                                            slot="reference"
+                                            v-model="contract.estabDateTwo"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            @change="vis2()"
+                                            v-else
+                                            />
+                                    </el-popover>
+                                    <!-- <el-input v-model="contract.estadatetwo" placeholder="成立日期"></el-input> -->
+                                </el-form-item>
+                                <el-form-item label="经营地址" prop="addressTwo">
+                                    <el-input  name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li" >
+                        <h3 style="margin-bottom:15px">知识产权
+                            <div class="show" @click="isShow(4)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.right">
+                                <el-form-item label="权利类别" prop="type">
+                                    <div>
+                                            <el-checkbox  v-model="checked1" label="商标权" ></el-checkbox>
+                                            <div v-if="checked1">
+                                                <el-input 
+                                                    oninput="value=value.replace(/[^\d]/g,'')"
+                                                    v-for="(city,i) in brand" 
+                                                    :key="city"
+                                                    
+                                                    name="brand" 
+                                                    class="rightNum"
+                                                    v-model="brand[i].value"
+                                                    placeholder="商标号">
+                                                </el-input>
+                                                <el-button @click="removeLi(brand)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addBrand()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            </div>
+                                            <el-checkbox  v-model="checked2" label="著作权" ></el-checkbox>
+                                            <div v-if="checked2">
+                                                <el-input 
+                                                    
+                                                    v-for="(city,i) in work" 
+                                                    :key="city"
+                                                    name="work" 
+                                                    class="rightNum"
+                                                    v-model="work[i].value"
+                                                    placeholder="著作号">
+                                                </el-input>
+                                                <el-button @click="removeLi(work)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addWork()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            </div>
+                                            <el-checkbox  v-model="checked3" label="专利权" ></el-checkbox>
+                                            <div v-if="checked3">
+
+                                                <el-input 
+                                                    
+                                                    v-for="(city,i) in right" 
+                                                    :key="city"
+                                                    name="right" 
+                                                    class="rightNum"
+                                                    v-model="right[i].value"
+                                                    placeholder="权利号">
+                                                </el-input>
+                                                <el-button @click="removeLi(right)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addRight()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            
+                                            
+                                            </div>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li"> 
+                            <h3 style="margin-bottom:15px;">合同原件
+                                <span v-if="isStandard"> (标准合同) </span>
+                                <span v-else> (非标合同) </span>
+                                <div class="show" @click="isShow(6)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.contract">
+                                <el-form-item >
+                                    <el-button type="warning" round @click="browse(state2.url)">浏览<i class="el-icon-view"></i></el-button>
+                                </el-form-item>
+                                <el-form-item >
+                                    <el-link :href="state2.url" type="primary" :underline="false">点击下载<i class="el-icon-download"></i></el-link>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li"> 
+                            <h3 style="margin-bottom:15px">审核
+                                <div class="show" @click="isShow(5)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.commit">
+                                <h4 style="margin-bottom:15px">描述信息</h4>
+                                <el-form-item style="margin:0px;margin-left:32px">
+                                    <el-input
+                                    style="width:300px"
+                                    type="textarea"
+                                    placeholder="请输入描述信息"
+                                    v-model="contract.msg">
+                                    </el-input>
+                                </el-form-item>
+                                <div></div>
+                                <el-form-item >
+                                    <el-button type="primary" style="width:75px" @click.native.prevent="commit3" v-if="!loading2">同意</el-button>
+                                    <el-button type="primary" style="width:75px" disabled  v-if="loading2">同意</el-button>
+                                    <el-button type="danger"  @click.native.prevent="open" v-if="!loading2">驳回</el-button>
+                                    <el-button disabled  v-if="loading2">驳回</el-button>
+                                </el-form-item>
+                                <div></div>
+                                <el-form-item v-if="loading2" style="color:#fff">
+                                    正在上传
+                                    <i class="el-icon-loading2" style="color:#fff"></i>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
                 </el-form>
             </el-form>
             <el-row v-if="isaudit==2&&!atypia&&!standard" style="padding-left:30px;height:900px">
-                <div class="li">
-                <h3>修改合同</h3>
+                <div class="libox" style="padding-bottom:30px">
+                    <div class="li">
+                        <h3>修改合同</h3>
+                    </div>
+                    <el-button style="margin-top:20px;margin-left:20px" type="primary" @click="standar()">标准合同</el-button>
+                    <el-button style="margin-top:20px;margin-left:20px" type="primary" @click="atypia=!atypia">非标合同</el-button>
                 </div>
-                <el-button style="margin-top:20px" type="primary" @click="standar()">标准合同</el-button>
-                <el-button style="margin-top:20px" type="primary" @click="atypia=!atypia">非标合同</el-button>
             </el-row>
             <el-button style="boder:none" icon="el-icon-back" @click="standard=false;atypia=false" v-if="isaudit==2&&(atypia||standard)"></el-button>
             <!-- <i class="el-icon-back" v-if="isaudit==2&&(atypia||standard)"></i> -->
             <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:60px;height:900px" v-if="isaudit==2&&atypia&&!standard">
-                <div class="li">
-                <h3>非标合同修改</h3>
+                <div class="libox" style="padding-bottom:30px">
+                    <div class="li" >
+                        <h3>非标合同修改</h3>
+                    </div>
+                    <!-- <a :href="url" style="margin-bottom:20px;text-decoration:underline;color:#4d90fe" >点击下载合同</a> -->
+                    <el-collapse-transition>
+                        <div class="lifroms" style="margin-top:20px" v-show="show.commit">
+                        <!-- <h4 style="">非标准合同上传</h4> -->
+                            <el-form-item label="文件上传" style="margin:0px">
+                                <el-upload
+                                    ref="upload"
+                                    class="upload-demo"
+                                    :action="BASE_API+'/eduservice/state/upcontract'"
+                                    :on-preview="handlePreview"
+                                    :on-remove="handleRemove"
+                                    :before-remove="beforeRemove"
+                                    :on-success="fileUploadSuccess"
+                                    :limit="1"
+                                    :on-exceed="handleExceed"
+                                    
+                                    :file-list="fileList">
+                                    <el-button style="width:80px;height:30px" slot="trigger" size="mini" type="primary" >选取文件</el-button>
+                                    <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+                                    <div slot="tip" style="margin-left:98px" class="el-upload__tip">文件上传大小，影响上传速度，建议10mb左右</div>
+                                </el-upload>
+                            </el-form-item>
+                            <!-- <h4 style="">描述</h4> -->
+                            <el-form-item label="描述信息" style="margin:0px">
+                                <el-input
+                                style="margin-top:15px;width:250px"
+                                type="textarea"
+                                :rows="2"
+                                placeholder="描述信息"
+                                v-model="textarea">
+                                </el-input>
+                            </el-form-item>
+                            <!-- <div style="margin-top:20px;">确认：</div> -->
+                            <div style="margin-bottom:10px"></div>
+                            <el-form-item style="margin:0px;margin-left:90px" v-if="!disable">
+                                <el-button type="primary" style="width:150px" @click.native.prevent="commit4">确认修改</el-button>
+                            </el-form-item>
+                            <el-form-item style="margin:0px;margin-left:90px;margin-top:30px" v-else>
+                                <el-button disabled type="primary" style="width:150px">确认修改</el-button>
+                            </el-form-item>
+                        </div>
+                    </el-collapse-transition>
                 </div>
-                <!-- <a :href="url" style="margin-bottom:20px;text-decoration:underline;color:#4d90fe" >点击下载合同</a> -->
-                <h4 style="margin-bottom:10px;color:#fff">非标准合同上传</h4>
-                <el-upload
-                    style="width:250px"
-                    class="upload-demo"
-                    :action="BASE_API+'/eduservice/state/upcontract'"
-                    :on-preview="handlePreview"
-                    :on-remove="handleRemove"
-                    :before-remove="beforeRemove"
-                    :on-success="fileUploadSuccess"
-                    multiple
-                    :limit="1"
-                    :on-exceed="handleExceed"
-                    :file-list="fileList">
-                    <el-button size="small" class="upload">点击上传</el-button>
-                </el-upload>
-                <h4 style="margin-bottom:10px;color:#fff">描述</h4>
-                <el-input
-                style="margin-top:15px;width:250px"
-                type="textarea"
-                :rows="2"
-                placeholder="描述信息"
-                v-model="textarea">
-                </el-input>
-                <div style="margin-top:20px;color:#fff">确认：</div>
-                 <div style="margin-bottom:10px"></div>
-                 <el-form-item style="margin:0px" v-if="!disable">
-                    <el-button type="primary" style="width:150px" @click.native.prevent="commit4">确认修改</el-button>
-                </el-form-item>
-                 <el-form-item style="margin:0px" v-else>
-                    <el-button disabled type="primary" style="width:150px">确认修改</el-button>
-                </el-form-item>
             </el-form>
             <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:60px" v-if="isaudit==2&&!atypia&&standard">
-                <div class="li">
-                <h3>标准合同修改</h3>
+                <div class="top">
+                    <img src="../../../assets/icon.png"/>
+                    标准合同修改
                 </div>
-                <el-form :inline="true" ref="contract" :model="contract" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px" >
-                    <div class="li">
-                    <h3 style="margin-bottom:15px">特许人基本信息</h3>
-                    </div>
-                    <el-form-item label="公司全称"  prop="companyName" style="width:270px">
-                        <el-input name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="经办人姓名" prop="respName" style="width:280px">
-                        <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
-                    </el-form-item>
-                    <el-form-item label="联系电话" prop="phone" style="width:270px">
-                        <el-input name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
-                    </el-form-item>
-                    <el-form-item label="传真" style="width:270px">
-                        <el-input name="tax" v-model="contract.tax" placeholder="传真"></el-input>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item label="公司座机" style="width:270px">
-                        <el-input name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
-                    </el-form-item>
-                    <el-form-item label="经办人职位" prop="respPost" style="width:280px">
-                        <el-input name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
-                    </el-form-item>
-                    <el-form-item label="电子邮件" prop="email" style="width:270px">
-                        <el-input name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
-                    </el-form-item>
-                    <el-form-item label="网址" style="width:250px">
-                        <el-input name="url" v-model="contract.url" placeholder="网址"></el-input>
-                    </el-form-item>
-                    <!-- <div></div> -->
-                    <el-form-item label="备案项目名称" prop="trade" style="width:300px">
-                        <el-input name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
-                    </el-form-item>
-                    <div class="li">
-                    <h3 style="margin-bottom:15px">基本信息</h3>
-                    </div>
-                    <el-form-item label="预计月数" prop="anticMonths">
-                    <el-input-number name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
-                    </el-form-item>
-                    <div class="li">
-                    <h3 style="margin-bottom:15px">金额</h3>
-                    </div>
-                    <el-form-item label="付款方式" >
-                    <el-select  v-model="paymentType" placeholder="请选择付款方式">
-                        <el-option label="全额付款" :value="1"></el-option>
-                        <el-option label="分期付款" :value="2"></el-option>
-                    </el-select>
-                    </el-form-item>
-                    <el-form-item label="全款金额" prop="fullAmount">
-                        <el-input name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
-                    </el-form-item>
-                    <el-form-item label="首款金额" v-if="paymentType==2" prop="firstAmount">
-                        <el-input name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
-                    </el-form-item>
-                    <el-form-item label="尾款金额" v-if="paymentType==2" prop="lastAmount">
-                        <el-input name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
-                    </el-form-item>
-                    <div class="li">
-                    <h3 style="margin-bottom:15px">直营店情况</h3>
-                    </div>
-                    <h4 style="margin-bottom:15px;color:#fff">直营店1</h4>
-                    <el-form-item label="直营店全称" prop="dssOne">
-                        <el-input name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="成立日期" prop="estabDateOne">
-                        <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="manual"
-                        v-model="visible1">
-                        <i class="el-icon-info"></i>
-                        <p>您所选年限距今不满足1年，是否继续？</p>
-                        <el-button type="primary" size="mini" @click="visible1=false" style="float:right">确认</el-button>
-                            <el-date-picker
-                            slot="reference"
-                            v-model="contract.estabDateOne"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            name="estabDateOne"
-                            style=" border:1px solid orange;"
-                            @change="vis1()"
-                            v-if="visible1"
-                            >
-                            </el-date-picker>
-                            <el-date-picker
-                            slot="reference"
-                            v-model="contract.estabDateOne"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            name="estabDateOne"
-                            @change="vis1()"
-                            v-else
-                            >
-                            </el-date-picker>
-                        </el-popover>
-                                        <!-- <el-input v-model="contract.estadateone" placeholder="成立日期"></el-input> -->
-                    </el-form-item>
-                    <el-form-item label="经营地址" prop="addressOne">
-                        <el-input name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
-                    </el-form-item>
-                    <h4 style="margin-bottom:15px;color:#fff">直营店2</h4>
-                    <el-form-item label="直营店全称" prop="dssTwo">
-                        <el-input name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="成立日期" prop="estabDateTwo">
-                        <el-popover
-                        placement="bottom"
-                        width="200"
-                        trigger="manual"
-                        v-model="visible2">
-                        <i class="el-icon-info"></i>
-                        <p>您所选年限距今不满足1年，是否继续？</p>
-                        <el-button type="primary" size="mini" @click="visible2=false" style="float:right">确认</el-button>
-                            <el-date-picker
-                            name="estabDateTwo"
-                            slot="reference"
-                            v-model="contract.estabDateTwo"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            style=" border:1px solid orange;"
-                            v-if="visible2"
-                            @change="vis2()"
-                            />
-                            <el-date-picker
-                            name="estabDateTwo"
-                            slot="reference"
-                            v-model="contract.estabDateTwo"
-                            type="date"
-                            placeholder="选择开始时间"
-                            value-format="yyyy-MM-dd"
-                            @change="vis2()"
-                            v-else
-                            />
-                        </el-popover>
-                        <!-- <el-input v-model="contract.estadatetwo" placeholder="成立日期"></el-input> -->
-                    </el-form-item>
-                    <el-form-item label="经营地址" prop="addressTwo">
-                        <el-input name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
-                    </el-form-item>
-                    <div class="li" >
-                    <h3 style="margin-bottom:15px">知识产权</h3>
-                    </div>
-                    <el-form-item label="权利类别">
-                        <div>
-                            <el-checkbox v-model="checked1" label="商标权" ></el-checkbox>
-                            <div v-if="checked1">
-                                <el-input 
-                                    v-for="(city,i) in brand" 
-                                    :key="city"
-                                    name="brand" 
-                                    class="rightNum"
-                                    v-model="brand[i].value"
-                                    placeholder="商标号">
-                                </el-input>
-                                <el-button @click="removeLi(brand)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addBrand()" size="mini" type="warning" icon="el-icon-plus" circle></el-button>
-                            </div>
-                            <el-checkbox v-model="checked2" label="著作权" ></el-checkbox>
-                            <div v-if="checked2">
-                                <el-input 
-                                    v-for="(city,i) in work" 
-                                    :key="city"
-                                    name="work" 
-                                    class="rightNum"
-                                    v-model="work[i].value"
-                                    placeholder="著作号">
-                                </el-input>
-                                <el-button @click="removeLi(work)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addWork()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
-                            </div>
-                            <el-checkbox v-model="checked3" label="专利权" ></el-checkbox>
-                            <div v-if="checked3">
-                                <el-input 
-                                    v-for="(city,i) in right" 
-                                    :key="city"
-                                    name="right" 
-                                    class="rightNum"
-                                    v-model="right[i].value"
-                                    placeholder="权利号">
-                                </el-input>
-                                <el-button @click="removeLi(right)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
-                                <el-button @click="addRight()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
-                            </div>
+                <el-form :inline="true" ref="contract" :model="contract" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px">
+                    <div class="libox">
+                        <div class="li">
+                            <h3 >特许人基本信息
+                                <div class="show" @click="isShow(0)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
                         </div>
-                    </el-form-item>
-                    <div class="li">
-                    <h3 style="margin-bottom:15px">提交信息</h3>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.info">
+                                <el-form-item label="公司全称"  prop="companyName" >
+                                    <el-input  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人姓名" prop="respName" >
+                                    <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
+                                </el-form-item>
+                                <el-form-item label="联系电话" prop="phone" >
+                                    <el-input   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                </el-form-item>
+                                <el-form-item label="电子邮件" prop="email" >
+                                    <el-input  name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
+                                </el-form-item>
+                                <el-form-item label="项目名称" prop="trade" >
+                                    <el-input  name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人职位" prop="respPost" >
+                                    <el-input  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                </el-form-item>
+                                <el-form-item label="公司传真" >
+                                    <el-input  name="tax" v-model="contract.tax" placeholder="公司传真"></el-input>
+                                </el-form-item>
+                                <!-- <div></div> -->
+                                <el-form-item label="公司座机" >
+                                    <el-input  name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
+                                </el-form-item>
+                                <el-form-item label="公司网址" >
+                                    <el-input  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
+                                </el-form-item>
+                            <!-- <div></div> -->
+                            </div>
+                        </el-collapse-transition>
                     </div>
-                    <h4 style="margin-bottom:15px;color:aliceblue">描述信息</h4>
-                    <el-form-item style="margin:0px;margin-left:32px">
-                        <el-input
-                        style="width:300px"
-                        type="textarea"
-                        placeholder="请输入描述信息"
-                        v-model="contract.msg">
-                        </el-input>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item >
-                        <el-button type="primary"  @click.native.prevent="commit2" v-if="!loading2">提交</el-button>
-                        <el-button disabled type="primary"  v-if="loading2">提交</el-button>
-                    </el-form-item>
-                    <div></div>
-                    <el-form-item v-if="loading2" style="color:#fff">
-                        正在上传
-                        <i class="el-icon-loading" style="color:#fff"></i>
-                    </el-form-item>
+                    <div class="libox">
+                        <div class="li">
+                            <h3>时间
+                                <div class="show" @click="isShow(1)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <!-- <el-form-item label="品牌名称" prop="brandName">
+                            <el-input  name="brandName" v-model="contract.brandName"  placeholder="品牌名称"></el-input>
+                        </el-form-item> -->
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.time">
+                                <el-form-item label="预计月数" prop="anticMonths">
+                                <el-input-number  name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li">
+                        <h3>金额
+                            <div class="show" @click="isShow(2)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.money">
+                                <el-form-item label="付款方式" >
+                                <el-select   v-model="paymentType" placeholder="请选择付款方式">
+                                    <el-option label="全额付款" :value="1"></el-option>
+                                    <el-option label="分期付款" :value="2"></el-option>
+                                </el-select>
+                                </el-form-item>
+                                <el-form-item label="全款金额" prop="fullAmount">
+                                    <el-input  name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
+                                </el-form-item>
+                                <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
+                                    <el-input  name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
+                                </el-form-item>
+                                <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
+                                    <el-input  name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li">
+                            <h3 style="margin-bottom:15px">直营店情况
+                                <div class="show" @click="isShow(3)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.shop">
+                                <h4 style="margin-bottom:15px;">直营店1</h4>
+                                <el-form-item label="直营店全称" prop="dssOne">
+                                    <el-input  name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="成立日期" prop="estabDateOne">
+                                    <el-popover
+                                    placement="bottom"
+                                    width="200"
+                                    trigger="manual"
+                                    v-model="visible1">
+                                    <p><i class="el-icon-info"></i>您所选年限距今不满足1年，是否继续？</p>
+                                    <el-button class="upload" size="mini" @click="visible1=false" style="float:right">确认</el-button>
+                                        <el-date-picker
+                                            
+                                            slot="reference"
+                                            v-model="contract.estabDateOne"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            name="estabDateOne"
+                                            style=" border:1px solid orange;"
+                                            @change="vis1()"
+                                            v-if="visible1"
+                                            >
+                                            </el-date-picker>
+                                            <el-date-picker
+                                            
+                                            slot="reference"
+                                            v-model="contract.estabDateOne"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            name="estabDateOne"
+                                            @change="vis1()"
+                                            v-else
+                                            >
+                                            </el-date-picker>
+                                    </el-popover>
+                                                    <!-- <el-input v-model="contract.estadateone" placeholder="成立日期"></el-input> -->
+                                </el-form-item>
+                                <el-form-item label="经营地址" prop="addressOne">
+                                    <el-input   name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
+                                </el-form-item>
+                                <h4 style="margin-bottom:15px;">直营店2</h4>
+                                <el-form-item label="直营店全称" prop="dssTwo">
+                                    <el-input  name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
+                                </el-form-item>
+                                <el-form-item label="成立日期" prop="estabDateTwo">
+                                    <el-popover
+                                    placement="bottom"
+                                    width="200"
+                                    trigger="manual"
+                                    v-model="visible2">
+                                    <i class="el-icon-info"></i>
+                                    <p>您所选年限距今不满足1年，是否继续？</p>
+                                    <el-button class="upload" size="mini" @click="visible2=false" style="float:right">确认</el-button>
+                                        <el-date-picker
+                                            
+                                            name="estabDateTwo"
+                                            slot="reference"
+                                            v-model="contract.estabDateTwo"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            style=" border:1px solid orange;"
+                                            v-if="visible2"
+                                            @change="vis2()"
+                                            />
+                                            <el-date-picker
+                                            
+                                            name="estabDateTwo"
+                                            slot="reference"
+                                            v-model="contract.estabDateTwo"
+                                            type="date"
+                                            placeholder="选择开始时间"
+                                            value-format="yyyy-MM-dd"
+                                            @change="vis2()"
+                                            v-else
+                                            />
+                                    </el-popover>
+                                    <!-- <el-input v-model="contract.estadatetwo" placeholder="成立日期"></el-input> -->
+                                </el-form-item>
+                                <el-form-item label="经营地址" prop="addressTwo">
+                                    <el-input  name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li" >
+                        <h3 style="margin-bottom:15px">知识产权
+                            <div class="show" @click="isShow(4)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.right">
+                                <el-form-item label="权利类别" prop="type">
+                                    <div>
+                                            <el-checkbox  v-model="checked1" label="商标权" ></el-checkbox>
+                                            <div v-if="checked1">
+                                                <el-input 
+                                                    oninput="value=value.replace(/[^\d]/g,'')"
+                                                    v-for="(city,i) in brand" 
+                                                    :key="city"
+                                                    
+                                                    name="brand" 
+                                                    class="rightNum"
+                                                    v-model="brand[i].value"
+                                                    placeholder="商标号">
+                                                </el-input>
+                                                <el-button @click="removeLi(brand)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addBrand()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            </div>
+                                            <el-checkbox  v-model="checked2" label="著作权" ></el-checkbox>
+                                            <div v-if="checked2">
+                                                <el-input 
+                                                    
+                                                    v-for="(city,i) in work" 
+                                                    :key="city"
+                                                    name="work" 
+                                                    class="rightNum"
+                                                    v-model="work[i].value"
+                                                    placeholder="著作号">
+                                                </el-input>
+                                                <el-button @click="removeLi(work)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addWork()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            </div>
+                                            <el-checkbox  v-model="checked3" label="专利权" ></el-checkbox>
+                                            <div v-if="checked3">
+
+                                                <el-input 
+                                                    
+                                                    v-for="(city,i) in right" 
+                                                    :key="city"
+                                                    name="right" 
+                                                    class="rightNum"
+                                                    v-model="right[i].value"
+                                                    placeholder="权利号">
+                                                </el-input>
+                                                <el-button @click="removeLi(right)" size="mini" type="warning" icon="el-icon-minus" circle ></el-button>
+                                                <el-button @click="addRight()" size="mini" type="warning" icon="el-icon-plus" circle ></el-button>
+                                            
+                                            
+                                            </div>
+                                    </div>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li">
+                        <h3 style="margin-bottom:15px">提交信息
+                            <div class="show" @click="isShow(5)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                        </div>
+                        <el-collapse-transition>
+                        <div class="lifroms" v-show="show.commit">
+                            <h4 style="margin-bottom:15px">描述信息</h4>
+                            <el-form-item style="margin:0px;margin-left:32px">
+                                <el-input
+                                
+                                style="width:300px"
+                                type="textarea"
+                                placeholder="请输入描述信息"
+                                v-model="contract.msg">
+                                </el-input>
+                            </el-form-item>
+                            <div></div>
+                            <el-form-item >
+                                <el-button type="primary"  @click.native.prevent="commit2" v-if="!loading2">提交</el-button>
+                                <el-button disabled type="primary" @click.native.prevent="commit2" v-if="loading2">提交</el-button>
+                            </el-form-item>
+                            <div></div>
+                            <el-form-item style="color:aliceblue" v-if="loading2">
+                                正在上传
+                                <i class="el-icon-loading2"></i>
+                            </el-form-item>
+                        </div>
+                        </el-collapse-transition>
+                    </div>
                 </el-form>
         </el-form>
+        
     </div>
 </template>
 <script>
@@ -579,7 +755,9 @@ export default {
                 str = str.replace('/-/g', '/')         //去空格字符等
                 let oldTime = new Date(str).getTime()
                 if (new Date().getTime()-oldTime<31622400000) {
-                    this.visible1=true
+                    if(!this.loading2){
+                        this.visible1=true
+                    }
                     callback()
                 } else {
                     this.visible1=false
@@ -595,7 +773,9 @@ export default {
                 str = str.replace('/-/g', '/')         //去空格字符等
                 let oldTime = new Date(str).getTime()
                 if (new Date().getTime()-oldTime<31622400000) {
-                    this.visible2=true
+                    if(!this.loading2){
+                        this.visible2=true
+                    }
                     callback()
                 } else {
                     this.visible2=false
@@ -607,6 +787,7 @@ export default {
             
             }
         return{
+            show:{info:true,time:true,money:true,shop:true,right:true,commit:true,contract:true},
             checked1:false,
             checked2:false,
             checked3:false,
@@ -622,6 +803,7 @@ export default {
             id:"",
             management:{},
             state2:{},
+            isStandard:true,
             visible1:false,
             visible2:false,
             loading2:false,
@@ -680,6 +862,43 @@ export default {
 	     '$route': 'init'//getOrderInfo为自定义方法
     },
      methods:{
+         submitUpload() {
+            this.$refs.upload.submit();
+        },
+        isShow(i){
+            // let i=this.show.indexOf(key)
+            let show=document.getElementsByClassName("show")[i]
+            let container=document.getElementsByClassName("container")[0]
+            let pd=false
+            if(i==0){
+                pd=this.show.info
+                this.show.info=!this.show.info
+            }else if(i==1){
+                pd=this.show.time
+                this.show.time=!this.show.time
+            }else if(i==2){
+                pd=this.show.money
+                this.show.money=!this.show.money
+            }else if(i==3){
+                pd=this.show.shop
+                this.show.shop=!this.show.shop
+            }else if(i==4){
+                pd=this.show.right
+                this.show.right=!this.show.right
+            }else if(i==5){
+                pd=this.show.commit
+                this.show.commit=!this.show.commit
+            }
+            // let libox=document.getElementsByClassName("libox")[i]
+            if(pd){
+                // libox.style.height="35px"
+                show.style="transform:rotate(-90deg)";
+            }else{
+                // libox.style.height="495px"
+                show.style="transform:rotate(0deg)";
+            }          
+            // console.log(this.show[i])
+        },
         init(){
             //  console.log(this.$route.query.id==undefined)
             if(this.$route.query.id==undefined){
@@ -714,6 +933,14 @@ export default {
                         this.paymentType=1
                     }
                     this.contract2=JSON.stringify(res.data.contract)
+                })
+                state.getStateList(this.id)
+                .then(res=>{
+                    this.state2=res.data.state
+                    if(JSON.stringify(res.data.state.url).indexOf("[{")>=0){
+                        this.state2.url=JSON.parse(res.data.state.url)[0].url
+                        isStandard=false//非标合同
+                    }
                 })
             }
             if(this.isaudit==0){
@@ -846,7 +1073,17 @@ export default {
             if (valid) {
             this.rightUtils()
             this.loading2=true
+            const loading = this.$loading({
+                lock: true,
+                text: '正在修改合同',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             this.contract.brandName=this.contract.trade
+            if(this.paymentType==1){
+                this.contract.firstAmount=null
+                this.contract.lastAmount=null
+            }
             let ls=[];
             ls.push(this.brand)
             ls.push(this.work)
@@ -854,7 +1091,7 @@ export default {
             this.contract.rightCategory=JSON.stringify(ls)
             contract.updateContract(this.contract)
            .then(res=>{
-               this.loading=false
+               this.loading2=false
                 this.$message({
                     type: 'success',
                     message: '提交成功!'
@@ -862,11 +1099,13 @@ export default {
                 this.msg2(res.data.contract.cid,res.data.contract.serialNum)
                 message.addMessages(this.messages)
                 .then(res=>{
+                    loading.close();
                     this.$router.push({path:'/audit/list'})
                 })
                 // this.contract.src=res.data.path
             })
             .catch(error=>{
+                 loading.close();
                  this.loading2=false
                  this.$message({
                     type: 'error',
@@ -881,6 +1120,16 @@ export default {
             this.$refs.contract.validate(valid => {
              if (valid) {
                 this.loading2=true
+                const loading = this.$loading({
+                    lock: true,
+                    text: '正在提交审核',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                if(this.paymentType==1){
+                    this.contract.firstAmount=null
+                    this.contract.lastAmount=null
+                }
                 this.state.sstate=2
                 this.record.sstate=2
                 this.msg(this.record.cid,1)
@@ -889,7 +1138,7 @@ export default {
                         .then(res=>{
                             record.addRecord(this.record)
                             .then(rest=>{
-                                if(JSON.stringify(this.contract)!=this.contract2){
+                                if(JSON.stringify(this.contract)!=this.contract2&&this.isStandard){
                                     this.rightUtils()
                                     this.contract.brandName=this.contract.trade
                                     let ls=[];
@@ -899,7 +1148,8 @@ export default {
                                     this.contract.rightCategory=JSON.stringify(ls)
                                     contract.updateContract2(this.contract)
                                     .then(res=>{
-                                        this.loading=false
+                                        loading.close();
+                                        this.loading2=false
                                             this.$message({
                                                 type: 'success',
                                                 message: '提交成功!'
@@ -912,6 +1162,7 @@ export default {
                                             // this.contract.src=res.data.path
                                         })
                                         .catch(error=>{
+                                            loading.close();
                                             this.loading2=false
                                             this.$message({
                                                 type: 'error',
@@ -925,6 +1176,7 @@ export default {
                                     });
                                      message.addMessages(this.messages)
                                             .then(res=>{
+                                                loading.close();
                                                 this.$router.push({path:'/audit/list'})
                                             })
                                 }
@@ -955,12 +1207,18 @@ export default {
             
         },
         standar(){
-            this.standard=!this.standard
             contract.getContract(this.record.cid)
             .then(res=>{
                 this.contract=res.data.contract
+                if(res.data.contract.type==1){
+                    this.$router.push({path:'/audit/updatepro',query: {id:this.id,cid:this.record.cid,url:this.url,isaudit:this.isaudit}})
+                }else{
+                    this.standard=!this.standard
+                    this.type();
+                }
+                
                 // this.contract2=res.data.contract
-                this.type();
+                
                 if(this.contract.lastAmount!=0){
                     this.paymentType=2
                 }else{
@@ -974,7 +1232,7 @@ export default {
                 message:'上传成功'
             })
             this.fileList2.push({
-                    name:response.data.url.substring(88,response.data.url.length),
+                    name:file.name,
                     url:response.data.url
             })
             this.disable=false
@@ -1019,33 +1277,44 @@ export default {
                     this.message.msg='您的合同'+res.data.contract.serialNum+'已被主管驳回，请及时修改合同'
                 }else if(i==3){
                     this.message.msg='您的合同'+res.data.contract.serialNum+'已通过合同签订，可以进行发起立案'
-                }else if(i==4){
+                }
+                if(i==4){
                     // this.message.msg='您的合同'+res.data.contract.serialNum+'已被修改，请耐心等待主管审核'
                     for(let i=0;i<this.management.length;i++){
                             let m={}
                             m.category=0
                             m.categoryId=cid
+                            m.send=this.roles.uid
                             m.uid=this.management[i].uid
                             m.msg='合同'+res.data.contract.serialNum+'已被修改，请及时审核'
                             messages.push(m);
                     }
+                }else{
+                    this.message.send=this.roles.uid
+                    this.message.categoryId=cid
+                    this.message.category=0
+                    this.message.uid=res.data.contract.uid
+                    messages.push(this.message)
                 }
-                this.message.send=this.roles.uid
-                this.message.categoryId=cid
-                this.message.category=0
-                this.message.uid=res.data.contract.uid
-                messages.push(this.message)
                 this.messages=messages
             })
         },
         reject(){//驳回
             this.state.sstate=1
             this.record.sstate=1
+            this.loading=true
+            const loading = this.$loading({
+                lock: true,
+                text: '正在提交审核',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
             this.msg(this.record.cid,2)
             this.state.sid=this.id
             state.update(this.state)
                 .then(res=>{
-                this.loading=false
+                this.loading2=false
+                loading.close();
                     this.$message({
                         type: 'success',
                         message: '提交成功!'
@@ -1074,20 +1343,29 @@ export default {
             //  console.log(this.$refs.state.validate)
             this.$refs.state.validate(valid => {
             if (valid) {
+                this.loading2=true
+                    const loading = this.$loading({
+                    lock: true,
+                    text: '正在修改合同',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 this.state.sstate=0
                 this.state.url=JSON.stringify(this.fileList2)
                 this.record.sstate=4
+                this.record.accessory=JSON.stringify(this.fileList2)
                 this.msg(this.record.cid,4)
                 // console.log(this.msg(this.record.cid,4))
                 this.state.sid=this.id
                 if(this.state.url!=''){
                      state.update(this.state)
                     .then(res=>{
-                    this.loading=false
+                    this.loading2=false
+                    loading.close();
                         this.$message({
                             type: 'success',
                             message: '提交成功!'
-                        });
+                    });
                     record.addRecord(this.record)
                     .then(res=>{
                         message.addMessages(this.messages)
@@ -1127,48 +1405,106 @@ export default {
     }
 }
 </script>
-<style  >
+<style >
 .container2 .el-input__inner{
-    color: aliceblue;
-    background-color: transparent;
+    /* color: aliceblue; */
+    /* background-color: transparent; */
+     background-color: #fff;
+     border: 1px solid #DDDCDC;
 }
+.container2 .el-input__inner[disabled]{
+    /* color: aliceblue; */
+    /* background-color: transparent; */
+}
+
 .container2 input{
-    color: aliceblue;
-    background-color: transparent;
-}
-.container2 h3{
-    margin: 0px;
-    color: #ffac02;
-    height: 30px;
-    position: relative;
-    left: 140px;
-    top:13px;
-}
-html{
-    
-}
-.container2{
-    /* top: -19px; */
-    position: relative;
-    /* height: 1550px; */
-    background:url('../../../assets/bgi.png');
-    background-size: 100% 100%;
-    padding-left: 30px;
-}
-.container2 .li{
-    height: 50px;
-    width: 100%;
-    position: relative;
-    left: -35px;
-    background:url('../../../assets/li.png');
-    background-size: 100% 100%;
+    /* color: aliceblue; */
+    /* background-color: #fff; */
+    /* width: 200px; */
+    box-shadow: inset 2px 1px 5px #cbc9c9;
 }
 .container2 .el-form-item{
     margin-top: 30px;
     margin-left: 30px;
+    /* width: 300px; */
 }
 .container2 .el-form-item__label{
-    color:aliceblue;
+    width: 93px;
+}
+.container2 h3{
+    background:url('../../../assets/white-title.png');
+    color: #2c2c2c;
+    height: 35px;
+    position: relative;
+    margin: 0px;
+    padding: 0px 10px;
+    text-shadow: 0px 1px #fff;
+    line-height: 34px;
+    /* padding-top: 10px; */
+    left: 0px;
+    /* top:13px; */
+}
+.container2 .lifroms{
+    padding:0px 130px;
+}
+.container2 .libox{
+    /* transition: height 0.3s; */
+    /* margin-top:20px ; */
+    width: 95%;
+    /* border: 1px solid red; */
+    margin: 0px auto;
+    background-color: #f7f7f7;
+    /* padding: 20px; */
+    /* box-shadow: -5px -2px 10px rgba(0, 0, 0,.3); */
+    box-shadow: 0px 5px 10px #AFAEAE;
+    margin-top: 20px;
+}
+.container2{
+    /* overflow:visible; */
+    position: relative;
+    background:url('../../../assets/bg.png');
+    /* background-size: 100% 100%; */
+    padding-left: 30px;
+    padding-bottom: 20px;
+}
+.container2 .top{
+    margin: 0px auto;
+    /* height: 50px; */
+    width: 95%;
+    font-size: 27px;
+    padding-top:35px;
+    /* padding-left: 30px; */
+    margin-bottom: 20px;
+    /* background:url('../../../assets/icon.png') no-repeat; */
+}
+.container2 .li{
+    height: 35px;
+    width: 100%;
+    position: relative;
+    /* left: -35px; */
+    /* background:url('../../../assets/li.png'); */
+    background-size: 100% 100%;
+}
+.container2 .show{
+    transition: all 0.3s ease-in;
+    cursor: pointer;
+    padding-left: 3px;
+    padding-bottom: 10px;
+    margin-top:5px ;
+    width: 25px;
+    height: 25px;
+    background-color: #bfc2c5;
+    border-radius: 50%;
+    float:right;
+}
+   
+
+.container2 .show i{
+    position: relative;
+    bottom: 4px;
+}
+.container2 .el-form-item__label{
+    /* color:aliceblue; */
 }
 .container2 .dialog-footer{
      position: relative;
@@ -1176,8 +1512,17 @@ html{
      top: 20px;
 }
 .container2 .el-textarea__inner{
-    color: aliceblue;
-    background-color: transparent;
+    /* color: aliceblue; */
+    /* background-color: unset; */
+    background-color: #fff;
+     border: 1px solid #DDDCDC;
+     box-shadow: inset 2px 1px 5px #cbc9c9;
+    height: 70px;
+}
+.container2 .el-textarea__inner[disabled]{
+    /* color: aliceblue; */
+    /* background-color: unset; */
+    height: 70px;
 }
 .container2 .upload{
     color:aliceblue;
@@ -1185,19 +1530,29 @@ html{
 }
 .container2 .primary{
     color:aliceblue;
-    background-color: #91601e;
+    /* background-color: #91601e; */
+    border: none;
 }
 .container2 .el-button--primary{
     width: 200px;
     height: 45px;
-    background-color: #ffac02;
+    /* background-color: #ffac02; */
 }
-.rightNum{
+.container2 .rightNum{
     width: 200px;
     margin-left: 20px;
     margin-bottom: 20px;
 }
 .el-checkbox{
     margin: 0px;
+    margin-right: 10px ;
+}
+.container2 .el-upload-list__item-name{
+
+   
+}
+.container2 .el-upload-list{
+     width: 300px;
+      margin-left:95px;
 }
 </style>

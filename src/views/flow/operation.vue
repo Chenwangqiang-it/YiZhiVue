@@ -1,29 +1,23 @@
 <template>
     <div class="app-container">
          <template>
-            <div style="margin-left:30px;margin-top:-20px;width:605px">
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==1||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==1)">
+            <div class="box">
+                <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==1||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==1)">
                     <div class="li">
-                    <h3>财务审核</h3>
+                        <h3>财务审核</h3>
                     </div>
-                    <el-form-item label="到款金额" style="width:280px" prop="paidFirstAmount">
-                        <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入到款金额"></el-input>
+                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidfirstAmount" v-if="list.type==1">
+                        <el-input v-model="form.sumPaidfirstAmount" placeholder="请输入到款金额" name="sumPaidfirstAmount"></el-input>
                     </el-form-item>
-                    <el-form-item label="到款日期" style="width:300px" prop="paidFirstAmountDate">
-                        <el-date-picker
-                        style="width:185px"
-                        v-model="form.paidFirstAmountDate"
-                        type="date"
-                        placeholder="选择开始时间"
-                        value-format="yyyy-MM-dd"
-                        name="paidFirstAmountDate"
-                        >
-                        </el-date-picker>
+                    <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidFirstAmount" v-else>
+                        <el-input v-model="form.paidFirstAmount" placeholder="请输入到款金额" name="paidFirstAmount"></el-input>
                     </el-form-item>
-                    <el-form-item label="打款单位"  style="width:280px;margin:0" prop="paymentFirstAmount">
+                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount!=0">到款金额应为:{{list.firstAmount}}</span>
+                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0">到款金额应为:{{list.fullAmount}}</span>
+                    <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentFirstAmount">
                         <el-input v-model="form.paymentFirstAmount" name="paymentFirstAmount" placeholder="请输入打款单位"></el-input>
                     </el-form-item>
-                    <el-form-item label="收款单位"  style="width:300px;margin:0" prop="gatheringFirstAmount">
+                    <el-form-item label="收款单位"  prop="gatheringFirstAmount">
                         <el-select v-model="form.gatheringFirstAmount"  name="gatheringFirstAmount" placeholder="请输入收款单位">
                                 <el-option
                                 v-for="item in company"
@@ -33,7 +27,22 @@
                                 </el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="附件上传" style="width:300px;margin:0;margin-top:20px">
+                    <el-form-item label="到款日期" prop="paidFirstAmountDate">
+                        <el-date-picker
+                        v-model="form.paidFirstAmountDate"
+                        type="date"
+                        placeholder="选择开始时间"
+                        value-format="yyyy-MM-dd"
+                        name="paidFirstAmountDate"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidFirstAmount" v-if="list.type==1">
+                        <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入项目到款金额"></el-input>
+                    </el-form-item>
+                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0&&list.type==1">项目到款应为:{{list.price}}</span>
+                    <span style="font-size:10px;margin-left:245px" v-else-if="list.type==1">项目到款应为:{{list.pfirstAmount}}</span>
+                    <el-form-item  label="附件上传" style="width:300px;margin:0;margin-top:20px">
                         <el-upload
                         class="upload-demo"
                         :action="BASE_API+'/eduservice/state/upcontract'"
@@ -47,18 +56,18 @@
                         :limit="fileAmount"
                         :on-exceed="handleExceed"
                         :file-list="fileList2">
-                        <el-button size="small" class="upload">点击上传</el-button>
+                        <el-button size="small" type="primary" >点击上传</el-button>
                         </el-upload>
                     </el-form-item>
-                    <el-form-item label="描述" style="margin:0;margin-top:20px">
-                        <el-input type="textarea" style="width:480px" v-model="form.a_desc"></el-input>
+                    <el-form-item label="描述">
+                        <el-input type="textarea" v-model="form.a_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==2||((roles.jurisdiction==2||roles.jurisdiction==6)&&list.schedules==2)">
                     <div class="li">
-                        <h3>流程分案</h3>
+                        <h3 style="left:-20px;top:-10px">流程分案</h3>
                     </div>
-                    <el-form-item label="分案" prop="agentId">
+                    <el-form-item label="选择代理" prop="agentId">
                         <el-select v-model="form.agentId" style="width:300px" name="agentId" placeholder="请选择代理人">
                                 <el-option
                                 v-for="item in agent"
@@ -71,7 +80,7 @@
                 </el-form>
                 <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==3||(roles.jurisdiction==4&&list.schedules==3)">
                     <div class="li">
-                        <h3>清单上传</h3>
+                        <h3 style="left:0px;">清单上传</h3>
                     </div>
                     <el-form-item label="附件上传" >
                         <el-upload
@@ -88,15 +97,15 @@
                         :limit="fileAmount"
                         :on-exceed="handleExceed"
                         :file-list="fileList2">
-                        <el-button size="small" class="upload">点击上传</el-button>
+                        <el-button size="small" type="primary"  class="upload">点击上传</el-button>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="描述">
-                        <el-input type="textarea" style="width:470px" v-model="form.i_desc"></el-input>
+                        <el-input type="textarea" style="width:300px" v-model="form.i_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==4||(roles.jurisdiction==3&&list.schedules==4)">
-                    <div class="li">
+                    <div class="li" style="height:40px">
                     <h3 v-if="this.list.uporadd!=0">申报材料提供</h3>
                     <h3 v-else>材料补充</h3>
                     </div>
@@ -121,19 +130,19 @@
                         :limit="fileAmount"
                         :on-exceed="handleExceed"
                         :file-list="fileList2">
-                        <el-button size="small" class="upload">点击上传</el-button>
+                        <el-button size="small" type="primary" class="upload">点击上传</el-button>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="描述">
-                        <el-input type="textarea" style="width:470px" v-model="form.d_desc"></el-input>
+                        <el-input type="textarea" style="width:400px" v-model="form.d_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==5||(roles.jurisdiction==4&&list.schedules==5)">
-                    <div class="li">
+                    <div class="li" style="height:40px">
                     <h3 v-if="this.list.uporadd!=1">制作材料</h3>
                     <h3 v-else>材料修改</h3>
                     </div>
-                    <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
+                    <el-form-item v-if="this.list.type!=1" style="margin:0px;width:400px" label="材料审核" prop="materials">
                         <el-radio-group fill="#E6A23C" v-model="materials">
                             <el-radio-button  label="通过"></el-radio-button>
                             <el-radio-button  label="撤回"></el-radio-button>
@@ -154,15 +163,15 @@
                             :limit="fileAmount"
                             :on-exceed="handleExceed"
                             :file-list="fileList2">
-                            <el-button size="small" class="upload">点击上传</el-button>
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
                             </el-upload>
                     </el-form-item>
                     <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:480px" v-model="form.ia_desc"></el-input>
+                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==6||(roles.jurisdiction==3&&list.schedules==6)">
-                    <div class="li">
+                    <div class="li" style="height:40px">
                     <h3 >提供盖章材料</h3>
                     </div>
                     <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
@@ -186,16 +195,17 @@
                             :limit="fileAmount"
                             :on-exceed="handleExceed"
                             :file-list="fileList2">
-                            <el-button size="small" class="upload">点击上传</el-button>
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
                             </el-upload>
                     </el-form-item>
                     <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:480px" v-model="form.ia_desc"></el-input>
+                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==7||(roles.jurisdiction==4&&list.schedules==7)">
-                    <div class="li">
-                    <h3>盖章材料审核</h3>
+                    <div class="li" style="height:40px">
+                    <h3 v-if="list.type!=1">盖章材料审核</h3>
+                    <h3 v-else>管理部门审核</h3>
                     </div>
                     <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
                         <el-radio-group fill="#E6A23C" v-model="materials">
@@ -218,19 +228,20 @@
                             :limit="fileAmount"
                             :on-exceed="handleExceed"
                             :file-list="fileList2">
-                            <el-button size="small" class="upload">点击上传</el-button>
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
                             </el-upload>
                     </el-form-item>
                     <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:480px" v-model="form.ia_desc"></el-input>
+                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
                     </el-form-item>
                 </el-form>
                 <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==8||(roles.jurisdiction==4&&list.schedules==8)">
                     <div class="li">
-                    <h3>待商务局审查</h3>
+                    <h3 v-if="list.type!=1">待商务局审查</h3>
+                    <h3 v-else>资料审核</h3>
                     </div>
                     <el-form-item  label="审核状态" prop="audit">
-                        <el-button class="primary" v-if="form.audit!=-1&&form.audit!=0" @click="form.audit=1" round>审核成功</el-button>
+                        <el-button type="primary" v-if="form.audit!=-1&&form.audit!=0" @click="form.audit=1" round>审核成功</el-button>
                         <el-button type="info" v-if="form.audit!=1" @click="form.audit=1" round>审核成功</el-button>
                         <el-button type="danger" v-if="form.audit!=-1&&form.audit!=1" @click="form.audit=0" round>审核驳回</el-button>
                         <el-button type="info" v-if="form.audit!=0" @click="form.audit=0" round>审核驳回</el-button>
@@ -250,7 +261,7 @@
                             :limit="fileAmount"
                             :on-exceed="handleExceed"
                             :file-list="fileList2">
-                            <el-button size="small" class="upload">点击上传</el-button>
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
                             </el-upload>
                     </el-form-item>
                     <el-form-item label="附件上传" style="margin:0px;width:300px" v-if="form.audit==0" >
@@ -268,10 +279,10 @@
                             :limit="fileAmount"
                             :on-exceed="handleExceed"
                             :file-list="fileList3">
-                            <el-button size="small" class="upload">点击上传</el-button>
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
                             </el-upload>
                     </el-form-item>
-                    <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="处理"  v-if="form.audit==0">
+                    <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="处理"  v-if="form.audit==0&&this.list.type!=1">
                         <el-select v-model="form.uporadd" name="uporadd" placeholder="请选择处理人">
                                 <el-option :label="list.agentName" value="1"></el-option>
                                 <el-option :label="list.uname" value="0"></el-option>
@@ -282,26 +293,26 @@
                         style="width:185px"
                         v-model="form.bulletinTime"
                         type="date"
-                        placeholder="选择开始时间"
+                        placeholder="选择公告日期"
                         value-format="yyyy-MM-dd"
                         name="bulletinTime"
                         >
                         </el-date-picker>
                     </el-form-item>
                     
-                    <el-form-item style="margin:0px;margin-top:15px" label="描述" >
-                        <el-input type="textarea" style="width:480px" v-model="form.b_desc"></el-input>
+                    <el-form-item style="margin-top:12px" label="描述" >
+                        <el-input type="textarea" style="width:400px" v-model="form.b_desc"></el-input>
                     </el-form-item>
                 </el-form>
-                <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction<=2||roles.jurisdiction==6)&&list.schedules==9">
+                <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction==2||roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==9">
                     <div class="li">
                     <h3>流程确认</h3>
                     </div>
-                    <el-form-item style="margin-top:10px;width:600px" label="信息">
-                        <span style="float:left;color:aliceblue">代理:{{list.agentName}}</span>
-                        <span style="float:right;color:aliceblue">立案时间:{{list.onRecord}}</span>
+                    <el-form-item style="margin:0px;margin-top:20px;width:500px" label="信息">
+                        <span style="float:left;">代理人:{{list.agentName}}</span>
+                        <span style="float:right;">立案时间:{{list.onRecord}}</span>
                     </el-form-item>
-                    <el-form-item style="margin:0;width:280px" label="浏览">
+                    <el-form-item style="margin:0;margin-top:20px;width:280px" label="浏览">
                         <el-popover
                             placement="right"
                             width="200"
@@ -310,14 +321,14 @@
                             <el-table :data="fileList4">
                                 <el-table-column width="200"  label="点击选择文件浏览">
                                     <template slot-scope="scop">
-                                    <span style="cursor:pointer" @click="browse(scop.row.url)" >{{scop.row.name}}</span>
+                                    <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
                                     </template>
                                 </el-table-column>
                             </el-table>
-                            <el-button slot="reference" class="upload" size="mini"  >附件浏览</el-button>
+                            <el-button slot="reference" type="success" size="mini"  >附件浏览</el-button>
                         </el-popover>
                     </el-form-item>
-                    <el-form-item style="margin:0;width:500px" label="确认">
+                    <el-form-item style="margin:0;margin-top:20px;margin-bottom:20px;width:500px" label="确认">
                         <el-checkbox-group v-model="form.end">
                             <el-checkbox label="确认结案" name="end"></el-checkbox>
                         </el-checkbox-group>
@@ -327,12 +338,12 @@
                     <div class="li">
                     <h3>顾问确认</h3>
                     </div>
-                    <el-form-item label="确认">
+                    <el-form-item style="margin:0px;margin-top:20px" label="确认">
                         <el-checkbox-group  v-model="form.signature">
                             <el-checkbox label="已公示" name="signature"></el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
-                    <el-form-item style="margin:0;width:280px" label="浏览">
+                    <el-form-item style="margin:0;margin-top:10px;width:280px" label="浏览">
                         <el-popover
                             placement="right"
                             width="200"
@@ -341,25 +352,42 @@
                             <el-table :data="fileList4">
                                 <el-table-column width="200"  label="点击选择文件浏览">
                                     <template slot-scope="scop">
-                                    <span style="cursor:pointer" @click="browse(scop.row.url)" >{{scop.row.name}}</span>
+                                    <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
                                     </template>
                                 </el-table-column>
                             </el-table>
-                            <el-button slot="reference" class="upload" size="mini"  >附件浏览</el-button>
+                            <el-button slot="reference" type="success" class="upload" size="mini"  >附件浏览</el-button>
                         </el-popover>
                     </el-form-item>
                     <el-form-item label="描述">
                         <el-input type="textarea" style="width:470px" v-model="form.s_desc"></el-input>
                     </el-form-item>
                 </el-form>
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="list.lastAmount!=0&&((roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==11||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==11))">
+                <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-else-if="list.lastAmount!=0&&((roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==11||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==11))">
                     <div class="li">
                     <h3>尾款审核</h3>
                     </div>
-                    <el-form-item label="到款金额"  style="margin-top:10px;width:280px" prop="paidLastAmount">
-                        <el-input v-model="form.paidLastAmount" placeholder="请输入到款金额" name="account"></el-input>
+                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidLastAmount" v-if="list.type==1">
+                        <el-input v-model="form.sumPaidLastAmount" placeholder="请输入到款金额" name="sumPaidLastAmount"></el-input>
                     </el-form-item>
-                    <el-form-item label="到款日期" style="margin-top:10px;width:300px" prop="paidLastAmountDate">
+                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="paidLastAmount" v-else>
+                        <el-input v-model="form.paidLastAmount" placeholder="请输入到款金额" name="paidLastAmount"></el-input>
+                    </el-form-item>
+                    <span style="font-size:10px;margin-left:240px">到款金额应为{{list.lastAmount}}</span>
+                    <el-form-item label="打款单位"  style="margin-top:0px" prop="paymentLastAmount">
+                        <el-input v-model="form.paymentLastAmount" placeholder="请输入打款单位" name="paymentLastAmount"></el-input>
+                    </el-form-item>
+                    <el-form-item label="收款单位"  style="margin-top:0px;" prop="gatheringLastAmount">
+                        <el-select v-model="form.gatheringLastAmount"  name="gatheringLastAmount" placeholder="请输入收款单位">
+                                <el-option
+                                v-for="item in company"
+                                :key="item.value"
+                                :label="item.name"
+                                :value="item.name">
+                                </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="到款日期" style="margin-top:0px;" prop="paidLastAmountDate">
                         <el-date-picker
                         style="width:185px"
                         v-model="form.paidLastAmountDate"
@@ -370,20 +398,11 @@
                         >
                         </el-date-picker>
                     </el-form-item>
-                    <el-form-item label="打款单位"  style="margin-top:10px;width:280px" prop="paymentLastAmount">
-                        <el-input v-model="form.paymentLastAmount" placeholder="请输入打款单位" name="paymentLastAmount"></el-input>
+                    <el-form-item label="项目到款" style="margin-bottom:0px" prop="paidLastAmount" v-if="list.type==1">
+                        <el-input v-model="form.paidLastAmount" placeholder="请输入项目到款金额" name="account"></el-input>
                     </el-form-item>
-                    <el-form-item label="收款单位"  style="margin-top:10px;width:300px" prop="gatheringLastAmount">
-                        <el-select v-model="form.gatheringLastAmount"  name="gatheringLastAmount" placeholder="请输入收款单位">
-                                <el-option
-                                v-for="item in company"
-                                :key="item.value"
-                                :label="item.name"
-                                :value="item.name">
-                                </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="附件上传" style="width:300px;margin:0;margin-top:0px">
+                    <span style="font-size:10px;margin-left:240px" v-if="list.type==1">项目到款应到{{list.plastAmount}}</span>
+                    <el-form-item label="附件上传" style="margin:0;margin-top:0px">
                         <el-upload
                         class="upload-demo"
                         :action="BASE_API+'/eduservice/state/upcontract'"
@@ -397,18 +416,18 @@
                         :limit="fileAmount"
                         :on-exceed="handleExceed"
                         :file-list="fileList2">
-                        <el-button size="small" class="upload">点击上传</el-button>
+                        <el-button size="small" type="primary" class="upload">点击上传</el-button>
                         </el-upload>
                     </el-form-item>
-                    <el-form-item  style="margin-top:10px;margin-bottom:0px" label="描述">
-                        <el-input type="textarea" style="width:480px" v-model="form.l_desc"></el-input>
+                    <el-form-item  style="margin-top:20px;margin-bottom:20px" label="描述">
+                        <el-input type="textarea" style="width:400px" v-model="form.l_desc"></el-input>
                     </el-form-item>
                 </el-form>
-                <div class="li" v-else>
+                <div class="li" style="margin-bottom:20px" v-else>
                     <h3>无流程需要处理</h3>
                 </div>
                 <span slot="footer" class="dialog-footer" v-if="list.schedules<12&&no">
-                    <el-button type="primary" @click.native.prevent="submit" >提 交</el-button>
+                    <el-button type="primary" style="width:200px;height:45px" @click.native.prevent="submit" >提 交</el-button>
                 </span>
             </div>
          </template>
@@ -511,6 +530,8 @@ export default {//定义变量和初始值
               ia_username:'',
               ia_date:'',
               uporadd:'',
+              sumPaidLastAmount:'',
+              sumPaidFirstAmount:0,
               paidFirstAmount:'',
               paidFirstAmountDate:'',
               paymentFirstAmount:'',
@@ -530,6 +551,7 @@ export default {//定义变量和初始值
                 declara:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 signature:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 lastamount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                agentId:[{ required: true, trigger: 'blur', validator: valiNotNull}],
             },
             saveRules2:{
                 account:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -539,6 +561,8 @@ export default {//定义变量和初始值
                 paymentFirstAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 gatheringFirstAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 paidLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
+                sumPaidfirstAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
+                sumPaidLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 paidLastAmountDate:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 paymentLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 gatheringLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
@@ -616,6 +640,9 @@ export default {//定义变量和初始值
                 // this.getHistorys(fid)
                 this.listToform()
                 let li=this.list
+                
+                
+                console.log(this.form.sumPaidlastAmount)
                 if(li.inventory==null){
                     this.fileList=[]
                 }else{
@@ -642,7 +669,7 @@ export default {//定义变量和初始值
         filesw(){
             if(this.list.schedules==9||this.list.schedules==10){
                 for(let i=0;i<this.fileList.length;i++){
-                    if(this.fileList[i].name=="商务部"){
+                    if(this.fileList[i].name.indexOf("商务部")>=0){
                         this.fileList4.push(this.fileList[i])
                     }
                 }
@@ -651,10 +678,11 @@ export default {//定义变量和初始值
         SpecialVerify(){
             this.flow.schedules=this.list.schedules
             if(this.list.schedules==1){
-                if(this.form.paidFirstAmount==null||this.form.paidFirstAmount==''){
+                console.log(this.form.sumPaidLastAmount)
+                if((this.form.paidFirstAmount==null||this.form.paidFirstAmount=='')&&this.list.type==1){
                     this.$message({
                     type:'warning',
-                    message:'到款金额不能为空'
+                    message:'项目到款金额不能为空'
                     })
                     return false
                 }
@@ -679,23 +707,62 @@ export default {//定义变量和初始值
                     })
                     return false
                 }
-                if(this.form.paidFirstAmount!=this.list.firstAmount){
-                    if(this.list.lastAmount==0){
-                        if(this.form.paidFirstAmount!=this.list.fullAmount){
+                if(this.list.type!=1){
+                    if(this.form.paidFirstAmount!=this.list.firstAmount){
+                        if(this.list.lastAmount==0){
+                            if(this.form.paidFirstAmount!=this.list.fullAmount){
+                                this.$message({
+                                    type:'warning',
+                                    message:'到款金额应该与合同全款金额一致'
+                                    })
+                                return false
+                            }
+                        }else{
                             this.$message({
+                                type:'warning',
+                                message:'到款金额应该与合同首款金额一致'
+                                })
+                            return false   
+                        } 
+                    }
+                }else{
+                    if(this.form.sumPaidfirstAmount!=this.list.firstAmount){                        
+                        if(this.list.lastAmount==0){
+                            if(this.form.sumPaidfirstAmount!=this.list.fullAmount){
+                                this.$message({
                                 type:'warning',
                                 message:'到款金额应该与合同全款金额一致'
                                 })
                             return false
+                            }
+                        }else{
+                             this.$message({
+                                type:'warning',
+                                message:'到款金额应该与合同首款金额一致'
+                                })
+                            return false
                         }
-                    }else{
-                        this.$message({
-                            type:'warning',
-                            message:'到款金额应该与合同首款金额一致'
-                            })
-                        return false   
-                    } 
+                    }
+                    
+                     if(this.form.paidFirstAmount!=this.list.firstAmount){
+                        if(this.list.lastAmount==0){
+                            if(this.form.paidFirstAmount!=this.list.price){
+                                this.$message({
+                                    type:'warning',
+                                    message:'项目到款金额应该与合同单价金额一致'
+                                    })
+                                return false
+                            }
+                        }else {
+                            this.$message({
+                                type:'warning',
+                                message:'项目到款金额应该与合同首款金额一致'
+                                })
+                            return false   
+                        } 
+                    }
                 }
+                
             }
             if(this.list.schedules==2){
                 if(this.form.agentId==''||this.form.agentId==null){
@@ -775,17 +842,22 @@ export default {//定义变量和初始值
                             return false
                     }
                 }else if(this.form.audit==0){
-                    if(this.form.uporadd==''||this.form.uporadd==null){
-                        this.$message({
-                            type:'warning',
-                            message:'请选择处理人'
-                        })
-                        return false
+                    if(this.list.type==1){
+                        this.form.uporadd=1
+                    }else{
+                        if(this.form.uporadd==''||this.form.uporadd==null){
+                            this.$message({
+                                type:'warning',
+                                message:'请选择处理人'
+                            })
+                            return false
+                        }
                     }
+                    
                 }
             }
             if(this.list.schedules==11){
-                if(this.form.paidLastAmount==null||this.form.paidLastAmount==''){
+                if(this.form.sumPaidLastAmount==null||this.form.sumPaidLastAmount==''){
                     this.$message({
                     type:'warning',
                     message:'到款金额不能为空'
@@ -813,12 +885,29 @@ export default {//定义变量和初始值
                     })
                     return false
                 }
-                if(this.form.paidLastAmount!=this.list.lastAmount){
-                    this.$message({
-                        type:'warning',
-                        message:'到款金额应该与合同尾款金额一致'
-                        })
-                    return false   
+                if(this.list.type!=1){
+                    if(this.form.paidLastAmount!=this.list.lastAmount){
+                        this.$message({
+                            type:'warning',
+                            message:'到款金额应该与合同尾款金额一致'
+                            })
+                        return false   
+                    }
+                }else{
+                    if(this.form.paidLastAmount!=this.list.plastAmount){
+                            this.$message({
+                                type:'warning',
+                                message:'项目到款金额应该与合同尾款金额一致'
+                                })
+                            return false   
+                    }
+                    if(this.form.sumPaidLastAmount!=this.list.lastAmount){
+                            this.$message({
+                                type:'warning',
+                                message:'到款金额应该与合同尾款金额一致'
+                                })
+                            return false
+                    }
                 }
             }
             if(this.list.schedules==10){
@@ -835,36 +924,59 @@ export default {//定义变量和初始值
                 }      
             }
             
-            if(this.list.schedules==6){
-                if(this.materials=='撤回'){
-                    this.flow.schedules=this.flow.schedules-2
-                }
-            }
-            
-            if(this.list.schedules==7){
-                if(this.materials=='撤回'){
-                    this.flow.schedules=this.flow.schedules-2
-                }
-            }else if(this.list.schedules==5){
-                if(this.materials=='撤回'){
-                    this.flow.schedules=this.flow.schedules-2
-                }else if(this.list.uporadd==1||this.list.uporadd==0){
+            if(this.list.type==1){
+                if(this.list.schedules==2){
                     this.flow.schedules=this.flow.schedules+2
                 }
+                if(this.list.schedules==5){
+                    this.flow.schedules=this.flow.schedules+1    
+                }
+                if(this.list.schedules==7){  
+                    if(this.materials=='撤回'){
+                        this.flow.schedules=this.flow.schedules-3
+                    }
+                }
+                if(this.list.schedules==8){
+                    if(this.form.audit==0){
+                        this.flow.schedules=this.flow.schedules-4
+                        this.addOrSubtract=1
+                    }else{
+                        this.addOrSubtract=0
+                    }
+                }
+            }else{
+                if(this.list.schedules==6){
+                    if(this.materials=='撤回'){
+                        this.flow.schedules=this.flow.schedules-2
+                    }
+                }
+                
+                if(this.list.schedules==7){
+                    if(this.materials=='撤回'){
+                        this.flow.schedules=this.flow.schedules-2
+                    }
+                }else if(this.list.schedules==5){
+                    if(this.materials=='撤回'){
+                        this.flow.schedules=this.flow.schedules-2
+                    }else if(this.list.uporadd==1||this.list.uporadd==0){
+                        this.flow.schedules=this.flow.schedules+2
+                    }
+                }
+                if(this.list.schedules==8){
+                    if(this.form.audit==0){
+                        if(this.form.uporadd==1){
+                            this.flow.schedules=this.flow.schedules-4
+                        }else{
+                            this.flow.schedules=this.flow.schedules-5
+                        }
+                        this.addOrSubtract=1
+                    }else{
+                        this.addOrSubtract=0
+                    }
+                }
+                
             }
             
-            if(this.list.schedules==8){
-                if(this.form.audit==0){
-                    if(this.form.uporadd==1){
-                        this.flow.schedules=this.flow.schedules-4
-                    }else{
-                        this.flow.schedules=this.flow.schedules-5
-                    }
-                    this.addOrSubtract=1
-                }else{
-                    this.addOrSubtract=0
-                }
-            }
             if(this.list.schedules==9){
                 if(!this.form.end){
                     this.$message({
@@ -995,35 +1107,67 @@ export default {//定义变量和初始值
                     }
                 }
                 if(schedules==5){
-                    if(this.materials=="撤回"){
-                        let inven={}
-                        inven.isUpdate=isUpdate
-                        inven.uid=this.roles.uid
-                        inven.fid=this.list.fid
-                        inven.schedules=6
-                        inven.result=schedules
-                        inven.describes=this.form.ia_desc
-                        historys.push(inven)
-                    }else if(this.list.uporadd==1){
-                        let declara={}
-                        declara.isUpdate=isUpdate
-                        declara.uid=this.roles.uid
-                        declara.fid=this.list.fid
-                        declara.schedules=8
-                        declara.result=schedules
-                        declara.describes=this.form.b_desc
-                        historys.push(declara)
+                    if(this.flow.type!=1){
+                        if(this.materials=="撤回"){
+                            let inven={}
+                            inven.isUpdate=isUpdate
+                            inven.uid=this.roles.uid
+                            inven.fid=this.list.fid
+                            inven.schedules=6
+                            inven.result=schedules
+                            inven.describes=this.form.ia_desc
+                            historys.push(inven)
+                        }else if(this.list.uporadd==1){
+                            let declara={}
+                            declara.isUpdate=isUpdate
+                            declara.uid=this.roles.uid
+                            declara.fid=this.list.fid
+                            declara.schedules=8
+                            declara.result=schedules
+                            declara.describes=this.form.b_desc
+                            historys.push(declara)
+                        }else{
+                            let declara={}
+                            declara.isUpdate=isUpdate
+                            declara.uid=this.roles.uid
+                            declara.fid=this.list.fid
+                            declara.schedules=4
+                            declara.result=schedules
+                            declara.describes=this.form.d_desc
+                            historys.push(declara)
+                        }
                     }else{
-                        let declara={}
-                        declara.isUpdate=isUpdate
-                        declara.uid=this.roles.uid
-                        declara.fid=this.list.fid
-                        declara.schedules=4
-                        declara.result=schedules
-                        declara.describes=this.form.d_desc
-                        historys.push(declara)
+                        if(this.materials=="撤回"){
+                            let inven={}
+                            inven.isUpdate=isUpdate
+                            inven.uid=this.roles.uid
+                            inven.fid=this.list.fid
+                            inven.schedules=7
+                            inven.result=schedules
+                            inven.describes=this.form.ia_desc
+                            historys.push(inven)
+                        }else if(this.list.uporadd==1){
+                            let declara={}
+                            declara.isUpdate=isUpdate
+                            declara.uid=this.roles.uid
+                            declara.fid=this.list.fid
+                            declara.schedules=8
+                            declara.result=schedules
+                            declara.describes=this.form.b_desc
+                            historys.push(declara)
+                        }else{
+                            let declara={}
+                            declara.isUpdate=isUpdate
+                            declara.uid=this.roles.uid
+                            declara.fid=this.list.fid
+                            declara.schedules=2
+                            declara.result=schedules
+                            declara.describes='分案'
+                            historys.push(declara)
+                        }
                     }
                 }
+                    
                 if(schedules==6){
                     if(this.materials=="撤回"){
                         let inven={}
@@ -1046,34 +1190,56 @@ export default {//定义变量和初始值
                     }
                 }
                 if(schedules==7){
-                    let inven={}
-                    inven.isUpdate=isUpdate
-                    inven.uid=this.roles.uid
-                    inven.fid=this.list.fid
-                    inven.schedules=6
-                    inven.result=schedules
-                    inven.describes=this.form.ia_desc
-                    historys.push(inven)
+                    if(this.list.type!=1){
+                        let inven={}
+                        inven.isUpdate=isUpdate
+                        inven.uid=this.roles.uid
+                        inven.fid=this.list.fid
+                        inven.schedules=6
+                        inven.result=schedules
+                        inven.describes=this.form.ia_desc
+                        historys.push(inven)
+                    }else{
+                        let declara={}
+                        declara.isUpdate=isUpdate
+                        declara.uid=this.roles.uid
+                        declara.fid=this.list.fid
+                        declara.schedules=5
+                        declara.result=schedules
+                        declara.describes=this.form.ia_desc
+                        historys.push(declara)
+                    }
                 }
                 if(schedules==8){
-                    if(this.addOrSubtract==1){
-                        if(this.list.uporadd==1){
-                            let declara={}
-                            declara.isUpdate=isUpdate
-                            declara.uid=this.roles.uid
-                            declara.fid=this.list.fid
-                            declara.schedules=5
-                            declara.result=schedules
-                            declara.describes=this.form.ia_desc
-                            historys.push(declara)
+                    if(this.flow.type!=1){
+                         if(this.addOrSubtract==1){
+                            if(this.list.uporadd==1){
+                                let declara={}
+                                declara.isUpdate=isUpdate
+                                declara.uid=this.roles.uid
+                                declara.fid=this.list.fid
+                                declara.schedules=5
+                                declara.result=schedules
+                                declara.describes=this.form.ia_desc
+                                historys.push(declara)
+                            }else{
+                                let declara={}
+                                declara.isUpdate=isUpdate
+                                declara.uid=this.roles.uid
+                                declara.fid=this.list.fid
+                                declara.schedules=4
+                                declara.result=schedules
+                                declara.describes=this.form.d_desc
+                                historys.push(declara)
+                            }
                         }else{
                             let declara={}
                             declara.isUpdate=isUpdate
                             declara.uid=this.roles.uid
                             declara.fid=this.list.fid
-                            declara.schedules=4
+                            declara.schedules=7
                             declara.result=schedules
-                            declara.describes=this.form.d_desc
+                            declara.describes=this.form.ia_desc
                             historys.push(declara)
                         }
                     }else{
@@ -1086,6 +1252,7 @@ export default {//定义变量和初始值
                         declara.describes=this.form.ia_desc
                         historys.push(declara)
                     }
+                   
                 }
                 if(schedules==10){
                     let declara={}
@@ -1138,70 +1305,8 @@ export default {//定义变量和初始值
                         historys.push(declara)
                     }
                 }
-                
             }else{
-                if((!this.form2.account&&this.list.schedules==1)||this.form3.a_desc!=this.form2.a_desc){
-                    let account={}
-                    account.isUpdate=isUpdate
-                    account.uid=this.roles.uid
-                    account.fid=this.list.fid
-                    account.schedules=1
-                    account.describes=this.form2.a_desc
-                    // if(!this.form2.account){
-                    //   account.describes="撤回财务审核"
-                    // }
-                    historys.push(account)
-                }
-                if((!this.form.division&&this.list.schedules==2)||this.form3.agentId!=this.form2.agentId){
-                    let division={}
-                    division.isUpdate=isUpdate
-                    division.uid=this.roles.uid
-                    division.fid=this.list.fid
-                    division.schedules=8
-                    if(this.form3.agentId!=this.form2.agentId){
-                    division.describes='修改分案'
-                    }
-                    if(!this.form2.division){
-                    division.describes='撤销分案'
-                    }
-                    historys.push(division)
-                }
-                if((!this.form2.inven&&this.list.schedules==3)||this.form3.i_desc!=this.form2.i_desc){
-                    let inven={}
-                    inven.isUpdate=isUpdate
-                    inven.uid=this.roles.uid
-                    inven.fid=this.list.fid
-                    inven.schedules=2
-                    inven.describes=this.form2.i_desc
-                    historys.push(inven)
-                }
-                if((!this.form2.declara&&this.list.schedules==4)||this.form3.d_desc!=this.form2.d_desc){
-                    let declara={}
-                    declara.isUpdate=isUpdate
-                    declara.uid=this.roles.uid
-                    declara.fid=this.list.fid
-                    declara.schedules=3
-                    declara.describes=this.form2.d_desc
-                    historys.push(declara)
-                }
-                if((!this.form2.signature&&this.list.schedules==6)||this.form3.s_desc!=this.form2.s_desc){
-                    let signature={}
-                    signature.isUpdate=isUpdate
-                    signature.uid=this.roles.uid
-                    signature.fid=this.list.fid
-                    signature.schedules=5
-                    signature.describes=this.form2.s_desc
-                    historys.push(signature)
-                }
-                if((!this.form2.lastamount&&this.list.schedules==5&&this.form2.lastAmount!=0)||this.form3.l_desc!=this.form2.l_desc){
-                    let signature={}
-                    signature.isUpdate=isUpdate
-                    signature.uid=this.roles.uid
-                    signature.fid=this.list.fid
-                    signature.schedules=4
-                    signature.describes=this.form2.l_desc
-                    historys.push(signature)
-                }
+                
             }
             if(this.fileList2.length!=0){//如果有文件上传添加记录和文件地址
                 let isfileupdate={}
@@ -1224,6 +1329,12 @@ export default {//定义变量和初始值
         },
         listToform(){
             // this.form.uporadd=this.list.uporadd
+            if(this.list.lastAmount==0){
+                this.form.sumPaidFirstAmount=this.list.fullAmount
+            }
+            else
+            this.form.sumPaidFirstAmount=this.list.firstAmount
+            this.form.sumPaidLastAmount=this.list.lastAmount
             this.form.agentId=this.list.agentId
             this.form.paidFirstAmount=this.list.paidFirstAmount
             this.form.paidFirstAmountDate=this.list.paidFirstAmountDate
@@ -1236,19 +1347,22 @@ export default {//定义变量和初始值
             this.form.bulletinTime=this.list.bulletinTime
         },
         fileUploadSuccess(response, file, fileList){
-            if(this.list.schedules==6&&this.form.audit==1){
+            if(this.list.schedules==8&&this.form.audit==1){
                 this.fileList2.push({
-                    name:"商务部",
+                    name:file.name,
                     url:response.data.url
                 })
-            }else if(this.list.schedules==6&&this.form.audit==0){
+                for(let i=0;i<this.fileList2.length;i++){
+                    this.fileList2[i].name="商务部"+i+1
+                }
+            }else if(this.list.schedules==8&&this.form.audit==0){
                 this.fileList3.push({
-                    name:response.data.url.substring(88,response.data.url.length),
+                    name:file.name,
                     url:response.data.url
                 })
             }else{
                 this.fileList2.push({
-                    name:response.data.url.substring(88,response.data.url.length),
+                    name:file.name,
                     url:response.data.url
                 })
             }
@@ -1346,27 +1460,52 @@ export default {//定义变量和初始值
                             messages.push(this.message);
                         }
                     }else if(i==5){//材料制作
-                        if(this.materials=='撤回'){
-                            this.message.msg='流程'+this.list.serialNum+'材料制作存在问题,流程撤销至材料制作'
-                            this.message.uid=this.list.agentId;
-                            messages.push(this.message);
-                        }else if(this.addOrSubtract==1){//驳回
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.msg='流程'+this.list.serialNum+'被驳回,需要重新进行材料制作，请确认'
-                            m.send=this.roles.uid
-                            messages.push(m);
+                        if(this.flow.type==1){
+                            if(this.addOrSubtract==1){//驳回
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.msg='流程'+this.list.serialNum+'被驳回,需要重新进行材料制作，请确认'
+                                m.send=this.roles.uid
+                                messages.push(m);
+                            }else if(this.materials=='撤回'){
+                                this.message.msg='流程'+this.list.serialNum+'材料存在问题,流程已撤回，请重新确认材料'
+                                this.message.uid=this.list.agentId
+                                messages.push(this.message);
+                            }else{
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.send=this.roles.uid
+                                m.msg='增加品牌流程'+this.list.serialNum+'已分案给您，需要进行材料制作，请确认'
+                                messages.push(m);
+                            }
                         }else{
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已通过申报材料提供，需要进行材料制作，请确认'
-                            messages.push(m);
+                            if(this.materials=='撤回'){
+                                this.message.msg='流程'+this.list.serialNum+'材料制作存在问题,流程撤销至材料制作'
+                                this.message.uid=this.list.agentId;
+                                messages.push(this.message);
+                            }else if(this.addOrSubtract==1){//驳回
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.msg='流程'+this.list.serialNum+'被驳回,需要重新进行材料制作，请确认'
+                                m.send=this.roles.uid
+                                messages.push(m);
+                            }else{
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.send=this.roles.uid
+                                m.msg='流程'+this.list.serialNum+'已通过申报材料提供，需要进行材料制作，请确认'
+                                messages.push(m);
+                            }
                         }
+                        
                     }else if(i==6){//盖章材料制作
                         if(this.materials=='撤回'){
                             this.message.msg='流程'+this.list.serialNum+'盖章材料存在问题,流程已撤回，请重新确认盖章材料'
@@ -1382,19 +1521,25 @@ export default {//定义变量和初始值
                             messages.push(m);
                         }
                     }else if(i==7){//盖章材料审核
-                        let m={}
-                        m.category=1
-                        m.categoryId=this.flow.fid
-                        m.uid=this.list.uid
-                        m.send=this.roles.uid
-                        m.msg='流程'+this.list.serialNum+'盖章材料已提供，需要审核，请确认'
-                        messages.push(m);
+                        if(this.list.type==1){
+                            let m={}
+                            m.category=1
+                            m.categoryId=this.flow.fid
+                            m.uid=this.list.agentId
+                            m.send=this.roles.uid
+                            m.msg='流程'+this.list.serialNum+'材料已制作完成，等待管理部门审核结果'
+                            messages.push(m);
+                        }else{
+                            let m={}
+                            m.category=1
+                            m.categoryId=this.flow.fid
+                            m.uid=this.list.uid
+                            m.send=this.roles.uid
+                            m.msg='流程'+this.list.serialNum+'盖章材料已提供，需要审核，请确认'
+                            messages.push(m);
+                        }
+                        
                     }
-                    // else if(i==7){//流程审核
-                    //     this.message.msg='您的流程'+this.list.serialNum+'待商务局审查已通过，请确认'
-                    //     this.message.uid=this.list.uid;
-                    //     messages.push(this.message);
-                    // }
                     else if(i==10){//顾问确认
                         this.message.msg='您的流程'+this.list.serialNum+'已通过流程确认，需要您确认'
                         this.message.uid=this.list.uid;
@@ -1451,23 +1596,44 @@ export default {//定义变量和初始值
                     
                     }else if(i==9){//流程审核
                         for(let i=0;i<this.flowmanager.length;i++){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.flowmanager[i].uid
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已通过商务局审核，需要流程确认，请确认'
-                            messages.push(m);
+                            if(this.list.type!=1){
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.flowmanager[i].uid
+                                m.send=this.roles.uid
+                                m.msg='流程'+this.list.serialNum+'已通过商务局审核，需要流程确认，请确认'
+                                messages.push(m);
+                            }else{
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.flowmanager[i].uid
+                                m.send=this.roles.uid
+                                m.msg='增加品牌流程'+this.list.serialNum+'已通过材料审核，需要流程确认，请确认'
+                                messages.push(m);
+                            }
+                            
                         }
                     }else if(i==8){//商务局审核
                         if(this.list.uporadd==''||this.list.uporadd==null){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已通过材料制作，需要商务局审核，请确认'
-                            messages.push(m)
+                            if(this.list.type!=1){
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.send=this.roles.uid
+                                m.msg='流程'+this.list.serialNum+'已通过盖章材料审核，需要商务局审核，请确认'
+                                messages.push(m)
+                            }else{
+                                let m={}
+                                m.category=1
+                                m.categoryId=this.flow.fid
+                                m.uid=this.list.agentId
+                                m.send=this.roles.uid
+                                m.msg='流程'+this.list.serialNum+'已通过管理部门审核，等待资料审核中'
+                                messages.push(m)
+                            }
                         }else if(this.list.uporadd==0){
                             let m={}
                             m.category=1
@@ -1509,6 +1675,15 @@ export default {//定义变量和初始值
 }
 </script>
 <style>
+.box{
+    width: 650px;
+    /* height: 400px; */
+    padding: 20px;
+    padding-left: 60px;
+    background-color: #fff;
+    border: 1px solid #DDDCDC;
+    box-shadow: 0px 5px 10px #AFAEAE;
+}
 .app-container{
     height: 100%; 
     position: relative;
@@ -1518,53 +1693,54 @@ export default {//定义变量和初始值
     /* height: 100%; */
 }
 .app-wrapper{
-    background:url('../../assets/bgi.png');
-    background-size: 100% 100%;
+    background-color: #f7f7f7;
+    /* background:url('../../assets/bgi.png');
+    background-size: 100% 100%; */
 }
 h3{
-    color: #ffac02;
+    /* color: #ffac02; */
     height: 30px;
     position: relative;
-    left: 70px;
-    top:13px;
+    left: 80px;
+    /* top:13px; */
 }
 .li{
-    height: 50px;
+    height: 20px;
     width: 110%;
     position: relative;
-    left: -35px;
-    background:url('../../assets/li.png');
+    /* left: -35px; */
+    /* background:url('../../assets/li.png'); */
     background-size: 100% 100%;
 }
 .el-form-item{
     margin-top: 30px;
 }
 .el-input__inner{
-    color: aliceblue;
-    background-color: transparent;
+    /* color: aliceblue; */
+    /* background-color: transparent; */
 }
 .el-form-item__label{
-    color:aliceblue;
+    /* color:aliceblue; */
 }
 .dialog-footer{
      position: relative;
      left: 80px;
-     top: 20px;
+     /* top: 20px; */
 }
 .el-textarea__inner{
-    color: aliceblue;
-    background-color: transparent;
+    /* color: aliceblue; */
+    /* background-color: transparent; */
 }
 .upload{
-    color:aliceblue;
-    background-color: #ffac02;
+    /* color:aliceblue; */
+    /* background-color: #ffac02; */
 }
 .primary{
     color:aliceblue;
-    background-color: #91601e;
+    /* background-color: #91601e; */
 }
 .el-button--primary{
-    width: 200px;
-    background-color: #ffac02;
+    /* width: 200px; */
+    /* background-color: #ffac02; */
 }
 </style>

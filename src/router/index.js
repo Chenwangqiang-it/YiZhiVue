@@ -51,6 +51,13 @@ export const constantRouterMap = [
         meta: { title: '账号注册', icon: 'user' ,show:true}
       },
       {
+        path: 'change/:id',
+        name: '业务转移',
+        component: () => import('@/views/account/change'),
+        meta: { title: '业务转移', icon: 'user' ,show:false},
+        hidden:true
+      },
+      {
         path: 'list',
         name: '账号列表',
         component: () => import('@/views/account/list'),
@@ -76,13 +83,26 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/contract/save',
     name: '合同',
-    meta: { title: '合同', icon: 'example' },
+    meta: { title: '合同', icon: 'contract' },
     children: [
       {
         path: 'save',
         name: '合同制作',
         component: () => import('@/views/edu/contract/save'),
         meta: { title: '合同制作', icon: 'table',show:true }
+      },
+      {
+        path: 'addBrand',
+        name: '增加品牌',
+        component: () => import('@/views/edu/contract/addbrand'),
+        meta: { title: '增加品牌', icon: 'addoder',show:true }
+      },
+      {
+        path: 'projectInfo/:id',
+        name: '合同信息',
+        component: () => import('@/views/edu/contract/addbrand'),
+        meta: { title: '合同信息', icon: 'addoder',show:false },
+        hidden:true
       },
       {
         path: 'info/:id',
@@ -141,18 +161,54 @@ export const constantRouterMap = [
         component: () => import('@/views/edu/audit/sign'),
         meta: { title: '合同签订', icon: 'tree',show:false},
         hidden: true
-      }
+      },
+      { 
+        path: 'updatepro',
+        name: '增加品牌合同修改',
+        component: () => import('@/views/edu/audit/updatepro'),
+        meta: { title: '增加品牌合同修改', icon: 'tree',show:true},
+        hidden: true
+      },
+      { 
+        path: 'auditpro',
+        name: '增加品牌合同审核',
+        component: () => import('@/views/edu/audit/updatepro'),
+        meta: { title: '增加品牌合同审核', icon: 'tree',show:true},
+        hidden: true
+      },
     ]
   },
   {
     path: '/flow',
     component: Layout,
+    redirect: '/flow/agency',
+    name: '流程',
+    meta: { title: '流程', icon: 'form' },
     children: [
       {
-        path: 'index',
-        name: '流程列表',
-        component: () => import('@/views/flow/index'),
-        meta: { title: '流程列表', icon: 'form',show:true }
+        path:'agency',
+        name: '代办事项',
+        component: () => import('@/views/flow/agency'),
+        meta: { title: '代办事项', icon: 'agency',show:true },
+      },
+      {
+        path:'closeout',
+        name: '结案流程',
+        component: () => import('@/views/flow/closeout'),
+        meta: { title: '结案流程', icon: 'closeout',show:true },
+      },
+      {
+        path:'revocation',
+        name: '流程撤案',
+        component: () => import('@/views/flow/revocation'),
+        meta: { title: '流程撤案', icon: 'revocation',show:true },
+      },
+      {
+        path:'revocationOperation/:id',
+        name: '撤案操作',
+        component: () => import('@/views/flow/revocationOperation'),
+        meta: { title: '流程操作', icon: 'revocation',show:false },
+        hidden:true
       },
       {
         path: 'index/:id',
@@ -160,6 +216,12 @@ export const constantRouterMap = [
         component: () => import('@/views/flow/index'),
         meta: { title: '流程待办', icon: 'form',show:true },
         hidden:true
+      },
+      {
+        path: 'index',
+        name: '所有流程',
+        component: () => import('@/views/flow/index'),
+        meta: { title: '所有流程', icon: 'all',show:true }
       },
       {
         path: 'operation/:id',

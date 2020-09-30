@@ -14,7 +14,8 @@
                     <span v-if="lists.sstate==0">合同提交</span>
                     <span v-if="lists.sstate==1||lists.sstate==2">合同审核</span>
                     <span v-if="lists.sstate==3">合同签订</span>
-                    <span v-if="lists.sstate==4">合同修改</span>
+                    <span v-if="lists.sstate==4&&lists.accessory==null">合同修改</span>
+                    <span v-if="lists.sstate==4&&lists.accessory!=null">非标合同修改</span>
                     <span v-if="lists.sstate==5">发起立案</span>
                     <span style="float:right;margin-right:50px;">提交状态:
                       <span style="color:#e82816" v-if="lists.sstate==-1">删除成功</span>

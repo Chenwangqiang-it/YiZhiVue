@@ -1,34 +1,53 @@
 <template>
     <div class="container2">
-        <el-form  ref="state" :model="state" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px">
-                <div class="li" style="margin-bottom:20px">
-                    <h3 style="left:60px">合同签订</h3>
-                </div>
-                <div style="margin-bottom:10px;color:#fff">上传签订后的合同</div>
-                <el-upload
+        <div class="box">
+            <el-form  ref="state" :model="state" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px">
+                    <div class="li">
+                        <h3>合同签订</h3>
+                    </div>
+                    <!-- <div style="margin-bottom:10px;">上传签订后的合同</div> -->
+                    <!-- <el-upload
+                        class="upload-demo"
+                        :action="BASE_API+'/eduservice/state/upcontract'"
+                        :on-preview="handlePreview"
+                        :on-remove="handleRemove"
+                        :before-remove="beforeRemove"
+                        :on-success="fileUploadSuccess"
+                        multiple
+                        :limit="5"
+                        style="width:300px"
+                        :on-exceed="handleExceed"
+                        :file-list="fileList2">
+                        <el-button size="small" class="upload">点击上传</el-button>
+                    </el-upload> -->
+                    <el-upload
+                    style="margin-left:70px;width:360px"
                     class="upload-demo"
                     :action="BASE_API+'/eduservice/state/upcontract'"
                     :on-preview="handlePreview"
                     :on-remove="handleRemove"
                     :before-remove="beforeRemove"
                     :on-success="fileUploadSuccess"
-                    multiple
-                    
-                    :limit="5"
-                    style="width:300px"
                     :on-exceed="handleExceed"
-                    :file-list="fileList2">
-                    <el-button size="small" class="upload">点击上传</el-button>
-                </el-upload>
-                <div style="margin-top:20px;color:#fff">确认：</div>
-                 
-                 <el-form-item style="margin:0;margin-top:10px" v-if="!disable">
-                    <el-button type="primary"  @click.native.prevent="commit">确认</el-button>
-                </el-form-item>
-                 <el-form-item style="margin:0;margin-top:10px" v-else>
-                    <el-button disabled type="primary" style="width:20%;">确认</el-button>
-                </el-form-item>
-        </el-form>
+                    :data="formData"
+                    :before-upload="beforeUpload"
+                    multiple
+                    drag
+                    :limit="5">
+                    <!-- :file-list="fileList2" -->
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将签订后的合同拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">上传文件最好不要大于10mb</div>
+                    </el-upload>
+                    <!-- <div style="margin-top:20px;">确认：</div> -->
+                    <el-form-item style="margin:0;margin-top:10px" v-if="!disable">
+                        <el-button type="primary" style="width:20%;float:right" @click.native.prevent="commit">确认</el-button>
+                    </el-form-item>
+                    <el-form-item style="margin:0;margin-top:10px;" v-else>
+                        <el-button disabled type="primary" style="width:20%;float:right">确认</el-button>
+                    </el-form-item>
+            </el-form>
+        </div>
     </div>
 </template>
 <script>
@@ -53,6 +72,7 @@ export default {
     },
     data(){
         return{
+            formData:new FormData(),
             id:"",
             management:{},
             state2:{},
@@ -103,9 +123,13 @@ export default {
                             url:res.data.state.url
                         })
                     }
-                    console.log(window.opener)
                     this.record.cid=this.state2.cid
                 })
+        },
+        beforeUpload(){
+            this.fileList2.forEach(file => {
+                this.formData.append('file', file.raw)
+            })
         },
         browse(url){
             // var url = 'http://127.0.0.1:8080/file/test.txt'; //要预览文件的访问地址
@@ -143,8 +167,8 @@ export default {
                 message:'上传成功'
             })
             this.fileList2.push({
-                    name:response.data.url.substring(88,response.data.url.length),
-                    url:response.data.url
+                name:file.name,
+                url:response.data.url
             })
             this.disable=false
         },
@@ -228,20 +252,27 @@ export default {
 }
 </script>
 <style  >
+.box{
+    width: 620px;
+    /* height: 400px; */
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #DDDCDC;
+    box-shadow: 0px 5px 10px #AFAEAE;
+}
 .container2 .el-input__inner{
     color: aliceblue;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 .container2 input{
     color: aliceblue;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 .container2 h3{
     margin: 0px;
-    color: #ffac02;
+    /* color: #ffac02; */
     height: 30px;
     position: relative;
-    left: 140px;
     top:13px;
 }
 
@@ -251,11 +282,12 @@ export default {
     padding: 30px;
 }
 .container2 .li{
+    /* background-color: #1b80ce; */
     height: 50px;
     width: 100%;
     position: relative;
-    left: -35px;
-    background:url('../../../assets/li.png');
+    left: 220px;
+    /* background:url('../../../assets/li.png'); */
     background-size: 100% 100%;
 }
 .container2 .el-form-item{
@@ -271,28 +303,25 @@ export default {
      top: 20px;
 }
 .container2 .el-textarea__inner{
-    color: aliceblue;
-    background-color: transparent;
-}
-.container2 .upload{
-    color:aliceblue;
-    background-color: #ffac02;
+    /* color: aliceblue; */
+    /* background-color: transparent; */
 }
 .container2 .primary{
     color:aliceblue;
-    background-color: #91601e;
+    /* background-color: #91601e; */
 }
 .container2 .el-button--primary{
     width: 200px;
     height: 45px;
-    background-color: #ffac02;
+    /* background-color: #ffac02; */
 }
 .link-contrainer{
     background-image:none !important;
     /* height: 100%; */
+     
 }
 .app-wrapper{
-    background:url('../../../assets/bgi.png');
-    background-size: 100% 100%;
+    background-color: #f7f7f7;
 }
+
 </style>

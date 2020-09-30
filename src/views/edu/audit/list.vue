@@ -15,10 +15,10 @@
                 </el-form-item>
                 <el-form-item>
                     <el-select v-model="stateQuery.sstate" placeholder="合同状态">
-                        <el-option label="审核中" value="0"></el-option>
+                        <el-option label="待审核" value="0"></el-option>
                         <el-option label="被驳回" value="1"></el-option>
                         <el-option label="待签订" value="2"></el-option>
-                        <el-option label="已签订" value="3"></el-option>
+                        <el-option label="待立案" value="3"></el-option>
                         <el-option label="已立案" value="4"></el-option>
                     </el-select>
                 </el-form-item>
@@ -61,7 +61,7 @@
             </el-table-column>
             <el-table-column
                 label="序号"
-                width="50"
+                width="60"
                 align="center">
                 <tempate slot-scope="scope">
                     {{(page-1)*limit+scope.$index+1}}
@@ -69,7 +69,8 @@
             </el-table-column>
             <el-table-column width="130" align="center"  label="合同编号">
                  <template slot-scope="scope">
-                    <el-link @click="info(scope.row.cid)">{{scope.row.serialNum}}</el-link>
+                    <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.serialNum}}</el-link>
+                    <el-link @click="projectInfo(scope.row.cid)" v-else>{{scope.row.serialNum}}</el-link>
                 </template>
             </el-table-column>
             <el-table-column width="80" align="center" prop="fullAmount" label="合同金额"></el-table-column>
@@ -84,20 +85,23 @@
                     {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
                 </tempate>
             </el-table-column>
-            <el-table-column width="200" align="center"  label="客户名称">
+            <el-table-column width="230" align="center"  label="客户名称">
                 <template slot-scope="scope">
-                    <el-link @click="info(scope.row.cid)">{{scope.row.companyName}}</el-link>
+                    <el-link style="width:220px" @click="info(scope.row.cid)"  v-if="scope.row.type!=1">{{scope.row.companyName}}</el-link>
+                    <el-link style="width:210px" @click="projectInfo(scope.row.cid)" v-else>{{scope.row.companyName}}</el-link>
                 </template>
             </el-table-column>
             <el-table-column width="150" align="center" label="项目名称">
                 <template slot-scope="scope">
-                    <el-link @click="info(scope.row.cid)">{{scope.row.brandName}}</el-link>
+                    <!-- {{scope.row}} -->
+                    <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.brandName}}</el-link>
+                    <el-link @click="projectInfo(scope.row.cid)" v-else>查看更多</el-link>
                 </template>
             </el-table-column>
-            <el-table-column width="80" align="center" prop="uname" label="顾问"></el-table-column>
+            <el-table-column width="78" align="center" prop="uname" label="顾问"></el-table-column>
             <el-table-column width="80" align="center" prop="sstate" label="状态" >
                 <template slot-scope="scope">
-                    <span v-if="scope.row.sstate==0" style="color:#17a05d">审核中</span>
+                    <span v-if="scope.row.sstate==0" style="color:#17a05d">待审核</span>
                     <el-popover
                         title="驳回原因"
                         placement="top-start"
@@ -106,8 +110,8 @@
                         :content=scope.row.cause>
                        <span v-if="scope.row.sstate==1" slot="reference" style="color:#f43907">驳回</span>
                     </el-popover>               
-                    <span v-if="scope.row.sstate==2" style="color:#17a05d">审核通过</span>
-                    <span v-if="scope.row.sstate==3" style="color:#00a74a">已签订</span>
+                    <span v-if="scope.row.sstate==2" style="color:#17a05d">待签订</span>
+                    <span v-if="scope.row.sstate==3" style="color:#00a74a">待立案</span>
                     <el-popover
                         title="立案描述"
                         placement="top-start"
@@ -140,16 +144,21 @@
                 </template>
             </el-table-column>
             <el-table-column width="170" align="center" prop="gmtCreate" label="创建时间" ></el-table-column>
-            <el-table-column label="操作" align="right">
+            <el-table-column width="360" label="操作" align="right">
                 <template slot-scope="scope">
                     <router-link :to="{path:'/audit/update/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:2}}" v-if="scope.row.sstate<3&&(roles.jurisdiction==3||roles.jurisdiction==0)">
                         <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
                     </router-link>
-                    <router-link  :to="{path:'/audit/audit/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:1}}" v-if="roles.jurisdiction<2&&scope.row.sstate==0">
+                    <router-link  :to="{path:'/audit/audit/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:1}}" v-if="roles.jurisdiction<2&&scope.row.sstate==0&&scope.row.type==0">
+                        <el-button  type="primary" size="mini">审核</el-button>
+                    </router-link>
+                    <router-link  :to="{path:'/audit/auditpro',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:1}}" v-if="roles.jurisdiction<2&&scope.row.sstate==0&&scope.row.type==1">
                         <el-button  type="primary" size="mini">审核</el-button>
                     </router-link>
                     <el-button @click="to2(scope.row.sid,scope.row.cid,scope.row.url,0)" v-if="scope.row.sstate==2&&(roles.jurisdiction==3||roles.jurisdiction==0)" type="primary" size="mini">签订</el-button>
-                    <el-button type="primary" size="mini" v-if="scope.row.sstate==3&&(roles.jurisdiction==3||roles.jurisdiction==0)" @click="open(scope.row.sid,scope.row.uid,scope.row.cid,scope.row.fid)">发起立案</el-button>
+
+                    <el-button type="primary" size="mini" v-if="scope.row.sstate==3&&(roles.jurisdiction==3||roles.jurisdiction==0)&&scope.row.type!=1" @click="open(scope.row.sid,scope.row.uid,scope.row.cid,scope.row.fid)">发起立案</el-button>
+                    <el-button type="primary" size="mini" v-if="scope.row.sstate==3&&(roles.jurisdiction==3||roles.jurisdiction==0)&&scope.row.type==1" @click="open2(scope.row.sid,scope.row.uid,scope.row.cid)">发起立案</el-button>
                     <el-button type="primary" size="mini"  @click="browse(scope.row.url)" v-if="JSON.stringify(scope.row.url).indexOf('[{')<0">浏览</el-button>
                     <el-popover
                         placement="right"
@@ -168,21 +177,6 @@
                     </el-popover>
                     <el-button type="primary" @click="to(scope.row.cid,scope.row.sstate,'/audit/schedule/')" size="mini">记录</el-button>
                     <el-button type="danger" icon="el-icon-delete" size="mini"  @click="removeDataById(scope.row.sid,scope.row.cid)" v-if="scope.row.sstate<3&&(roles.jurisdiction==3||roles.jurisdiction==0)">删除</el-button>
-                </template>
-            </el-table-column>
-            <el-table-column
-                v-if="multipleSelection.length!=0"
-                fixed="right"
-                align="center"
-                label="多个立案"
-                width="120">
-                <template slot-scope="scope">
-                    <el-button
-                    @click.native.prevent="divisions(scope.$index)"
-                    type="text"
-                    >
-                    发起立案
-                    </el-button>
                 </template>
             </el-table-column>
             </el-table>
@@ -227,7 +221,7 @@ export default {//定义变量和初始值
             record:{},
             list:null,//查询之后接口返回集合
             page:1,//当前页
-            limit:11,//每页记录数
+            limit:18,//每页记录数
             total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
             stateQuery:{},//条件封装
@@ -255,6 +249,43 @@ export default {//定义变量和初始值
                 this.division(sid,uid,cid,fid)
             })
         },
+        open2(sid,uid,cid) {
+            this.$prompt('', '描述（可选）', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            }).then(({ value }) => {
+                this.divisionMsg=value
+                this.ProjectDivision(sid,uid,cid)
+            })
+        },
+        ProjectDivision(sid,uid,cid){
+            this.flow.uid=uid
+            this.flow.sid=sid
+            this.flow.cid=cid
+            this.flow.schedules=1
+            this.flow.isFlow=1
+            this.flow.onRecord=(new Date().getFullYear()+'-'+(new Date().getMonth()+1)+'-'+new Date().getDate())
+            flow.updateProjectFlow(this.flow)
+            .then(res=>{
+                this.$message({
+                    type: 'success',
+                    message: '立案成功!'
+                });
+                this.state.sstate=4
+                this.state.sid=sid
+                this.state.cause=this.divisionMsg
+                state.update(this.state)
+                this.record.sstate=5
+                this.record.cid=cid
+                this.record.uid=this.roles.uid
+                record.addRecord(this.record)
+                this.msg(cid,1)
+                for(let i=0;i<res.data.flows.length;i++){
+                    this.historys(res.data.flows[i].fid)
+                }
+                this.$router.push({path:'/flow/index'})
+            })
+        },
         init(){
             if(this.list!=null){
                 this.loading=false
@@ -266,7 +297,13 @@ export default {//定义变量和初始值
             let routeData = this.$router.resolve({
                 path: '/contract/info/'+id
             })
-            window.open(routeData.href,"_blank",'width=1400px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
+            window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
+        },
+        projectInfo(id){
+            let routeData = this.$router.resolve({
+                path: '/contract/projectInfo/'+id
+            })
+            window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
         to(cid,sstate){
             let routeData = this.$router.resolve({
@@ -547,6 +584,13 @@ export default {//定义变量和初始值
 }
 </script>
 <style >
+.app-container .el-button+.el-button {
+    margin-left: 0px;
+}
+.app-container .el-table td, .el-table th,.el-link--inner{
+    padding: 3px;
+    font-size: 13px;
+}
 .app-container{
     background:url('https://yizhitexu.oss-cn-beijing.aliyuncs.com/static/%E6%9C%AA%E6%A0%87%E9%A2%98-1.jpg?Expires=1595917874&OSSAccessKeyId=TMP.3Kf5TDCjKYC8eEb2SoNydCB7ARcFnRK9fPk8agvfbo67Ns71K1DZM4uJRohN6LEFsCUSVt5G9c3WLeSQ7pMxXN4RSqn8hB&Signature=GuO9LerWVQWbjYaQZ7EXfuWbK8A%3D');
     background-size: 100% 100%;

@@ -16,4 +16,12 @@ export default{
             timeout: 36000
         })
     },
+    editEviCard(formData){
+        return request({
+            url: `/eduservice/tools/jpgTopdf`,
+            method: 'post',
+            data:formData,
+            timeout: 36000
+          })
+    },
 }

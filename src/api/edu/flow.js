@@ -46,6 +46,14 @@ export default{
             timeout: 36000
           })
     },
+    updateProjectFlow(flow){
+        return request({
+            url: `/eduservice/flow/updateProjectFlow`,
+            method: 'post',
+            data:flow,
+            timeout: 36000
+          })
+    },
     updateFlows(flow){
         return request({
             url: `/eduservice/flow/updates`,
@@ -61,6 +69,30 @@ export default{
             timeout: 36000
             // params
           })
+    },
+    getFlowCount(uid){
+        return request({
+            url: `/eduservice/flow/getFlowCount/${uid}`,
+            method: 'get',
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
+    changeFlowAgentId(change){
+        return request({
+            url: `/eduservice/flow/changeFlowAgent`,
+            method: 'post',
+            data:change,
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
+    changeFlowAgent(id){
+        return request({
+            url: `/eduservice/flow-index/changeFlowAgent/${id}`,
+            method: 'post',
+            timeout: 60000 // request timeou
+            // params
+          })
     }
-    
 }

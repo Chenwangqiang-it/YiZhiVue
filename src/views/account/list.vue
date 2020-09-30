@@ -49,7 +49,7 @@
             <el-table-column
                 label="序号"
                 align="center"
-                width="180">
+                width="140">
                 <tempate slot-scope="scope">
                     {{(page-1)*limit+scope.$index+1}}
                 </tempate>
@@ -69,17 +69,18 @@
             <el-table-column prop="phoneNum" label="电话号码" width="180"></el-table-column>
             <el-table-column prop="upassword" label="密码" width="180"></el-table-column>
             <el-table-column prop="higherAuthority" label="上级主管" width="180"></el-table-column>
-            <el-table-column prop="jurisdiction" label="权限级别">
+            <el-table-column width="100" prop="jurisdiction" label="权限级别">
                 <template slot-scope="scope">
                     {{scope.row.jurisdiction==0?'root':(scope.row.jurisdiction==1?'管理者':(scope.row.jurisdiction==2?'流程管理者':(scope.row.jurisdiction==3?'顾问':(scope.row.jurisdiction==4?'代理':'财务'))))}}
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="200" align="center">
+            <el-table-column label="操作" width="300" align="center">
                 <template slot-scope="scope">
+                    <el-button type="warning" size="mini" @click="change(scope.row.uid)">业务转移</el-button>
                     <router-link :to="'/account/set/'+scope.row.uid">
                         <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
                     </router-link>
-                    <el-button type="danger" size="mini" icon="el-icon-delete" @click="removeDataById(scope.row.id)">删除</el-button>
+                    <el-button type="danger" size="mini" icon="el-icon-delete" @click="removeDataById(scope.row.uid)">删除</el-button>
                 </template>
             </el-table-column>
             </el-table>
@@ -96,6 +97,8 @@
 </template>
 <script>
 import user from '@/api/edu/user'
+import contract from '@/api/edu/contract'
+import flow from '@/api/edu/flow'
     //核心代码位置
 import { mapGetters } from 'vuex'
  import { Message } from 'element-ui'
@@ -112,7 +115,7 @@ export default {//定义变量和初始值
         return{
             list:null,//查询之后接口返回集合
             page:1,//当前页
-            limit:3,//每页记录数
+            limit:10,//每页记录数
             total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
             userQuery:{}//条件封装
@@ -136,12 +139,25 @@ export default {//定义变量和初始值
                     //res返回的数据
                     this.list=res.data.rows
                     this.total=res.data.total
-                    console.log(this.list)
-                    console.log(this.total)
                 })//请求成功
                 .catch(error=>{
                     console.log(error)
                 })//请求失败
+        },
+        change(id){
+            let routeData = this.$router.resolve({
+                path: '/account/change/'+id
+            })
+            window.open(routeData.href,"_blank",'width=640px,height=350px,top=300px,left=800px,resizable=yes,scrollbars')
+            window['logoClickBtn'] = (url) => {
+                // Toast({ message: url, position: 'bottom', duration: 5000 });
+                //将init方法公示到window 子页面可以调用该方法
+                this.$message({
+                    type: 'success',
+                    message: '转移成功!'
+                });
+                this.getList()
+            }
         },
         resetData(){//清空表单
             //表单输入项数据清空
@@ -150,23 +166,37 @@ export default {//定义变量和初始值
             this.getList()
         },
         removeDataById(id){//删除讲师
-           this.$confirm('此操作将永久删除该讲师记录, 是否继续?', '提示', {
+           this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
             }).then(() => {//点击确定，执行
-                teacher.delteteacherId(id)//调用方法执行删除
-                .then(res=>{//删除成功
-                   
-                    this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                    });
-                    this.getList()//刷新列表
+                contract.getContractCount(id)
+                .then(res=>{
+                    flow.getFlowCount(id)
+                    .then(response=>{
+                        if(res.data.count==0&&response.data.count==0){
+                            user.delteteacherId(id)//调用方法执行删除
+                            .then(rest=>{//删除成功
+                                this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                                });
+                                this.getList()//刷新列表
+                            })
+                            .catch(error=>{
+                                
+                            })
+                        }else{
+                            this.$message({
+                            type: 'warning',
+                            message: '该用户还有'+res.data.count+'个合同，'+response.data.count+'个流程未转移，请先转移后再删除!'
+                            });
+                        }
+                    })
+                    
                 })
-                .catch(error=>{
-
-                })
+                
                 
             })
             
