@@ -326,8 +326,7 @@ export default {//定义变量和初始值
             //字段不写也可以，会根据表单自己生成
             flowQuery:{},//条件封装
             dialogVisible: false,
-            updateVisible:false,
-            
+            updateVisible:false,        
             BASE_API:process.env.BASE_API,//端口号
             importBtnDisabled:false,
             fileList: [],
@@ -429,6 +428,12 @@ export default {//定义变量和初始值
     created() {//页面渲染之前执行，调用methods定义的方法
           this.init()
     },
+    watch:{//监听
+        $route(to,from){//路由变化的方式，路由一变化就执行
+            console.log('watch $route')
+            this.init()
+        }
+    },
     methods:{
       projectInfo(id){
             let routeData = this.$router.resolve({
@@ -437,6 +442,20 @@ export default {//定义变量和初始值
             window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
       init(){
+        let router_path = this.$route.path
+        if(router_path=='/case/end'){
+          this.flowQuery.beginSchedule=9
+          this.flowQuery.endSchedule=12
+          this.p=1
+        }else if(router_path=='/case/unfinished'){
+          this.flowQuery.beginSchedule=1
+          this.flowQuery.endSchedule=8
+          this.p=2
+        }else if(router_path=='/case/unpayment'){
+          this.flowQuery.beginSchedule=9
+          this.flowQuery.endSchedule=11
+          this.p=3
+        }
         this.getList()
         this.getAgent()
       },
@@ -446,172 +465,6 @@ export default {//定义变量和初始值
             })
             window.open(routeData.href,"_blank",'width=1400px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
-      SpecialVerify(){
-        if(this.list[this.index].schedules==1){
-          if(this.form.paidFirstAmount==null||this.form.paidFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'到款金额不能为空'
-            })
-            return false
-          }
-          if(this.form.paidFirstAmountDate==null||this.form.paidFirstAmountDate==''){
-            this.$message({
-              type:'warning',
-              message:'请填写到款日期'
-            })
-            return false
-          }
-          if(this.form.paymentFirstAmount==null||this.form.paymentFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'打款单位不能为空'
-            })
-            return false
-          }
-          if(this.form.gatheringFirstAmount==null||this.form.gatheringFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'收款单位不能为空'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==2){
-          if(this.form.agentId==''||this.form.agentId==null){
-            this.$message({
-              type:'warning',
-              message:'请选择代理人'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==3){
-          if(!this.isfileupdate){
-            this.$message({
-              type:'warning',
-              message:'必须上传文件'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==4){
-          if(!this.isfileupdate){
-            this.$message({
-              type:'warning',
-              message:'必须上传文件'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==5){
-          if(this.form.paidLastAmount==null||this.form.paidLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'到款金额不能为空'
-            })
-            return false
-          }
-          if(this.form.paidLastAmountDate==null||this.form.paidLastAmountDate==''){
-            this.$message({
-              type:'warning',
-              message:'请填写到款日期'
-            })
-            return false
-          }
-          if(this.form.paymentLastAmount==null||this.form.paymentLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'打款单位不能为空'
-            })
-            return false
-          }
-          if(this.form.gatheringLastAmount==null||this.form.gatheringLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'收款单位不能为空'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==4){
-          if(this.list[this.index].lastAmount==0){
-            this.flow.schedules=this.list[this.index].schedules+1
-          }
-        }
-        this.flow.schedules=this.list[this.index].schedules+1
-        this.msg(this.flow.cid,0,this.list[this.index].schedules+1)
-        this.flow.agentId=this.form.agentId
-        for(let i=0;i<this.agent.length;i++){
-          if(this.flow.agentId==this.agent[i].uid){
-            this.flow.agentName=this.agent[i].uname
-          }
-        }
-        return true
-      },
-      SpecialVerify2(){
-         if(this.list[this.index].schedules>1){
-          if(this.form2.paidFirstAmount==null||this.form2.paidFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'到款金额不能为空'
-            })
-            return false
-          }
-          if(this.form2.paidFirstAmountDate==null||this.form2.paidFirstAmountDate==''){
-            this.$message({
-              type:'warning',
-              message:'请填写到款日期'
-            })
-            return false
-          }
-          if(this.form2.paymentFirstAmount==null||this.form2.paymentFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'打款单位不能为空'
-            })
-            return false
-          }
-          if(this.form2.gatheringFirstAmount==null||this.form2.gatheringFirstAmount==''){
-            this.$message({
-              type:'warning',
-              message:'收款单位不能为空'
-            })
-            return false
-          }
-        }
-        if(this.list[this.index].schedules==5){
-          if(this.form2.paidLastAmount==null||this.form2.paidLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'到款金额不能为空'
-            })
-            return false
-          }
-          if(this.form2.paidLastAmountDate==null||this.form2.paidLastAmountDate==''){
-            this.$message({
-              type:'warning',
-              message:'请填写到款日期'
-            })
-            return false
-          }
-          if(this.form2.paymentLastAmount==null||this.form2.paymentLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'打款单位不能为空'
-            })
-            return false
-          }
-          if(this.form2.gatheringLastAmount==null||this.form2.gatheringLastAmount==''){
-            this.$message({
-              type:'warning',
-              message:'收款单位不能为空'
-            })
-            return false
-          }
-        }
-        return true
-      },
       getAgent(){
             user.getAgent()
             .then(res=>{
@@ -652,252 +505,6 @@ export default {//定义变量和初始值
           }
         })
       },
-      formtoflow2(){
-          this.flow.paidFirstAmount=this.form2.paidFirstAmount
-          this.flow.paidFirstAmountDate=this.form2.paidFirstAmountDate
-          this.flow.paymentFirstAmount=this.form2.paymentFirstAmount
-          this.flow.gatheringFirstAmount=this.form2.gatheringFirstAmount
-          this.flow.paidLastAmount=this.form2.paidLastAmount
-          this.flow.paidLastAmountDate=this.form2.paidLastAmountDate
-          this.flow.paymentLastAmount=this.form2.paymentLastAmount
-          this.flow.gatheringLastAmount=this.form2.gatheringLastAmount
-      },
-      upsub(){
-        this.$refs.form2.validate(valid => {
-          if (valid) {
-            if(this.SpecialVerify2()){
-              this.flow=this.list[this.index]
-              if(this.verifyu()|this.isfileupdate){
-                this.flow.agentId=this.agentId2
-                this.msg(this.flow.cid,1,this.schedu)
-                this.flow.schedules=this.schedu
-                if(this.fileList.length!=0){
-                  this.flow.inventory=JSON.stringify(this.fileList)
-                }
-                this.formtoflow2()
-                flow.updateFlow(this.flow)
-                .then(res=>{
-                    this.$message({
-                        type:'success',
-                        message:'提交成功'
-                    })
-                    this.historys(this.flow.schedules,1)
-                    this.getList()
-                    this.isfileupdate=false
-                    this.updateVisible = false
-                })
-              }
-            }
-          }
-        })
-      },
-      historys(schedules,isUpdate){
-        let historys=[]
-        if(isUpdate==0){
-          if(this.list[this.index].schedules==2){
-            let account={}
-            account.isUpdate=isUpdate
-            account.uid=this.roles.uid
-            account.fid=this.list[this.index].fid
-            account.schedules=1
-            account.describes=this.form.a_desc
-            historys.push(account)
-          }
-          if(this.list[this.index].schedules==3){
-            let division={}
-            division.isUpdate=isUpdate
-            division.uid=this.roles.uid
-            division.fid=this.list[this.index].fid
-            division.schedules=8
-            division.describes='分案'
-            historys.push(division)
-          }
-          if(this.list[this.index].schedules==4){
-            let inven={}
-            inven.isUpdate=isUpdate
-            inven.uid=this.roles.uid
-            inven.fid=this.list[this.index].fid
-            inven.schedules=2
-            inven.describes=this.form.i_desc
-            historys.push(inven)
-          }
-          if(this.list[this.index].schedules==5){
-            let declara={}
-            declara.isUpdate=isUpdate
-            declara.uid=this.roles.uid
-            declara.fid=this.list[this.index].fid
-            declara.schedules=3
-            declara.describes=this.form.d_desc
-            historys.push(declara)
-          }
-          if(this.list[this.index].schedules==6){
-            let declara={}
-            declara.isUpdate=isUpdate
-            declara.uid=this.roles.uid
-            declara.fid=this.list[this.index].fid
-            declara.schedules=5
-            declara.describes=this.form.d_desc
-            historys.push(declara)
-          }
-          if(this.list[this.index].schedules==7){
-            let signature={}
-            signature.isUpdate=isUpdate
-            signature.uid=this.roles.uid
-            signature.fid=this.list[this.index].fid
-            signature.schedules=4
-            signature.describes=this.form.l_desc
-            historys.push(signature)
-          }
-        }else{
-          if((!this.form2.account&&this.list[this.index].schedules==1)||this.form3.a_desc!=this.form2.a_desc){
-            let account={}
-            account.isUpdate=isUpdate
-            account.uid=this.roles.uid
-            account.fid=this.list[this.index].fid
-            account.schedules=1
-            account.describes=this.form2.a_desc
-            // if(!this.form2.account){
-            //   account.describes="撤回财务审核"
-            // }
-            historys.push(account)
-          }
-          if((!this.form.division&&this.list[this.index].schedules==2)||this.form3.agentId!=this.form2.agentId){
-            let division={}
-            division.isUpdate=isUpdate
-            division.uid=this.roles.uid
-            division.fid=this.list[this.index].fid
-            division.schedules=8
-            if(this.form3.agentId!=this.form2.agentId){
-              division.describes='修改分案'
-            }
-            if(!this.form2.division){
-               division.describes='撤销分案'
-            }
-            historys.push(division)
-          }
-          if((!this.form2.inven&&this.list[this.index].schedules==3)||this.form3.i_desc!=this.form2.i_desc){
-            let inven={}
-            inven.isUpdate=isUpdate
-            inven.uid=this.roles.uid
-            inven.fid=this.list[this.index].fid
-            inven.schedules=2
-            inven.describes=this.form2.i_desc
-            historys.push(inven)
-          }
-          if((!this.form2.declara&&this.list[this.index].schedules==4)||this.form3.d_desc!=this.form2.d_desc){
-            let declara={}
-            declara.isUpdate=isUpdate
-            declara.uid=this.roles.uid
-            declara.fid=this.list[this.index].fid
-            declara.schedules=3
-            declara.describes=this.form2.d_desc
-            historys.push(declara)
-          }
-          if((!this.form2.signature&&this.list[this.index].schedules==6)||this.form3.s_desc!=this.form2.s_desc){
-            let signature={}
-            signature.isUpdate=isUpdate
-            signature.uid=this.roles.uid
-            signature.fid=this.list[this.index].fid
-            signature.schedules=5
-            signature.describes=this.form2.s_desc
-            historys.push(signature)
-          }
-          if((!this.form2.lastamount&&this.list[this.index].schedules==5&&this.form2.lastAmount!=0)||this.form3.l_desc!=this.form2.l_desc){
-            let signature={}
-            signature.isUpdate=isUpdate
-            signature.uid=this.roles.uid
-            signature.fid=this.list[this.index].fid
-            signature.schedules=4
-            signature.describes=this.form2.l_desc
-            historys.push(signature)
-          }
-        }
-        if(this.isfileupdate){
-          let isfileupdate={}
-          isfileupdate.uid=this.roles.uid
-          isfileupdate.fid=this.list[this.index].fid
-          isfileupdate.schedules=7
-          isfileupdate.describes='文件修改'
-          historys.push(isfileupdate)
-        }
-        history.addHistory(historys)
-      },
-      msg(cid,isupdate,i){
-        this.message={}
-            if(isupdate==1){
-              if(this.schedu!=this.flow.schedules){
-                contract.getContract(cid)
-                .then(res=>{
-                    if(i==6){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至顾问确认'
-                    }else if(i==5){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至尾款确认'
-                    }else if(i==4){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至申报材料提交'
-                    }else if(i==3){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至清单提交'
-                    }else if(i==2){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至流程分案'
-                    }else if(i==1){
-                        this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至财务审核'
-                    }
-                    this.message.categoryId=this.flow.fid
-                    this.message.category=1
-                    this.message.uid=res.data.contract.uid;
-                    message.addMessage(this.message)
-                })
-              }else{
-                contract.getContract(cid)
-                .then(res=>{
-                    if(this.form3.a_desc!=this.form2.a_desc){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'财务审核阶段描述已被修改'
-                    }else if(this.form3.agentId!=this.form2.agentId){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'流程分案阶段已被重新分案'
-                    }else if(this.form3.i_desc!=this.form2.i_desc){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'清单上传阶段描述已被修改'
-                    }else if(this.form3.d_desc!=this.form2.d_desc){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'申报材料上传阶段描述已被修改'
-                    }else if(this.form3.l_desc!=this.form2.l_desc){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'尾款确认阶段描述已被修改'
-                    }else if(this.form3.s_desc!=this.form2.s_desc){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'顾问确认阶段描述已被修改'
-                    }
-                    this.message.categoryId=this.flow.fid
-                    this.message.category=1
-                    this.message.uid=res.data.contract.uid;
-                    if(this.message.msg!=''){
-                      message.addMessage(this.message)
-                    }
-                })
-              }
-            }else{
-              contract.getContract(cid)
-              .then(res=>{
-                  if(i.length==19){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已被删除'
-                      this.message.categoryId=i
-                  }else {
-                    this.message.categoryId=this.flow.fid
-                  }
-                  if(i==2){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过财务审核'
-                  }else if(i==3){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过流程分案'
-                  }else if(i==4){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过清单上传'
-                  }else if(i==5){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过尾款确认'
-                  }else if(i==6){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过申报材料提供'
-                  }else if(i==7){
-                      this.message.msg='您的流程'+res.data.contract.serialNum+'已通过顾问确认,进入交互状态'
-                  }
-                  this.message.category=1
-                  this.message.uid=res.data.contract.uid;
-                  message.addMessage(this.message)
-              })
-            }
-      },
       getContract(id){
         contract.getContract(id)
         .then(res=>{
@@ -937,6 +544,9 @@ export default {//定义变量和初始值
           this.win2.close()
         }
         this.win2=window.open(routeData.href,'win2','width=692px,height=420px,top=300px,left=700px,resizable=yes,scrollbars',false)
+        window['logoClickBtn'] = (url) => {
+                this.getList()
+            }
       },
       select(fid,index){
         let routeData = this.$router.resolve({
@@ -951,118 +561,6 @@ export default {//定义变量和初始值
           //将init方法公示到window 子页面可以调用该方法
           this.init()
         }
-      },
-      listToform(index){
-        this.form.agentId=this.list[index].agentId
-        this.form.paidFirstAmount=this.list[index].paidFirstAmount
-        this.form.paidFirstAmountDate=this.list[index].paidFirstAmountDate
-        this.form.paymentFirstAmount=this.list[index].paymentFirstAmount
-        this.form.gatheringFirstAmount=this.list[index].gatheringFirstAmount
-        this.form.paidLastAmount=this.list[index].paidLastAmount
-        this.form.paidLastAmountDate=this.list[index].paidLastAmountDate
-        this.form.paymentLastAmount=this.list[index].paymentLastAmount
-        this.form.gatheringLastAmount=this.list[index].gatheringLastAmount
-      },
-      listToform2(index){
-        this.form2.agentId=this.list[index].agentId
-        this.form2.paidFirstAmount=this.list[index].paidFirstAmount
-        this.form2.paidFirstAmountDate=this.list[index].paidFirstAmountDate
-        this.form2.paymentFirstAmount=this.list[index].paymentFirstAmount
-        this.form2.gatheringFirstAmount=this.list[index].gatheringFirstAmount
-        this.form2.paidLastAmount=this.list[index].paidLastAmount
-        this.form2.paidLastAmountDate=this.list[index].paidLastAmountDate
-        this.form2.paymentLastAmount=this.list[index].paymentLastAmount
-        this.form2.gatheringLastAmount=this.list[index].gatheringLastAmount
-      },
-      cleanFrom(){
-        this.form.account=false
-        this.form.agentId=''
-        this.form.a_desc=''
-        this.form.a_username=''
-        this.form.a_date=''
-        this.form.inven=false
-        this.form.i_desc=''
-        this.form.i_username=''
-        this.form.i_date=''
-        this.form.declara=false
-        this.form.d_desc=''
-        this.form.d_username=''
-        this.form.d_date=''
-        this.form.signature=false
-        this.form.s_desc=''
-        this.form.s_username=''
-        this.form.s_date=''
-        this.form.lastAmount=0
-        this.form.lastamount=''
-        this.form.l_desc=''
-        this.form.l_username=''
-        this.form.l_date=''
-        this.form.division=false
-        this.form.di_username=''
-        this.form.di_date=''
-      },
-      getHistorys(id){
-        history.getHistorys(id)
-        .then(res=>{
-          let li=res.data.list
-          for(let i=0;i<li.length;i++){
-            let l=li[i]
-            if(l.schedules==1){
-              this.form.a_desc=l.describes
-              this.form.a_date=l.gmtCreate
-              user.getUserInfo(l.uid)
-              .then(res=>{
-                this.form.a_username= res.data.user.uname
-                this.form3=JSON.parse(JSON.stringify(this.form2));
-              })
-            }
-            if(l.schedules==8){
-              this.form.di_date=l.gmtCreate
-               user.getUserInfo(l.uid)
-              .then(res=>{
-                this.form.di_username= res.data.user.uname
-                this.form3=JSON.parse(JSON.stringify(this.form2));
-              })
-            }
-            if(l.schedules==2){
-               this.form.i_desc=l.describes
-               this.form.i_date=l.gmtCreate
-               user.getUserInfo(l.uid)
-              .then(res=>{
-                this.form.i_username= res.data.user.uname
-                this.form3=JSON.parse(JSON.stringify(this.form2));
-              })
-            }
-            if(l.schedules==3){
-               this.form.d_desc=l.describes
-               this.form.d_date=l.gmtCreate
-                user.getUserInfo(l.uid)
-                .then(res=>{
-                  this.form.d_username= res.data.user.uname
-                  this.form3=JSON.parse(JSON.stringify(this.form2));
-                })
-            }
-            if(l.schedules==5){
-               this.form.l_desc=l.describes
-               this.form.l_date=l.gmtCreate
-               user.getUserInfo(l.uid)
-                .then(res=>{
-                  this.form.s_username= res.data.user.uname
-                  this.form3=JSON.parse(JSON.stringify(this.form2));
-                })
-            }
-            if(l.schedules==4){
-               this.form.s_desc=l.describes
-               this.form.s_date=l.gmtCreate
-               user.getUserInfo(l.uid)
-                .then(res=>{
-                  this.form.l_username= res.data.user.uname
-                  this.form3=JSON.parse(JSON.stringify(this.form2));
-                })
-            }
-          }
-          // console.log(this.form)
-        })
       },
       submitUpload() {
       },
@@ -1085,7 +583,7 @@ export default {//定义变量和初始值
       beforeRemove(file, fileList) {
         return this.$confirm(`确定移除 ${ file.name }？`);
       },
-      removeDataById(id,cid){//删除讲师
+      removeDataById(id,cid){
            this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -1108,7 +606,33 @@ export default {//定义变量和初始值
             
         },
       getList(page =1){
+        let id=this.$route.params.id;
+        if(id!=undefined&&id.length==19){
           this.getUntreated(page)
+        }else{
+            this.page=page
+            this.loading=true
+            if(this.roles.jurisdiction==3){
+                this.flowQuery.uid=this.roles.uid
+            }else if(this.roles.jurisdiction==4){
+                this.flowQuery.agentId=this.roles.uid
+            }
+            this.flowQuery.pname=this.flowQuery.brandName
+            flow.getFlowListPage(this.page,this.limit,this.flowQuery)
+                .then(res=>{
+                    //res返回的数据
+                    this.list=res.data.rows
+                    for(let i=0;i<this.list.length;i++){
+                       this.list[i].inventory=JSON.parse(this.list[i].inventory)
+                       this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
+                    }
+                    this.total=res.data.total
+                    this.loading=false
+                })//请求成功
+                .catch(error=>{
+                    console.log(error)
+                })//请求失败
+          }
         },
         disposeShow(s){//判断处理按钮是否存在
           let j=this.roles.jurisdiction
@@ -1116,7 +640,7 @@ export default {//定义变量和初始值
             return false
           }
           if(j==6){
-            if(s==1||s==2||s==9||s==11){
+            if(s==1||s==2||s==3||s==4||s==5||s==6||s==7||s==8||s==9||s==11){
               return true
             }
             return false
@@ -1175,7 +699,7 @@ export default {//定义变量和初始值
         this.loading=true
         this.flowQuery.jurisdiction=this.roles.jurisdiction
         this.flowQuery.uid=this.roles.uid
-        flow.getAwait(this.page,this.limit,this.flowQuery)
+        flow.getUntreated(this.page,this.limit,this.flowQuery)
             .then(res=>{
                 //res返回的数据
                 this.list=res.data.rows

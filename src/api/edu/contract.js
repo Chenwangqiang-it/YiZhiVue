@@ -11,6 +11,14 @@ export default{
             // params
           })
     },
+    saveContract(contract){
+        return request({
+            url: `/eduservice/contract/save`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 
+          })
+    },
     getContract(id){
         return request({
             url: `/eduservice/contract/getContractByid/${id}`,
@@ -21,6 +29,24 @@ export default{
     updateContract(contract){
         return request({
             url: `/eduservice/contract/update`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
+    change(contract){
+        return request({
+            url: `/eduservice/contract/change`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
+    change2(contract){
+        return request({
+            url: `/eduservice/contract/change2`,
             method: 'post',
             data:contract,
             timeout: 60000 // request timeou
@@ -73,6 +99,33 @@ export default{
     addProject(addProject){
         return request({
             url: `/eduservice/contract/addProject`,
+            method: 'post',
+            data:addProject,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    saveProject(addProject){
+        return request({
+            url: `/eduservice/contract/saveProject`,
+            method: 'post',
+            data:addProject,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    changeProject(addProject){
+        return request({
+            url: `/eduservice/contract/changeProject`,
+            method: 'post',
+            data:addProject,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    changeProject2(addProject){
+        return request({
+            url: `/eduservice/contract/changeProject2`,
             method: 'post',
             data:addProject,
             timeout: 60000 // request timeou

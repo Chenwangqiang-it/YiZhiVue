@@ -2,433 +2,498 @@
     <div class="app-container">
          <template>
             <div class="box">
-                <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==1||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==1)">
-                    <div class="li">
-                        <h3>财务审核</h3>
-                    </div>
-                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidfirstAmount" v-if="list.type==1">
-                        <el-input v-model="form.sumPaidfirstAmount" placeholder="请输入到款金额" name="sumPaidfirstAmount"></el-input>
-                    </el-form-item>
-                    <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidFirstAmount" v-else>
-                        <el-input v-model="form.paidFirstAmount" placeholder="请输入到款金额" name="paidFirstAmount"></el-input>
-                    </el-form-item>
-                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount!=0">到款金额应为:{{list.firstAmount}}</span>
-                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0">到款金额应为:{{list.fullAmount}}</span>
-                    <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentFirstAmount">
-                        <el-input v-model="form.paymentFirstAmount" name="paymentFirstAmount" placeholder="请输入打款单位"></el-input>
-                    </el-form-item>
-                    <el-form-item label="收款单位"  prop="gatheringFirstAmount">
-                        <el-select v-model="form.gatheringFirstAmount"  name="gatheringFirstAmount" placeholder="请输入收款单位">
-                                <el-option
-                                v-for="item in company"
-                                :key="item.value"
-                                :label="item.name"
-                                :value="item.name">
-                                </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="到款日期" prop="paidFirstAmountDate">
-                        <el-date-picker
-                        v-model="form.paidFirstAmountDate"
-                        type="date"
-                        placeholder="选择开始时间"
-                        value-format="yyyy-MM-dd"
-                        name="paidFirstAmountDate"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidFirstAmount" v-if="list.type==1">
-                        <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入项目到款金额"></el-input>
-                    </el-form-item>
-                    <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0&&list.type==1">项目到款应为:{{list.price}}</span>
-                    <span style="font-size:10px;margin-left:245px" v-else-if="list.type==1">项目到款应为:{{list.pfirstAmount}}</span>
-                    <el-form-item  label="附件上传" style="width:300px;margin:0;margin-top:20px">
-                        <el-upload
-                        class="upload-demo"
-                        :action="BASE_API+'/eduservice/state/upcontract'"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        :on-success="fileUploadSuccess"
-                        :on-error="fileUploadError"
-                        :disabled="importBtnDisabled"
-                        multiple
-                        :limit="fileAmount"
-                        :on-exceed="handleExceed"
-                        :file-list="fileList2">
-                        <el-button size="small" type="primary" >点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                        <el-input type="textarea" v-model="form.a_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==2||((roles.jurisdiction==2||roles.jurisdiction==6)&&list.schedules==2)">
-                    <div class="li">
-                        <h3 style="left:-20px;top:-10px">流程分案</h3>
-                    </div>
-                    <el-form-item label="选择代理" prop="agentId">
-                        <el-select v-model="form.agentId" style="width:300px" name="agentId" placeholder="请选择代理人">
-                                <el-option
-                                v-for="item in agent"
-                                :key="item.value"
-                                :label="item.uname"
-                                :value="item.uid">
-                                </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==3||(roles.jurisdiction==4&&list.schedules==3)">
-                    <div class="li">
-                        <h3 style="left:0px;">清单上传</h3>
-                    </div>
-                    <el-form-item label="附件上传" >
-                        <el-upload
-                        style="width:250px"
-                        class="upload-demo"
-                        :action="BASE_API+'/eduservice/state/upcontract'"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        :on-success="fileUploadSuccess"
-                        :on-error="fileUploadError"
-                        :disabled="importBtnDisabled"
-                        multiple
-                        :limit="fileAmount"
-                        :on-exceed="handleExceed"
-                        :file-list="fileList2">
-                        <el-button size="small" type="primary"  class="upload">点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                        <el-input type="textarea" style="width:300px" v-model="form.i_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==4||(roles.jurisdiction==3&&list.schedules==4)">
-                    <div class="li" style="height:40px">
-                    <h3 v-if="this.list.uporadd!=0">申报材料提供</h3>
-                    <h3 v-else>材料补充</h3>
-                    </div>
-                    <el-form-item style="margin:0px" label="材料确认" prop="lastamount">
-                        <el-checkbox-group v-model="form.lastamount">
-                            <el-checkbox label="申报材料已移交" name="lastamount"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                    <el-form-item style="margin:0px" label="附件上传">
-                        <el-upload
-                        class="upload-demo"
-                        style="width:470px"
-                        :action="BASE_API+'/eduservice/state/upcontract'"
-                        list-type="text"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        :on-success="fileUploadSuccess"
-                        :on-error="fileUploadError"
-                        :disabled="importBtnDisabled"
-                        multiple
-                        :limit="fileAmount"
-                        :on-exceed="handleExceed"
-                        :file-list="fileList2">
-                        <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                        <el-input type="textarea" style="width:400px" v-model="form.d_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==5||(roles.jurisdiction==4&&list.schedules==5)">
-                    <div class="li" style="height:40px">
-                    <h3 v-if="this.list.uporadd!=1">制作材料</h3>
-                    <h3 v-else>材料修改</h3>
-                    </div>
-                    <el-form-item v-if="this.list.type!=1" style="margin:0px;width:400px" label="材料审核" prop="materials">
-                        <el-radio-group fill="#E6A23C" v-model="materials">
-                            <el-radio-button  label="通过"></el-radio-button>
-                            <el-radio-button  label="撤回"></el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
-                            <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList2">
-                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                            </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==6||(roles.jurisdiction==3&&list.schedules==6)">
-                    <div class="li" style="height:40px">
-                    <h3 >提供盖章材料</h3>
-                    </div>
-                    <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
-                        <el-radio-group fill="#E6A23C" v-model="materials">
-                            <el-radio-button  label="通过"></el-radio-button>
-                            <el-radio-button  label="撤回"></el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
-                            <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList2">
-                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                            </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==7||(roles.jurisdiction==4&&list.schedules==7)">
-                    <div class="li" style="height:40px">
-                    <h3 v-if="list.type!=1">盖章材料审核</h3>
-                    <h3 v-else>管理部门审核</h3>
-                    </div>
-                    <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
-                        <el-radio-group fill="#E6A23C" v-model="materials">
-                            <el-radio-button  label="通过"></el-radio-button>
-                            <el-radio-button  label="撤回"></el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
-                            <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList2">
-                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                            </el-upload>
-                    </el-form-item>
-                    <el-form-item label="描述" >
-                        <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==8||(roles.jurisdiction==4&&list.schedules==8)">
-                    <div class="li">
-                    <h3 v-if="list.type!=1">待商务局审查</h3>
-                    <h3 v-else>资料审核</h3>
-                    </div>
-                    <el-form-item  label="审核状态" prop="audit">
-                        <el-button type="primary" v-if="form.audit!=-1&&form.audit!=0" @click="form.audit=1" round>审核成功</el-button>
-                        <el-button type="info" v-if="form.audit!=1" @click="form.audit=1" round>审核成功</el-button>
-                        <el-button type="danger" v-if="form.audit!=-1&&form.audit!=1" @click="form.audit=0" round>审核驳回</el-button>
-                        <el-button type="info" v-if="form.audit!=0" @click="form.audit=0" round>审核驳回</el-button>
-                    </el-form-item>
-                    <el-form-item label="附件上传" style="margin:0px;width:300px" v-if="form.audit==1">
-                            <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList2">
-                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                            </el-upload>
-                    </el-form-item>
-                    <el-form-item label="附件上传" style="margin:0px;width:300px" v-if="form.audit==0" >
-                            <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList3">
-                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                            </el-upload>
-                    </el-form-item>
-                    <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="处理"  v-if="form.audit==0&&this.list.type!=1">
-                        <el-select v-model="form.uporadd" name="uporadd" placeholder="请选择处理人">
-                                <el-option :label="list.agentName" value="1"></el-option>
-                                <el-option :label="list.uname" value="0"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="公告日期"  prop="bulletinTime" v-if="form.audit==1">
-                        <el-date-picker
-                        style="width:185px"
-                        v-model="form.bulletinTime"
-                        type="date"
-                        placeholder="选择公告日期"
-                        value-format="yyyy-MM-dd"
-                        name="bulletinTime"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
-                    
-                    <el-form-item style="margin-top:12px" label="描述" >
-                        <el-input type="textarea" style="width:400px" v-model="form.b_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction==2||roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==9">
-                    <div class="li">
-                    <h3>流程确认</h3>
-                    </div>
-                    <el-form-item style="margin:0px;margin-top:20px;width:500px" label="信息">
-                        <span style="float:left;">代理人:{{list.agentName}}</span>
-                        <span style="float:right;">立案时间:{{list.onRecord}}</span>
-                    </el-form-item>
-                    <el-form-item style="margin:0;margin-top:20px;width:280px" label="浏览">
-                        <el-popover
-                            placement="right"
-                            width="200"
-                            trigger="click"
+                <div class="change" @click="interimPayment=!interimPayment" v-if="isChange"><i class="el-icon-guide"></i></div>
+                <div v-if="!interimPayment">
+                    <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==1||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==1)">
+                        <div class="li">
+                            <h3>财务审核</h3>
+                        </div>
+                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidfirstAmount" v-if="list.type==1">
+                            <el-input v-model="form.sumPaidfirstAmount" placeholder="请输入到款金额" name="sumPaidfirstAmount"></el-input>
+                        </el-form-item>
+                        <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidFirstAmount" v-else>
+                            <el-input v-model="form.paidFirstAmount" placeholder="请输入到款金额" name="paidFirstAmount"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount!=0">到款金额应为:{{list.firstAmount}}</span>
+                        <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0">到款金额应为:{{list.fullAmount}}</span>
+                        <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentFirstAmount">
+                            <el-input v-model="form.paymentFirstAmount" name="paymentFirstAmount" placeholder="请输入打款单位"></el-input>
+                        </el-form-item>
+                        <el-form-item label="收款单位"  prop="gatheringFirstAmount">
+                            <el-select v-model="form.gatheringFirstAmount"  name="gatheringFirstAmount" placeholder="请输入收款单位">
+                                    <el-option
+                                    v-for="item in company"
+                                    :key="item.value"
+                                    :label="item.name"
+                                    :value="item.name">
+                                    </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="到款日期" prop="paidFirstAmountDate">
+                            <el-date-picker
+                            v-model="form.paidFirstAmountDate"
+                            type="date"
+                            placeholder="选择开始时间"
+                            value-format="yyyy-MM-dd"
+                            name="paidFirstAmountDate"
                             >
-                            <el-table :data="fileList4">
-                                <el-table-column width="200"  label="点击选择文件浏览">
-                                    <template slot-scope="scop">
-                                    <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                            <el-button slot="reference" type="success" size="mini"  >附件浏览</el-button>
-                        </el-popover>
-                    </el-form-item>
-                    <el-form-item style="margin:0;margin-top:20px;margin-bottom:20px;width:500px" label="确认">
-                        <el-checkbox-group v-model="form.end">
-                            <el-checkbox label="确认结案" name="end"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction==3&&list.schedules==10||(roles.jurisdiction<1&&list.schedules==10)">
-                    <div class="li">
-                    <h3>顾问确认</h3>
-                    </div>
-                    <el-form-item style="margin:0px;margin-top:20px" label="确认">
-                        <el-checkbox-group  v-model="form.signature">
-                            <el-checkbox label="已公示" name="signature"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                    <el-form-item style="margin:0;margin-top:10px;width:280px" label="浏览">
-                        <el-popover
-                            placement="right"
-                            width="200"
-                            trigger="click"
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidFirstAmount" v-if="list.type==1">
+                            <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入项目到款金额"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0&&list.type==1">项目到款应为:{{list.price}}</span>
+                        <span style="font-size:10px;margin-left:245px" v-else-if="list.type==1">项目到款应为:{{list.pfirstAmount}}</span>
+                        <el-form-item  label="附件上传" style="width:300px;margin:0;margin-top:20px">
+                            <el-upload
+                            class="upload-demo"
+                            :action="BASE_API+'/eduservice/state/upcontract'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :before-remove="beforeRemove"
+                            :on-success="fileUploadSuccess"
+                            :on-error="fileUploadError"
+                            :disabled="importBtnDisabled"
+                            multiple
+                            :limit="fileAmount"
+                            :on-exceed="handleExceed"
+                            :file-list="fileList2">
+                            <el-button size="small" type="primary" >点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input type="textarea" v-model="form.a_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==2||((roles.jurisdiction==2||roles.jurisdiction==6)&&list.schedules==2)">
+                        <div class="li">
+                            <h3 style="left:-20px;top:-10px">流程分案</h3>
+                        </div>
+                        <el-form-item label="选择代理" prop="agentId">
+                            <el-select v-model="form.agentId" style="width:300px" name="agentId" placeholder="请选择代理人">
+                                    <el-option
+                                    v-for="item in agent"
+                                    :key="item.value"
+                                    :label="item.uname"
+                                    :value="item.uid">
+                                    </el-option>
+                            </el-select>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==3||(roles.jurisdiction==4&&list.schedules==3)">
+                        <div class="li">
+                            <h3 style="left:0px;">清单上传</h3>
+                        </div>
+                        <el-form-item label="附件上传" >
+                            <el-upload
+                            style="width:250px"
+                            class="upload-demo"
+                            :action="BASE_API+'/eduservice/state/upcontract'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :before-remove="beforeRemove"
+                            :on-success="fileUploadSuccess"
+                            :on-error="fileUploadError"
+                            :disabled="importBtnDisabled"
+                            multiple
+                            :limit="fileAmount"
+                            :on-exceed="handleExceed"
+                            :file-list="fileList2">
+                            <el-button size="small" type="primary"  class="upload">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input type="textarea" style="width:300px" v-model="form.i_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==4||(roles.jurisdiction==3&&list.schedules==4)">
+                        <div class="li" style="height:40px">
+                        <h3 v-if="this.list.uporadd!=0">申报材料提供</h3>
+                        <h3 v-else>材料补充</h3>
+                        </div>
+                        <el-form-item style="margin:0px" label="材料确认" prop="lastamount">
+                            <el-checkbox-group v-model="form.lastamount">
+                                <el-checkbox label="申报材料已移交" name="lastamount"></el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                        <el-form-item style="margin:0px" label="附件上传">
+                            <el-upload
+                            class="upload-demo"
+                            style="width:470px"
+                            :action="BASE_API+'/eduservice/state/upcontract'"
+                            list-type="text"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :before-remove="beforeRemove"
+                            :on-success="fileUploadSuccess"
+                            :on-error="fileUploadError"
+                            :disabled="importBtnDisabled"
+                            multiple
+                            :limit="fileAmount"
+                            :on-exceed="handleExceed"
+                            :file-list="fileList2">
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input type="textarea" style="width:400px" v-model="form.d_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==5||(roles.jurisdiction==4&&list.schedules==5)">
+                        <div class="li" style="height:40px">
+                        <h3 v-if="this.list.uporadd!=1">制作材料</h3>
+                        <h3 v-else>材料修改</h3>
+                        </div>
+                        <el-form-item v-if="this.list.type!=1" style="margin:0px;width:400px" label="材料审核" prop="materials">
+                            <el-radio-group fill="#E6A23C" v-model="materials">
+                                <el-radio-button  label="通过"></el-radio-button>
+                                <el-radio-button  label="撤回"></el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
+                                <el-upload
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                list-type="text"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                :on-success="fileUploadSuccess"
+                                :on-error="fileUploadError"
+                                :disabled="importBtnDisabled"
+                                multiple
+                                :limit="fileAmount"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList2">
+                                <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                                </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述" >
+                            <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==6||(roles.jurisdiction==3&&list.schedules==6)">
+                        <div class="li" style="height:40px">
+                        <h3 >提供盖章材料</h3>
+                        </div>
+                        <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
+                            <el-radio-group fill="#E6A23C" v-model="materials">
+                                <el-radio-button  label="通过"></el-radio-button>
+                                <el-radio-button  label="撤回"></el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
+                                <el-upload
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                list-type="text"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                :on-success="fileUploadSuccess"
+                                :on-error="fileUploadError"
+                                :disabled="importBtnDisabled"
+                                multiple
+                                :limit="fileAmount"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList2">
+                                <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                                </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述" >
+                            <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==7||(roles.jurisdiction==4&&list.schedules==7)">
+                        <div class="li" style="height:40px">
+                        <h3 v-if="list.type!=1">盖章材料审核</h3>
+                        <h3 v-else>管理部门审核</h3>
+                        </div>
+                        <el-form-item style="margin:0px;width:400px" label="材料审核" prop="materials">
+                            <el-radio-group fill="#E6A23C" v-model="materials">
+                                <el-radio-button  label="通过"></el-radio-button>
+                                <el-radio-button  label="撤回"></el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item style="margin:0px;width:400px;margin-top:20px" label="附件上传" >
+                                <el-upload
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                list-type="text"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                :on-success="fileUploadSuccess"
+                                :on-error="fileUploadError"
+                                :disabled="importBtnDisabled"
+                                multiple
+                                :limit="fileAmount"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList2">
+                                <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                                </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述" >
+                            <el-input type="textarea" style="width:400px" v-model="form.ia_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :inline="true" :rules="saveRules2" label-width="80px" v-else-if="roles.jurisdiction<1&&list.schedules==8||(roles.jurisdiction==4&&list.schedules==8)">
+                        <div class="li">
+                        <h3 v-if="list.type!=1">待商务局审查</h3>
+                        <h3 v-else>资料审核</h3>
+                        </div>
+                        <el-form-item  label="审核状态" prop="audit">
+                            <el-button type="primary" v-if="form.audit!=-1&&form.audit!=0" @click="form.audit=1" round>审核成功</el-button>
+                            <el-button type="info" v-if="form.audit!=1" @click="form.audit=1" round>审核成功</el-button>
+                            <el-button type="danger" v-if="form.audit!=-1&&form.audit!=1" @click="form.audit=0" round>审核驳回</el-button>
+                            <el-button type="info" v-if="form.audit!=0" @click="form.audit=0" round>审核驳回</el-button>
+                        </el-form-item>
+                        <el-form-item label="附件上传" style="margin:0px;width:300px" v-if="form.audit==1">
+                                <el-upload
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                list-type="text"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                :on-success="fileUploadSuccess"
+                                :on-error="fileUploadError"
+                                :disabled="importBtnDisabled"
+                                multiple
+                                :limit="fileAmount"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList2">
+                                <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                                </el-upload>
+                        </el-form-item>
+                        <el-form-item label="附件上传" style="margin:0px;width:300px" v-if="form.audit==0" >
+                                <el-upload
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                list-type="text"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                :on-success="fileUploadSuccess"
+                                :on-error="fileUploadError"
+                                :disabled="importBtnDisabled"
+                                multiple
+                                :limit="fileAmount"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList3">
+                                <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                                </el-upload>
+                        </el-form-item>
+                        <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="处理"  v-if="form.audit==0&&this.list.type!=1">
+                            <el-select v-model="form.uporadd" name="uporadd" placeholder="请选择处理人">
+                                    <el-option :label="list.agentName" value="1"></el-option>
+                                    <el-option :label="list.uname" value="0"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item style="margin-top:10px;margin-bottom:0px;width:500px" label="公告日期"  prop="bulletinTime" v-if="form.audit==1">
+                            <el-date-picker
+                            style="width:185px"
+                            v-model="form.bulletinTime"
+                            type="date"
+                            placeholder="选择公告日期"
+                            value-format="yyyy-MM-dd"
+                            name="bulletinTime"
                             >
-                            <el-table :data="fileList4">
-                                <el-table-column width="200"  label="点击选择文件浏览">
-                                    <template slot-scope="scop">
-                                    <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                            <el-button slot="reference" type="success" class="upload" size="mini"  >附件浏览</el-button>
-                        </el-popover>
-                    </el-form-item>
-                    <el-form-item label="描述">
-                        <el-input type="textarea" style="width:470px" v-model="form.s_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-else-if="list.lastAmount!=0&&((roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==11||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==11))">
-                    <div class="li">
-                    <h3>尾款审核</h3>
+                            </el-date-picker>
+                        </el-form-item>
+                        
+                        <el-form-item style="margin-top:12px" label="描述" >
+                            <el-input type="textarea" style="width:400px" v-model="form.b_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form"  :rules="saveRules" label-width="80px" v-else-if="(roles.jurisdiction==2||roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==9">
+                        <div class="li">
+                        <h3>流程确认</h3>
+                        </div>
+                        <el-form-item style="margin:0px;margin-top:20px;width:500px" label="信息">
+                            <span style="float:left;">代理人:{{list.agentName}}</span>
+                            <span style="float:right;">立案时间:{{list.onRecord}}</span>
+                        </el-form-item>
+                        <el-form-item style="margin:0;margin-top:20px;width:280px" label="浏览">
+                            <el-popover
+                                placement="right"
+                                width="200"
+                                trigger="click"
+                                >
+                                <el-table :data="fileList4">
+                                    <el-table-column width="200"  label="点击选择文件浏览">
+                                        <template slot-scope="scop">
+                                        <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <el-button slot="reference" type="success" size="mini"  >附件浏览</el-button>
+                            </el-popover>
+                        </el-form-item>
+                        <el-form-item style="margin:0;margin-top:20px;margin-bottom:20px;width:500px" label="确认">
+                            <el-checkbox-group v-model="form.end">
+                                <el-checkbox label="确认结案" name="end"></el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" :rules="saveRules" label-width="80px" v-else-if="roles.jurisdiction==3&&list.schedules==10||(roles.jurisdiction<1&&list.schedules==10)">
+                        <div class="li">
+                        <h3>顾问确认</h3>
+                        </div>
+                        <el-form-item style="margin:0px;margin-top:20px" label="确认">
+                            <el-checkbox-group  v-model="form.signature">
+                                <el-checkbox label="已公示" name="signature"></el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                        <el-form-item style="margin:0;margin-top:10px;width:280px" label="浏览">
+                            <el-popover
+                                placement="right"
+                                width="200"
+                                trigger="click"
+                                >
+                                <el-table :data="fileList4">
+                                    <el-table-column width="200"  label="点击选择文件浏览">
+                                        <template slot-scope="scop">
+                                        <span style="cursor:pointer" @click="browse(scop.row.url[0])" >{{scop.row.name}}</span>
+                                        </template>
+                                    </el-table-column>
+                                </el-table>
+                                <el-button slot="reference" type="success" class="upload" size="mini"  >附件浏览</el-button>
+                            </el-popover>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input type="textarea" style="width:470px" v-model="form.s_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px" v-else-if="list.lastAmount!=0&&((roles.jurisdiction<1||roles.jurisdiction==6)&&list.schedules==11||((roles.jurisdiction==5||roles.jurisdiction==6)&&list.schedules==11))">
+                        <div class="li">
+                        <h3>尾款审核</h3>
+                        </div>
+                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidLastAmount" v-if="list.type==1">
+                            <el-input v-model="form.sumPaidLastAmount" placeholder="请输入到款金额" name="sumPaidLastAmount"></el-input>
+                        </el-form-item>
+                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="paidLastAmount" v-else>
+                            <el-input v-model="form.paidLastAmount" placeholder="请输入到款金额" name="paidLastAmount"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:240px">到款金额应为{{list.lastAmount}}</span>
+                        <el-form-item label="打款单位"  style="margin-top:0px" prop="paymentLastAmount">
+                            <el-input v-model="form.paymentLastAmount" placeholder="请输入打款单位" name="paymentLastAmount"></el-input>
+                        </el-form-item>
+                        <el-form-item label="收款单位"  style="margin-top:0px;" prop="gatheringLastAmount">
+                            <el-select v-model="form.gatheringLastAmount"  name="gatheringLastAmount" placeholder="请输入收款单位">
+                                    <el-option
+                                    v-for="item in company"
+                                    :key="item.value"
+                                    :label="item.name"
+                                    :value="item.name">
+                                    </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="到款日期" style="margin-top:0px;" prop="paidLastAmountDate">
+                            <el-date-picker
+                            style="width:185px"
+                            v-model="form.paidLastAmountDate"
+                            type="date"
+                            placeholder="选择开始时间"
+                            value-format="yyyy-MM-dd"
+                            name="paidLastAmountDate"
+                            >
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="项目到款" style="margin-bottom:0px" prop="paidLastAmount" v-if="list.type==1">
+                            <el-input v-model="form.paidLastAmount" placeholder="请输入项目到款金额" name="account"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:240px" v-if="list.type==1">项目到款应到{{list.plastAmount}}</span>
+                        <el-form-item label="附件上传" style="margin:0;margin-top:0px">
+                            <el-upload
+                            class="upload-demo"
+                            :action="BASE_API+'/eduservice/state/upcontract'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :before-remove="beforeRemove"
+                            :on-success="fileUploadSuccess"
+                            :on-error="fileUploadError"
+                            :disabled="importBtnDisabled"
+                            multiple
+                            :limit="fileAmount"
+                            :on-exceed="handleExceed"
+                            :file-list="fileList2">
+                            <el-button size="small" type="primary" class="upload">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item  style="margin-top:20px;margin-bottom:20px" label="描述">
+                            <el-input type="textarea" style="width:400px" v-model="form.l_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div class="li" style="margin-bottom:20px" v-else>
+                        <h3>无流程需要处理</h3>
                     </div>
-                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidLastAmount" v-if="list.type==1">
-                        <el-input v-model="form.sumPaidLastAmount" placeholder="请输入到款金额" name="sumPaidLastAmount"></el-input>
-                    </el-form-item>
-                    <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="paidLastAmount" v-else>
-                        <el-input v-model="form.paidLastAmount" placeholder="请输入到款金额" name="paidLastAmount"></el-input>
-                    </el-form-item>
-                    <span style="font-size:10px;margin-left:240px">到款金额应为{{list.lastAmount}}</span>
-                    <el-form-item label="打款单位"  style="margin-top:0px" prop="paymentLastAmount">
-                        <el-input v-model="form.paymentLastAmount" placeholder="请输入打款单位" name="paymentLastAmount"></el-input>
-                    </el-form-item>
-                    <el-form-item label="收款单位"  style="margin-top:0px;" prop="gatheringLastAmount">
-                        <el-select v-model="form.gatheringLastAmount"  name="gatheringLastAmount" placeholder="请输入收款单位">
-                                <el-option
-                                v-for="item in company"
-                                :key="item.value"
-                                :label="item.name"
-                                :value="item.name">
-                                </el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="到款日期" style="margin-top:0px;" prop="paidLastAmountDate">
-                        <el-date-picker
-                        style="width:185px"
-                        v-model="form.paidLastAmountDate"
-                        type="date"
-                        placeholder="选择开始时间"
-                        value-format="yyyy-MM-dd"
-                        name="paidLastAmountDate"
-                        >
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="项目到款" style="margin-bottom:0px" prop="paidLastAmount" v-if="list.type==1">
-                        <el-input v-model="form.paidLastAmount" placeholder="请输入项目到款金额" name="account"></el-input>
-                    </el-form-item>
-                    <span style="font-size:10px;margin-left:240px" v-if="list.type==1">项目到款应到{{list.plastAmount}}</span>
-                    <el-form-item label="附件上传" style="margin:0;margin-top:0px">
-                        <el-upload
-                        class="upload-demo"
-                        :action="BASE_API+'/eduservice/state/upcontract'"
-                        :on-preview="handlePreview"
-                        :on-remove="handleRemove"
-                        :before-remove="beforeRemove"
-                        :on-success="fileUploadSuccess"
-                        :on-error="fileUploadError"
-                        :disabled="importBtnDisabled"
-                        multiple
-                        :limit="fileAmount"
-                        :on-exceed="handleExceed"
-                        :file-list="fileList2">
-                        <el-button size="small" type="primary" class="upload">点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                    <el-form-item  style="margin-top:20px;margin-bottom:20px" label="描述">
-                        <el-input type="textarea" style="width:400px" v-model="form.l_desc"></el-input>
-                    </el-form-item>
-                </el-form>
-                <div class="li" style="margin-bottom:20px" v-else>
-                    <h3>无流程需要处理</h3>
+                    <span slot="footer" class="dialog-footer" v-if="list.schedules<12&&no">
+                        <el-button type="primary" style="width:200px;height:45px" @click.native.prevent="submit" >提 交</el-button>
+                    </span>
                 </div>
-                <span slot="footer" class="dialog-footer" v-if="list.schedules<12&&no">
-                    <el-button type="primary" style="width:200px;height:45px" @click.native.prevent="submit" >提 交</el-button>
-                </span>
+                <div v-if="interimPayment">
+                    <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px">
+                        <div class="li">
+                            <h3>中期到款</h3>
+                        </div>
+                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidfirstAmount" v-if="list.type==1">
+                            <el-input v-model="form.sumPaidfirstAmount" placeholder="请输入到款金额" name="sumPaidfirstAmount"></el-input>
+                        </el-form-item>
+                        <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidFirstAmount" v-else>
+                            <el-input v-model="form.paidFirstAmount" placeholder="请输入到款金额" name="paidFirstAmount"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:245px">到款金额应为:{{list.firstAmount}}</span>
+                        <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentFirstAmount">
+                            <el-input v-model="form.paymentFirstAmount" name="paymentFirstAmount" placeholder="请输入打款单位"></el-input>
+                        </el-form-item>
+                        <el-form-item label="收款单位"  prop="gatheringFirstAmount">
+                            <el-select v-model="form.gatheringFirstAmount"  name="gatheringFirstAmount" placeholder="请输入收款单位">
+                                    <el-option
+                                    v-for="item in company"
+                                    :key="item.value"
+                                    :label="item.name"
+                                    :value="item.name">
+                                    </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="到款日期" prop="paidFirstAmountDate">
+                            <el-date-picker
+                            v-model="form.paidFirstAmountDate"
+                            type="date"
+                            placeholder="选择开始时间"
+                            value-format="yyyy-MM-dd"
+                            name="paidFirstAmountDate"
+                            >
+                            </el-date-picker>
+                        </el-form-item>
+                        <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidFirstAmount" v-if="list.type==1">
+                            <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入项目到款金额"></el-input>
+                        </el-form-item>
+                        <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0&&list.type==1">项目到款应为:{{list.price}}</span>
+                        <span style="font-size:10px;margin-left:245px" v-else-if="list.type==1">项目到款应为:{{list.pfirstAmount}}</span>
+                        <el-form-item  label="附件上传" style="width:300px;margin:0;margin-top:20px">
+                            <el-upload
+                            class="upload-demo"
+                            :action="BASE_API+'/eduservice/state/upcontract'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :before-remove="beforeRemove"
+                            :on-success="fileUploadSuccess"
+                            :on-error="fileUploadError"
+                            :disabled="importBtnDisabled"
+                            multiple
+                            :limit="fileAmount"
+                            :on-exceed="handleExceed"
+                            :file-list="fileList2">
+                            <el-button size="small" type="primary" >点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="描述">
+                            <el-input type="textarea" v-model="form.a_desc"></el-input>
+                        </el-form-item>
+                    </el-form>
+                </div>
             </div>
          </template>
     </div>
@@ -467,93 +532,95 @@ export default {//定义变量和初始值
             }
       }
     return{
-            materials:'通过',
-            flowmanager:{},
-            finance:{},
-            company:{},
-            no:false,
-            addOrSubtract:0,
-            fileAmount:20,
-            update:0,
-            history:{},
-            isfileupdate:false,
-            isnoable:true,
-            agent:[],
-            record:{},
-            list:{},//查询之后接口返回集合
-            page:1,//当前页
-            limit:3,//每页记录数
-            total:0,//总记录数
-            //字段不写也可以，会根据表单自己生成
-            flowQuery:{},//条件封装
-            dialogVisible: false,
-            updateVisible:false,
-            BASE_API:process.env.BASE_API,//端口号
-            importBtnDisabled:false,
-            fileList: [],
-            fileList2:[],
-            fileList3:[],
-            fileList4:[],
-            form3:{},
-            form: {
-              account:false,
-              a_desc:'',
-              a_username:'',
-              a_date:'',
-              division:false,
-              agentId: '',
-              di_username:'',
-              di_date:'',
-              inven:false,
-              i_desc:'',
-              i_username:'',
-              i_date:'',
-              declara:false,
-              d_desc:'',
-              d_username:'',
-              d_date:'',
-              lastAmount:0,
-              lastamount:false,
-              l_desc:'',
-              l_username:'',
-              l_date:'',
-              signature:false,
-              s_desc:'',
-              s_username:'',
-              s_date:'',
-              audit:-1,
-              bulletinTime:'',
-              b_desc:'',
-              b_username:'',
-              b_date:'',
-              ia_desc:'',
-              ia_username:'',
-              ia_date:'',
-              uporadd:'',
-              sumPaidLastAmount:'',
-              sumPaidFirstAmount:0,
-              paidFirstAmount:'',
-              paidFirstAmountDate:'',
-              paymentFirstAmount:'',
-              gatheringFirstAmount:'',
-              paidLastAmount:'',
-              paidLastAmountDate:'',
-              paymentLastAmount:'',
-              gatheringLastAmount:'',
-              end:false
-            },
-            mesg:[],
-            message:{},
-            schedu:'',
-            agentId2:'',
-            saveRules: {
-                inven:[{ required: true, trigger: 'blur', validator: valiNotNull}],
-                declara:[{ required: true, trigger: 'blur', validator: valiNotNull}],
-                signature:[{ required: true, trigger: 'blur', validator: valiNotNull}],
-                lastamount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
-                agentId:[{ required: true, trigger: 'blur', validator: valiNotNull}],
-            },
-            saveRules2:{
+        isChange:false,
+        interimPayment:false,
+        materials:'通过',
+        flowmanager:{},
+        finance:{},
+        company:{},
+        no:false,
+        addOrSubtract:0,
+        fileAmount:20,
+        update:0,
+        history:{},
+        isfileupdate:false,
+        isnoable:true,
+        agent:[],
+        record:{},
+        list:{},//查询之后接口返回集合
+        page:1,//当前页
+        limit:3,//每页记录数
+        total:0,//总记录数
+        //字段不写也可以，会根据表单自己生成
+        flowQuery:{},//条件封装
+        dialogVisible: false,
+        updateVisible:false,
+        BASE_API:process.env.BASE_API,//端口号
+        importBtnDisabled:false,
+        fileList: [],
+        fileList2:[],
+        fileList3:[],
+        fileList4:[],
+        form3:{},
+        form: {
+            account:false,
+            a_desc:'',
+            a_username:'',
+            a_date:'',
+            division:false,
+            agentId: '',
+            di_username:'',
+            di_date:'',
+            inven:false,
+            i_desc:'',
+            i_username:'',
+            i_date:'',
+            declara:false,
+            d_desc:'',
+            d_username:'',
+            d_date:'',
+            lastAmount:0,
+            lastamount:false,
+            l_desc:'',
+            l_username:'',
+            l_date:'',
+            signature:false,
+            s_desc:'',
+            s_username:'',
+            s_date:'',
+            audit:-1,
+            bulletinTime:'',
+            b_desc:'',
+            b_username:'',
+            b_date:'',
+            ia_desc:'',
+            ia_username:'',
+            ia_date:'',
+            uporadd:'',
+            sumPaidLastAmount:'',
+            sumPaidFirstAmount:0,
+            paidFirstAmount:'',
+            paidFirstAmountDate:'',
+            paymentFirstAmount:'',
+            gatheringFirstAmount:'',
+            paidLastAmount:'',
+            paidLastAmountDate:'',
+            paymentLastAmount:'',
+            gatheringLastAmount:'',
+            end:false
+        },
+        mesg:[],
+        message:{},
+        schedu:'',
+        agentId2:'',
+        saveRules: {
+            inven:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+            declara:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+            signature:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+            lastamount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+            agentId:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+        },
+        saveRules2:{
                 account:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 agentId:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 paidFirstAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
@@ -589,6 +656,7 @@ export default {//定义变量和初始值
             this.getCompany()
             this.getFlow()
             this.getFinance()
+            //判断切换按钮是否存在
         },
         getCompany(){
             company.getCompany()
@@ -640,9 +708,6 @@ export default {//定义变量和初始值
                 // this.getHistorys(fid)
                 this.listToform()
                 let li=this.list
-                
-                
-                console.log(this.form.sumPaidlastAmount)
                 if(li.inventory==null){
                     this.fileList=[]
                 }else{
@@ -651,8 +716,18 @@ export default {//定义变量和初始值
                 }
                 this.filesw()
                 this.notoper()
+                 this.showChange()
                 this.isfileupdate=false
             })
+        },
+        showChange(){
+            if(this.roles.jurisdiction==0||this.roles.jurisdiction==5||this.roles.jurisdiction==6){
+                if(this.list.schedules>=2&&this.list.schedules<=8){
+                    this.isChange=true
+                }else{
+                    this.isChange=false
+                }
+            }
         },
         getFlow(){
             user.getFlow()
@@ -678,7 +753,6 @@ export default {//定义变量和初始值
         SpecialVerify(){
             this.flow.schedules=this.list.schedules
             if(this.list.schedules==1){
-                console.log(this.form.sumPaidLastAmount)
                 if((this.form.paidFirstAmount==null||this.form.paidFirstAmount=='')&&this.list.type==1){
                     this.$message({
                     type:'warning',
@@ -744,7 +818,7 @@ export default {//定义变量和初始值
                         }
                     }
                     
-                     if(this.form.paidFirstAmount!=this.list.firstAmount){
+                     if(this.form.paidFirstAmount!=this.list.pfirstAmount){
                         if(this.list.lastAmount==0){
                             if(this.form.paidFirstAmount!=this.list.price){
                                 this.$message({
@@ -1683,6 +1757,18 @@ export default {//定义变量和初始值
     background-color: #fff;
     border: 1px solid #DDDCDC;
     box-shadow: 0px 5px 10px #AFAEAE;
+}
+.change{
+    width:20px;
+    height:40px;
+    float:right;
+}
+.change .el-icon-guide{
+    font-size: 19px;
+}
+.change:hover{
+    cursor: pointer;
+    color:#409EFF;
 }
 .app-container{
     height: 100%; 

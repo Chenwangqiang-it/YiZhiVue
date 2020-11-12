@@ -13,7 +13,7 @@
               <el-form-item  >
                   <el-input v-model="flowQuery.brandName" placeholder="品牌名称"></el-input>
               </el-form-item>
-              <el-form-item>
+              <el-form-item v-if="!isRevocation">
                   <el-select v-model="flowQuery.schedule" placeholder="撤案进度">
                       <el-option label="财务审核" value="1"></el-option>
                       <el-option label="流程分案" value="2"></el-option>
@@ -230,28 +230,27 @@ export default {//定义变量和初始值
         return{
           win1:null,
           win2:null,
-           loading:false,
-            fileAmount:20,
-            update:0,
-            history:{},
-            isfileupdate:false,
-            isnoable:true,
-            agent:[],
-            index:1,
-            record:{},
-            list:null,//查询之后接口返回集合
-            page:1,//当前页
-            limit:22,//每页记录数
-            total:0,//总记录数
+          loading:false,
+          fileAmount:20,
+          update:0,
+          history:{},
+          isfileupdate:false,
+          isnoable:true,
+          agent:[],
+          index:1,
+          record:{},
+          list:null,//查询之后接口返回集合
+          page:1,//当前页
+          limit:22,//每页记录数
+          total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
-            flowQuery:{},//条件封装
-            dialogVisible: false,
-            updateVisible:false,
-            
-            BASE_API:process.env.BASE_API,//端口号
-            importBtnDisabled:false,
-            fileList: [],
-            form3:{},
+          flowQuery:{},//条件封装
+          dialogVisible: false,
+          updateVisible:false,           
+          BASE_API:process.env.BASE_API,//端口号
+          importBtnDisabled:false,
+          fileList: [],
+          form3:{},
              form: {
               account:false,
               a_desc:'',
@@ -326,6 +325,7 @@ export default {//定义变量和初始值
             message:{},
             schedu:'',
             agentId2:'',
+            isRevocation:'',
             saveRules: {
                 inven:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 declara:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -349,6 +349,9 @@ export default {//定义变量和初始值
     created() {//页面渲染之前执行，调用methods定义的方法
           this.init()
     },
+    watch: {// 如果路由有变化，会再次执行该方法
+	     '$route': 'init'//getOrderInfo为自定义方法
+    },
     methods:{
       projectInfo(id){
             let routeData = this.$router.resolve({
@@ -357,15 +360,23 @@ export default {//定义变量和初始值
             window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
       init(){
+        let router_path = this.$route.path
+        if(router_path=='/flow/abnormal'){
+          this.flowQuery.schedule=45
+          this.isRevocation=true
+        }else{
+          this.flowQuery.schedules=''
+          this.isRevocation=false
+        }
         this.getList()
         this.getAgent()
       },
       info(id){
-            let routeData = this.$router.resolve({
-                path: '/contract/info/'+id
-            })
-            window.open(routeData.href,"_blank",'width=1400px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
-        },
+          let routeData = this.$router.resolve({
+              path: '/contract/info/'+id
+          })
+          window.open(routeData.href,"_blank",'width=1400px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
+      },
       SpecialVerify(){
         if(this.list[this.index].schedules==1){
           if(this.form.paidFirstAmount==null||this.form.paidFirstAmount==''){
@@ -1029,70 +1040,94 @@ export default {//定义变量和初始值
             
         },
       getList(page =1){
+        this.page=page
+        if(this.roles.jurisdiction==3){
+            this.flowQuery.uid=this.roles.uid
+        }else if(this.roles.jurisdiction==4){
+            this.flowQuery.agentId=this.roles.uid
+        }
+        this.flowQuery.pname=this.flowQuery.brandName
+        if(this.isRevocation){
+          flow.getFlowListPage(this.page,this.limit,this.flowQuery)
+          .then(res=>{
+              //res返回的数据
+              this.list=res.data.rows
+              for(let i=0;i<this.list.length;i++){
+                  this.list[i].inventory=JSON.parse(this.list[i].inventory)
+                  this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
+              }
+              this.total=res.data.total
+              this.loading=false
+          })//请求成功
+          .catch(error=>{
+              console.log(error)
+          })//请求失败
+        }else{
           this.getUntreated(page)
-        },
-        disposeShow(s){//判断处理按钮是否存在
-          let j=this.roles.jurisdiction
-          if(s>44){
-            return false
-          }
-          if(j==6){
-            if(s==44||s==43){
-              return true
-            }
-            return false
-          }
-          if(j==5){
-            if(s==44){
-              return true
-            }
-            return false
-          }
-          if(j==4){
-            if(s==41){
-              return true
-            }
-            return false
-          }
-          if(j==3){
-            if(s<41){
-              return true
-            }
-            return false
-          }
-          if(j==2){
-            if(s==43){
-              return true
-            }
-            return false
-          }
-          if(j==1){
-            if(s==42){
-              return true
-            }
-            return false
-          }
-          if(j<1){
+        }
+      },
+      disposeShow(s){//判断处理按钮是否存在
+        let j=this.roles.jurisdiction
+        if(s>44){
+          return false
+        }
+        if(j==6){
+          if(s==44||s==43){
             return true
           }
           return false
-        },
-        resetData(){//清空表单
-            //表单输入项数据清空
-            this.flowQuery={}
-            //查询所有讲师数据
-            this.getList()
-        },
-        browse(url){
-            // var url = 'http://127.0.0.1:8080/file/test.txt'; //要预览文件的访问地址
-            window.open('http://view.xdocin.com/xdoc?_xdoc='+encodeURIComponent(url));
-        },
-        handleClose(done) {
-        this.$confirm('是否退出？(上传文件和描述将不会保存)')
-          .then(_ => {
-            done();
-          })
-          .catch(_ => {});
+        }
+        if(j==5){
+          if(s==44){
+            return true
+          }
+          return false
+        }
+        if(j==4){
+          if(s==41){
+            return true
+          }
+          return false
+        }
+        if(j==3){
+          if(s<41){
+            return true
+          }
+          return false
+        }
+        if(j==2){
+          if(s==43){
+            return true
+          }
+          return false
+        }
+        if(j==1){
+          if(s==42){
+            return true
+          }
+          return false
+        }
+        if(j<1){
+          return true
+        }
+        return false
+      },
+      resetData(){//清空表单
+          //表单输入项数据清空
+          this.flowQuery={}
+          //查询所有讲师数据
+          this.getList()
+      },
+      browse(url){
+          // var url = 'http://127.0.0.1:8080/file/test.txt'; //要预览文件的访问地址
+          window.open('http://view.xdocin.com/xdoc?_xdoc='+encodeURIComponent(url));
+      },
+      handleClose(done) {
+      this.$confirm('是否退出？(上传文件和描述将不会保存)')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
       },
       getUntreated(page){
         this.page=page

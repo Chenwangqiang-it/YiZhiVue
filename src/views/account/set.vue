@@ -7,27 +7,43 @@
       </el-form-item>
       <el-form-item label="职位">
         <el-select v-model="user.identity" clearable placeholder="请选择">
-          <el-option value="1" label="经理"/>
-          <el-option value="2" label="总经理"/>
+          <el-option
+          v-for="(item,i) in identity"
+          :key="i"
+          :label="item.identityName"
+          :value="item.identity">
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="部门">
         <el-select v-model="user.dept" placeholder="请选择">
-          <el-option label="市场部" value="1" />
-          <el-option label="财务部" value="2" />
+          <el-option
+          v-for="(item,i) in dept"
+          :key="i"
+          :label="item.deptName"
+          :value="item.deptId">
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="权限级别">
         <el-select v-model="user.jurisdiction" placeholder="请选择">
-          <el-option label="管理者" value="1" />
-          <el-option label="流程管理者" value="2" />
-          <el-option label="顾问" value="3" />
-          <el-option label="代理" value="4" />
-          <el-option label="财务" value="4" />
+          <el-option
+          v-for="(item,i) in permitsaccess"
+          :key="i"
+          :label="item.jurisdictionName"
+          :value="item.jurisdiction">
+          </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="上级主管">
-        <el-input v-model="user.higherAuthority"/>
+        <el-select v-model="user.higherAuthority" placeholder="请选择">
+          <el-option
+          v-for="(item,i) in use"
+          :key="i"
+          :label="item.uname"
+          :value="item.uid">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="密码">
         <el-input v-model="user.upassword"/>
@@ -51,6 +67,9 @@
  import user from '@/api/edu/user'
  import ImageCropper from '@/components/ImageCropper'
  import PanThumb from '@/components/PanThumb'
+ import identity from '@/api/edu/identity'
+ import dept from '@/api/edu/dept'
+ import permitsaccess from '@/api/edu/permitsaccess'
  export default {
    name: 'Dashboard',
     computed: {
@@ -70,8 +89,12 @@
         dept:'',
         higherAuthority:'',
         identity:'',
-        jurisdiction:''
+        jurisdiction:'',
       },
+      identity:{},
+      dept:{},
+      permitsaccess:{},
+      use:{},
       BASE_API:process.env.BASE_API,//端口号
       imagecropperKey: 0,//上传组件的key
       imagecropperShow:false,//上传组件是否显示
@@ -79,7 +102,7 @@
     }
   },
   created(){
-      if(this.roles.jurisdiction!=0){
+      if(this.roles.jurisdiction>1){
         Message.error('你的权限不够')
         this.$router.go(-1)
       }else{
@@ -106,6 +129,22 @@
     init(){//页面初始化方法
       if(this.$route.params && this.$route.params.id){
         const id = this.$route.params.id
+        user.getList()
+        .then(res=>{
+          this.use=res.data.list
+        })
+        identity.getList()
+        .then(res=>{
+          this.identity=res.data.list
+        })
+        dept.getList()
+        .then(res=>{
+          this.dept=res.data.list
+        })
+        permitsaccess.getList()
+        .then(res=>{
+          this.permitsaccess=res.data.list
+        })
         this.getInfo(id)
       }else{//路径中没有id，做添加
         // console.log(this.$route.params.id)
@@ -117,6 +156,10 @@
       user.getUserInfo(id)
       .then(res=>{    
         this.user=res.data.user
+        let iden=res.data.user.identity
+        this.$set(this.user,"identity",parseInt(iden));
+        this.$set(this.user,"dept",parseInt(res.data.user.dept));
+        this.$set(this.user,"jurisdiction",parseInt(res.data.user.jurisdiction));
       })
     },
     updateUser(){

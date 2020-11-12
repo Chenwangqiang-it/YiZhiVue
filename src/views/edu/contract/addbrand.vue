@@ -6,11 +6,19 @@
                 <div class="top">
                     <img src="../../../assets/icon.png"/>
                     增加品牌信息填写
+                    <div style="float:right;position: relative;top:-20px">
+                        <!-- <el-button type="primary" style="width:70px;height:30px;font-size:12px;text-">主要按钮</el-button> -->
+                        <div class="reData" @click="recommit">清空数据</div>
+                        <el-switch
+                        v-model="value1"
+                        inactive-text="保存数据">
+                        </el-switch>
+                    </div>
                 </div>
                 <div class="libox">
                     <div class="li">
                         <h3 >特许人基本信息
-                            <div class="show" @click="isShow(0)">
+                            <div class="show" @click="isShow(0)" style="position: relative;left:97px">
                                 <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                             </div>
                         </h3>
@@ -72,6 +80,7 @@
                         <div class="lifroms" v-show="show.right">
                             <div class="add">
                                 <el-popover
+                                style="margin-right:5px"
                                 placement="bottom"
                                 width="160"
                                 height="150"
@@ -83,6 +92,38 @@
                                 </div>
                                <el-link slot="reference" type="primary" v-if="infoOrAdd">添加项目+</el-link>
                                </el-popover>
+                                <div v-if="installmentType==2">
+                                    <el-upload
+                                    v-if="infoOrAdd"
+                                    style="margin-top:10px"
+                                    class="upload-demo"
+                                    :action="BASE_API+'/eduservice/state/upcontract'"
+                                    :on-preview="handlePreview"
+                                    :on-remove="handleRemove"
+                                    :on-success="contractUploadSuccess"
+                                    :before-upload="contractUpload"
+                                    multiple
+                                    :limit="1"
+                                    :show-file-list=false
+                                    :file-list="filelist">
+                                        <el-button size="small" style="background-color:#409EFF;color:#fff;margin-bottom:20px">合同上传</el-button>
+                                    </el-upload>
+                                    <div style="" v-if="fileUploading">
+                                        <i class="el-icon-loading"></i>    
+                                    </div>
+                                    <div style="" v-if="filelist.length!=0">
+                                        <el-dropdown trigger="click">
+                                            <span class="el-dropdown-link">
+                                                合同列表<i class="el-icon-arrow-down el-icon--right"></i>
+                                            </span>
+                                            <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item v-for="(filelist,i) in filelist" :key="filelist.value">
+                                                    <el-link @click="dowload(filelist.response.data.url[i])" type="primary">{{filelist.name}}</el-link>
+                                                </el-dropdown-item>
+                                            </el-dropdown-menu>
+                                        </el-dropdown>
+                                    </div>
+                                </div>
                             </div>
                             <el-form v-for="(list,i) in contract.project" :key="list.value" :model="list" :rules="saveRules" ref="project">
                                 <h4 style="margin-bottom:0px;height:40px;line-height:40px">项目{{i+1}}:
@@ -93,16 +134,26 @@
                                 <el-form v-for="(item,j) in list" :key="item.value" :model="item" :rules="saveRules" ref="project[j]">
                                     <h5 style="margin-bottom:0px;line-height:40px" v-if="j==0">
                                         <el-form-item style="margin-top:0px" label="付款方式" prop="paymentType">
-                                            <el-select :disabled="!infoOrAdd"  v-model="paymentType" placeholder="请选择付款方式">
+                                            <el-select :disabled="!infoOrAdd"  @change="firstAmountSum()" v-model="paymentType" placeholder="请选择付款方式">
                                                 <el-option label="全额付款" :value="1"></el-option>
                                                 <el-option label="分期付款" :value="2"></el-option>
                                             </el-select>
                                         </el-form-item>
+                                        <el-form-item style="margin-top:0px" label="付款方式" prop="installmentType" v-if="paymentType==2">
+                                            <el-select :disabled="!infoOrAdd" @change="firstAmountSum()" v-model="installmentType" placeholder="请选择支付方式">
+                                                <el-option label="二期付款" :value="1"></el-option>
+                                                <el-option label="三期付款" :value="2"></el-option>
+                                            </el-select>
+                                        </el-form-item>
+                                        <div v-if="paymentType==2"></div>
                                         <el-form-item style="margin-top:0px" label="单价金额" prop="price">
                                             <el-input oninput="value=value.replace(/[^\d]/g,'')" :disabled="!infoOrAdd" name="fullAmount" v-model="item.price" placeholder="单件价格"></el-input>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px"  label="首款金额" v-if="paymentType==2" prop="firstAmount">
                                             <el-input :disabled="!infoOrAdd" name="firstAmount" v-model="item.firstAmount" placeholder="首款金额"></el-input>
+                                        </el-form-item>
+                                        <el-form-item style="margin-top:0px"  label="中期金额" v-if="installmentType==2" prop="interimAmount">
+                                            <el-input :disabled="!infoOrAdd" name="interimAmount" v-model="item.interimAmount" placeholder="中期金额"></el-input>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px" label="尾款金额" v-if="paymentType==2" prop="lastAmount">
                                             <el-input :disabled="!infoOrAdd" name="lastAmount" v-model="item.lastAmount" placeholder="尾款金额"></el-input>
@@ -240,6 +291,9 @@
                             <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
                                 <el-input :disabled="!infoOrAdd" name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
                             </el-form-item>
+                            <el-form-item  label="中期金额" v-if="installmentType==2" prop="interimAmount">
+                                <el-input :disabled="!infoOrAdd" name="interimAmount" v-model="contract.interimAmount" placeholder="中期金额"></el-input>
+                            </el-form-item>
                             <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
                                 <el-input :disabled="!infoOrAdd" name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
                             </el-form-item>
@@ -268,7 +322,7 @@
                         </el-form-item>
                         <div></div>
                         <el-form-item v-if="infoOrAdd">
-                            <el-button type="primary"  @click.native.prevent="commit" >提交</el-button>
+                            <el-button type="primary" v-if="!loading"  @click.native.prevent="commit" >提交</el-button>
                             <el-button disabled type="primary" v-if="loading">提交</el-button>
                         </el-form-item>
                         <div></div>
@@ -308,13 +362,38 @@ export default {
                 this.getContract(id);
             }
         }else{//制作合同
+            let c=null
+            c=JSON.parse(this.getCookie('addbrand'))
+            if(c!=null&&c!=undefined&&c!=''){
+                
+                this.contract=c
+                if(this.contract.firstAmount!=0&&this.contract.firstAmount!=''&&this.contract.firstAmount!=null){
+                    this.paymentType=2
+                }else{
+                    this.paymentType=1
+                }
+                if(this.contract.interimAmount!=0&&this.contract.interimAmount!=''&&this.contract.interimAmount!=null){
+                    this.installmentType=2
+                }else{
+                    this.installmentType=1
+                }
+                // this.fileTransform()
+                // this.$set(this.contract,"project", c.project);
+            }
             this.getManagement();
             this.infoOrAdd=true
+            window.addEventListener('beforeunload', this.updateHandler)
         if(this.roles.jurisdiction>3){
             Message.error('你的权限不够')
             this.$router.go(-1)
         }
         }
+    },
+    destroyed() {
+        window.removeEventListener('beforeunload', this.updateHandler)
+    },
+    destroyed() {
+        this.updateHandler()
     },
     data(){
         const valiNotNull = (rule, value, callback) => {
@@ -364,15 +443,8 @@ export default {
             if (value==null||value=='') {
                 callback(new Error('请输入正确单件价格'))
             } else {
-                if(value!=0){
-                    let full=0
-                    for(let i=0;i<this.contract.project.length;i++){
-                        if(this.contract.project[i][0].price!='')
-                        full+=parseInt(this.contract.project[i][0].price)
-                    }
-                    this.contract.fullAmount=full
-                }
-                
+                if(value!=0)
+                this.firstAmountSum()
                 callback()
             }
         }
@@ -393,11 +465,30 @@ export default {
                 }
             }
         }
+        const valiInterimAmount= (rule, value, callback) => {
+            if(value==''||value==null){
+                callback(new Error('中期款不可以为空!'))
+            }else{
+                if (parseInt(value)+parseInt(this.contract.project[0][0].firstAmount)>this.contract.project[0][0].price) {
+                    if(parseInt(value)==this.contract.interimAmount){
+                        callback()
+                    }else {
+                        callback(new Error('中期款不可以超过单价!'))
+                    }
+                } else {
+                    if(value!=0)
+                    this.firstAmountSum()
+                    callback()
+                }
+            }
+        }
         const valilastAmount = (rule, value, callback) => {
             if(value==''||value==null){
                 callback(new Error('尾款不可以为空!'))
             }
             else {
+                if(value!=0)
+                this.firstAmountSum()
                 callback()
             }
         }
@@ -409,22 +500,15 @@ export default {
             }
             }
         return{
+            fileUploading:false,
+            filelist:[],
+            fileList:[],
+            value1:true,
+            installmentType:1,
             paymentType:1,
             projectIndex:-1,
             num:1,
             show:{info:true,time:true,money:true,shop:true,right:true,commit:true},
-            checked1:false,
-            checked2:false,
-            checked3:false,
-            right:[
-                {index:0,value:'',type:3}
-            ],
-            brand:[
-                {index:0,value:'',type:1}
-            ],
-            work:[
-                {index:0,value:'',type:2}
-            ],
             infoOrAdd:false,
             management:{},
             visible1:false,
@@ -436,6 +520,7 @@ export default {
                 uname:'',
                 uphone:'',
                 brandName:'',
+                interimAmount:'',
                 fullAmount:'',
                 firstAmount:'',
                 lastAmount:'',
@@ -455,6 +540,7 @@ export default {
                 project:[
                     [
                         {
+                            interimAmount:null,
                             lastAmount:null,
                             firstAmount:null,
                             price:'',
@@ -476,6 +562,7 @@ export default {
                 brandName:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 fullAmount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 firstAmount:[{ required: true, trigger: 'blur', validator: valiFirstAmount}],
+                interimAmount:[{ required: true, trigger: 'blur', validator: valiInterimAmount}],
                 lastAmount:[{ required: true, trigger: 'blur', validator: valilastAmount}],
                 anticMonths:[{ required: true, trigger: 'blur', validator: valianticMonths}],
                 companyName:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -506,31 +593,115 @@ export default {
         }
     },
      methods:{
+        contractUploadSuccess(response, file, fileList){
+            this.$message({
+                type:'success',
+                message:'上传成功'
+            })
+            this.filelist=fileList
+            this.fileUploading=false
+        },
+        contractUpload(){
+            this.fileUploading=true
+        },
         removeProject(i){
             this.contract.project.splice(i,1)
+            this.firstAmountSum()
         },
         removeType(i,j){
             this.contract.project[i].splice(j,1)
         },
         firstAmountSum(){
-            let firstSum=0
-            let lastSum=0
-            for(let i=0;i<this.contract.project.length;i++){
-                if(this.contract.project[i][0].firstAmount!='')
-                this.contract.project[i][0].firstAmount=parseInt(this.contract.project[i][0].firstAmount)
-                if(this.contract.project[i][0].lastAmount!='')
-                this.contract.project[i][0].lastAmount=parseInt(this.contract.project[i][0].lastAmount)
-                if(this.contract.project[i][0].price!=0&&this.contract.project[i][0].price!=''){
-                    this.contract.project[i][0].lastAmount=parseInt(this.contract.project[i][0].price)-parseInt(this.contract.project[i][0].firstAmount)
+            if(this.paymentType==1){
+                let full=0
+                for(let i=0;i<this.contract.project.length;i++){
+                    if(this.contract.project[i][0].price!='')
+                    full+=parseInt(this.contract.project[i][0].price)
+
+                    this.contract.project[i][0].firstAmount=null
+                    this.contract.project[i][0].lastAmount=null
+                    this.contract.project[i][0].interimAmount=null
                 }
-                if(this.contract.project[i][0].firstAmount!='')
-                firstSum+=parseInt(this.contract.project[i][0].firstAmount)
-                if(this.contract.project[i][0].lastAmount!='')
-                lastSum+=parseInt(this.contract.project[i][0].lastAmount)
+                this.installmentType=1
+                this.contract.firstAmount=null
+                this.contract.lastAmount=null
+                this.contract.interimAmount=null
+                this.contract.fullAmount=full
+            }else if(this.paymentType==2){
+                if(this.installmentType==1){
+                    let firstSum=0
+                    let lastSum=0
+                    let full=0
+                    for(let i=0;i<this.contract.project.length;i++){
+                        let firstAmount=this.contract.project[i][0].firstAmount!=''&&this.contract.project[i][0].firstAmount!=null
+                        let lastAmount=this.contract.project[i][0].lastAmount!=''&&this.contract.project[i][0].lastAmount!=null
+                        let price=this.contract.project[i][0].price!=''&&this.contract.project[i][0].price!=null
+                        let firstAmountInt=parseInt(this.contract.project[i][0].firstAmount)
+                        let lastAmountInt=parseInt(this.contract.project[i][0].lastAmount)
+                        let priceInt=parseInt(this.contract.project[i][0].price)
+                        if(firstAmount&&price){
+                            this.contract.project[i][0].lastAmount=priceInt-firstAmountInt
+                            
+                        }
+                        else if(lastAmount&&price){
+                            this.contract.project[i][0].firstAmount=priceInt-lastAmountInt
+                            
+                        }
+                        else if(firstAmount&&lastAmount){
+                            this.contract.project[i][0].price=firstAmountInt+lastAmountInt
+                            
+                        }
+                        if(this.contract.project[i][0].lastAmount!=''&&this.contract.project[i][0].lastAmount!=null)
+                        lastSum+=parseInt(this.contract.project[i][0].lastAmount)
+                        if(this.contract.project[i][0].firstAmount!=''&&this.contract.project[i][0].firstAmount!=null)
+                        firstSum+=parseInt(this.contract.project[i][0].firstAmount)
+                        if(this.contract.project[i][0].price!=''&&this.contract.project[i][0].price!=null)
+                        full+=parseInt(this.contract.project[i][0].price)
+                        this.contract.project[i][0].interimAmount=null
+                        console.log(this.contract.project[i][0].lastAmount)
+                    }
+                    this.contract.interimAmount=null
+                    this.contract.fullAmount=full
+                    this.contract.firstAmount=firstSum
+                    this.contract.lastAmount=lastSum
+                }else if(this.installmentType==2){
+                    let firstSum=0
+                    let lastSum=0
+                    let interimSum=0
+                    let full=0
+                    for(let i=0;i<this.contract.project.length;i++){
+                        let firstAmount=this.contract.project[i][0].firstAmount!=''&&this.contract.project[i][0].firstAmount!=null
+                        let lastAmount=this.contract.project[i][0].lastAmount!=''&&this.contract.project[i][0].lastAmount!=null
+                        let price=this.contract.project[i][0].price!=''&&this.contract.project[i][0].price!=null
+                        let interimAmount=this.contract.project[i][0].interimAmount!=''&&this.contract.project[i][0].interimAmount!=null
+                        
+                        if(firstAmount&&interimAmount&&price)
+                        this.contract.project[i][0].lastAmount=parseInt(this.contract.project[i][0].price)-parseInt(this.contract.project[i][0].firstAmount)-parseInt(this.contract.project[i][0].interimAmount)
+
+                        else if(lastAmount&&firstAmount&&price)
+                        this.contract.project[i][0].interimAmount=parseInt(this.contract.project[i][0].price)-parseInt(this.contract.project[i][0].lastAmount)-parseInt(this.contract.project[i][0].firstAmount)
+
+                        else if(lastAmount!=''&&interimAmount&&price)
+                        this.contract.project[i][0].firstAmount=parseInt(this.contract.project[i][0].price)-parseInt(this.contract.project[i][0].lastAmount)-parseInt(this.contract.project[i][0].interimAmount)
+
+                        else if(firstAmount&&lastAmount&&interimAmount)
+                        this.contract.project[i][0].price=parseInt(this.contract.project[i][0].firstAmount)+parseInt(this.contract.project[i][0].lastAmount)+parseInt(this.contract.project[i][0].interimAmount)
+
+                        if(this.contract.project[i][0].interimAmount!=''&&this.contract.project[i][0].interimAmount!=null)
+                        interimSum+=parseInt(this.contract.project[i][0].interimAmount)
+                        if(this.contract.project[i][0].price!=''&&this.contract.project[i][0].price!=null)
+                        full+=parseInt(this.contract.project[i][0].price)
+                        if(this.contract.project[i][0].firstAmount!=''&&this.contract.project[i][0].firstAmount!=null)
+                        firstSum+=parseInt(this.contract.project[i][0].firstAmount)
+                        if(this.contract.project[i][0].lastAmount!=''&&this.contract.project[i][0].lastAmount!=null)
+                        lastSum+=parseInt(this.contract.project[i][0].lastAmount)
+                    }
+                    this.contract.fullAmount=full
+                    this.contract.firstAmount=firstSum
+                    this.contract.lastAmount=lastSum
+                    this.contract.interimAmount=interimSum
+                }
             }
-            this.contract.firstAmount=firstSum
-            
-            this.contract.lastAmount=lastSum
         },
         setProjectIndex(i){
             this.projectIndex=i
@@ -571,6 +742,7 @@ export default {
             for(let i=0;i<this.num;i++){
                 let project=[{
                         price:'',
+                        interimAmount:null,
                         lastAmount:'',
                         firstAmount:'',
                         paymentType:1,
@@ -604,9 +776,6 @@ export default {
         dowload(url){
             window.location.href=url
         },
-        removeLi(li){
-             li.pop()
-         },
         vis1(){
              if(this.contract.estabDateOne!=''&&this.contract.estabDateOne!=null){
                 let str = this.contract.estabDateOne.toString();        // toString
@@ -640,22 +809,69 @@ export default {
              }
          },
         recommit(){
-             this.contract=[]
+             this.contract={
+                uid:'',
+                uname:'',
+                uphone:'',
+                brandName:'',
+                fullAmount:'',
+                firstAmount:'',
+                lastAmount:'',
+                anticMonths:'',
+                companyName:'',
+                companyAddrss:'',
+                speialPlane:'',
+                respName:'',
+                respPost:'',
+                email:'',
+                trade:'',
+                phone:'',
+                url:'',
+                src:'',
+                rightCategory:'',
+                rightNum:'',
+                project:[
+                    [
+                        {
+                            lastAmount:null,
+                            firstAmount:null,
+                            price:'',
+                            fileUploading:false,
+                            cid:'',
+                            pname:'',
+                            ptype:'',
+                            pnumber:'',
+                            pproperty:'',
+                            pbegin:'',
+                            pend:'',
+                            materia:[],
+                        }
+                    ]
+                    
+                ]
+            },
             this.contract.src=''
         },
         vismateria(){
+            if(this.paymentType==2&&this.installmentType==2&&this.filelist.length==0){
+                this.$message({
+                    type: 'warning',
+                    message: '暂无三期合同模板，请上传非标合同!'
+                });
+                return false
+            }
             // 验证文件是否上传
             for(let i=0;i<this.contract.project.length;i++){
                 for(let j=0;j<this.contract.project[i].length;j++){
-                    // if(this.contract.project[i][j].materia.length==0){
-                    //     this.$message({
-                    //         type: 'warning',
-                    //         message: '每个类型至少上传一份资料'
-                    //     });
-                    //     return false
-                    // }
+                    if(this.contract.project[i][j].materia.length==0){
+                        this.$message({
+                            type: 'warning',
+                            message: '每个类型至少上传一份资料'
+                        });
+                        return false
+                    }
                     
-                    if(this.contract.project[i][j].price==''){
+                    if(this.contract.project[i][0].price==''||this.contract.project[i][0].price==null){
                         this.$message({
                             type: 'warning',
                             message: '单价金额未填'
@@ -663,7 +879,6 @@ export default {
                         return false
                     }
                     if(this.paymentType==2){
-                        console.log(this.contract.project[i][j].firstAmount)
                         if(this.contract.project[i][0].firstAmount==null||this.contract.project[i][0].firstAmount==''){
                             this.$message({
                                 type: 'warning',
@@ -677,6 +892,15 @@ export default {
                                 message: '尾款金额未填'
                             });
                             return false
+                        }
+                        if(this.installmentType==2){
+                            if(this.contract.project[i][0].interimAmount==null||this.contract.project[i][0].interimAmount==''){
+                            this.$message({
+                                type: 'warning',
+                                message: '请填选中期金额'
+                            });
+                            return false
+                        }
                         }
                     }
                     if(this.contract.project[i][j].ptype==''){
@@ -729,6 +953,37 @@ export default {
             
             return true
         },
+        updateHandler() {
+            if(this.value1){
+                this.setCookie('addbrand',JSON.stringify(this.contract), 360)
+            }else{
+                this.setCookie('addbrand',null, 360)
+            }  
+        },
+        setCookie (name, value, day) {
+            if (day !== 0) { //当设置的时间等于0时，不设置expires属性，cookie在浏览器关闭后删除
+                var curDate = new Date();
+                var curTamp = curDate.getTime();
+                var curWeeHours = new Date(curDate.toLocaleDateString()).getTime() - 1;
+                var passedTamp = curTamp - curWeeHours;
+                var leftTamp = 24 * 60 * 60 * 1000 - passedTamp;
+                var leftTime = new Date();
+                leftTime.setTime(leftTamp + curTamp);
+                document.cookie = name + "=" + escape(value) + ";expires=" + leftTime.toGMTString();
+            } else {
+                document.cookie = name + "=" + escape(value);
+                console.log(name)
+            }
+        },
+        getCookie(name) {
+            var arr;
+            var reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+            if (arr = document.cookie.match(reg))
+                return unescape(arr[2]);
+            else
+                return null; ocument.cookie = name + "=" + escape(value);
+
+        },
         commit(){
             this.$refs['contract'].validate(valid => {
                 let valid2=this.vismateria()
@@ -736,6 +991,7 @@ export default {
                 // this.$refs.project.validate(valid2=>{
                     if (valid&&valid2) {
                         this.loading=true
+                        this.value1=false
                         this.contract.uid=this.roles.uid;
                         this.contract.uname=this.roles.uname
                         this.contract.uphone=this.roles.phoneNum
@@ -764,34 +1020,42 @@ export default {
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         });
-                        contract.addProject(this.contract)
-                        .then(res=>{
-                        this.loading=false
-                            this.$message({
-                                type: 'success',
-                                message: '提交成功!'
-                            });
-                            for(let i=0;i<this.contract.project.length;i++){
-                                
-                                for(let j=0;j<this.contract.project[i].length;j++){
-                                    this.contract.project[i][j].cid=res.data.contract.cid
-                                }
-                            }
-                            let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
-
-                            project.addProject(this.contract.project)
+                        if(this.installmentType==1){
+                            contract.addProject(this.contract)
                             .then(res=>{
-                                message.addMessages(messages)
-                                .then(res=>{
-                                    loading.close();
-                                    this.$router.push({path:'/audit/list'})
+                                loading.close();
+                                this.$message({
+                                    type: 'success',
+                                    message: '提交成功!'
+                                });
+                                //禁止存放cookie
+                                for(let i=0;i<this.contract.project.length;i++){
+                                    for(let j=0;j<this.contract.project[i].length;j++){
+                                        this.contract.project[i][j].cid=res.data.contract.cid
+                                    }
+                                }
+                                let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
+                                project.addProject(this.contract.project)
+                                .then(resp=>{
+                                    message.addMessages(messages)
+                                    .then(respons=>{
+                                        this.$router.push({path:'/audit/list'})
+                                    })
+                                    .catch(error=>{
+                                        loading.close();
+                                        this.loading=false
+                                        this.$message({
+                                            type: 'error',
+                                            message: '消息操作失败'
+                                        });
+                                    })
                                 })
                                 .catch(error=>{
                                     loading.close();
                                     this.loading=false
                                     this.$message({
                                         type: 'error',
-                                        message: '消息操作失败'
+                                        message: '项目插入出错..'
                                     });
                                 })
                             })
@@ -800,21 +1064,58 @@ export default {
                                 this.loading=false
                                 this.$message({
                                     type: 'error',
-                                    message: '项目插入出错..'
+                                    message: '提交失败，请重新提交!'
                                 });
                             })
-                            
-                            
-                            // this.contract.src=res.data.path
-                        })
-                        .catch(error=>{
-                            loading.close();
-                            this.loading=false
-                            this.$message({
-                                type: 'error',
-                                message: '提交失败，请重新提交!'
-                            });
-                        })
+                        }else if(this.installmentType==2){
+                            this.contract.src=JSON.stringify(this.filelist)
+                            contract.saveProject(this.contract)
+                            .then(res=>{
+                                loading.close();
+                                this.$message({
+                                    type: 'success',
+                                    message: '提交成功!'
+                                });
+                                //禁止存放cookie
+                                for(let i=0;i<this.contract.project.length;i++){
+                                    for(let j=0;j<this.contract.project[i].length;j++){
+                                        this.contract.project[i][j].cid=res.data.contract.cid
+                                    }
+                                }
+                                let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
+                                project.addProject(this.contract.project)
+                                .then(resp=>{
+                                    message.addMessages(messages)
+                                    .then(respons=>{
+                                        this.$router.push({path:'/audit/list'})
+                                    })
+                                    .catch(error=>{
+                                        loading.close();
+                                        this.loading=false
+                                        this.$message({
+                                            type: 'error',
+                                            message: '消息操作失败'
+                                        });
+                                    })
+                                })
+                                .catch(error=>{
+                                    loading.close();
+                                    this.loading=false
+                                    this.$message({
+                                        type: 'error',
+                                        message: '项目插入出错..'
+                                    });
+                                })
+                            })
+                            .catch(error=>{
+                                loading.close();
+                                this.loading=false
+                                this.$message({
+                                    type: 'error',
+                                    message: '提交失败，请重新提交!'
+                                });
+                            })
+                        }
                     }
                 // })
             })
@@ -831,7 +1132,24 @@ export default {
                 this.contract=res.data.contract
                 this.contract.project=res.data.projects
                 if(res.data.projects.length!=0){
-                    for(let i=0;i<this.contract.project.length;i++){
+                    this.fileTransform()
+                }else{
+                    this.type();
+                }
+                if(this.contract.interimAmount!=0){
+                    this.installmentType=2
+                }else{
+                    this.installmentType=1
+                }
+                if(this.contract.lastAmount!=0){
+                    this.paymentType=2
+                }else{
+                    this.paymentType=1
+                }
+            })
+        },
+        fileTransform(){
+            for(let i=0;i<this.contract.project.length;i++){
                         // console.log(this.contract.project[i][0].materia)
                         for(let j=0;j<this.contract.project[i].length;j++){
                             this.contract.project[i][j].materia=JSON.parse(this.contract.project[i][j].materia)
@@ -843,15 +1161,6 @@ export default {
                             }
                         }
                     }
-                }else{
-                    this.type();
-                }
-                if(this.contract.lastAmount!=0){
-                    this.paymentType=2
-                }else{
-                    this.paymentType=1
-                }
-            })
         },
         type(){
             if(this.contract.rightNum.indexOf("1")>=0){
@@ -928,11 +1237,13 @@ export default {
 </script>
 <style >
 .container .add{
-    width: 100%;
+    float: right;
+    width: 100px;
+    height:50px;
     position: relative;
-    top: 10px;
+    top: -15px;
     text-align: right;
-    right:-50px
+    right:-70px
 }
 /* .container .add .el-input-number__decrease{
     height: 45px;
@@ -1095,5 +1406,17 @@ export default {
     margin: 0px;
     margin-right: 10px ;
 }
-
+.reData{
+    width: 100px;
+    height:30px;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #E6A23C;
+    padding-top: 6px;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    /* top:-20px */
+    cursor: pointer;
+}
 </style>

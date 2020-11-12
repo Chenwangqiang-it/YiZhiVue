@@ -24,6 +24,7 @@
                     </span>
                   </h4>
                   <p>{{user[index].uname}} 提交于 {{lists.gmtCreate}}</p>
+                  <pre v-if="lists.notStandardMsg!=null&&lists.notStandardMsg!=''">非标合同描述:{{lists.notStandardMsg}}</pre>
                   <p v-if="lists.accessory!=null">
                     附件:
                     <el-link :href="li.url" target="_blank" v-for="(li,index2) in lists.accessory" :key="index2">{{li.name}}</el-link>
@@ -79,3 +80,8 @@ import record from '@/api/edu/record'
     }
   };
 </script>
+<style>
+  pre{
+       font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    }
+</style>

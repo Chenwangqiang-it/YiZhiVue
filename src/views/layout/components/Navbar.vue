@@ -77,7 +77,8 @@ export default {
             //var socketUrl="${request.contextPath}/im/"+$("#userId").val();
             var socketUrl=
             this.BASE_API+"/imserver/"+this.roles.openid;
-            socketUrl=socketUrl.replace("https","ws").replace("http","ws");
+            // https:协议使用wsshppt使用ws
+            socketUrl=socketUrl.replace("https","wss").replace("http","ws");
             console.log(socketUrl);
             if(this.socket!=null){
                 this.socket.close();

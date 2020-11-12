@@ -24,15 +24,26 @@
         <span class="svg-container">
           <i class="el-icon-s-custom" />
         </span>
-        <el-input name="higherAuthority" v-model="user.higherAuthority" type="text" auto-complete="on" placeholder="上级主管" />
+        <el-select style="width:92%" v-model="user.higherAuthority" type="text" auto-complete="on" placeholder="上级主管">
+          <el-option
+          v-for="(item,i) in use"
+          :key="i"
+          :label="item.uname"
+          :value="item.uid">
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item prop="dept">
         <span class="svg-container">
           <i class="el-icon-s-grid" />
         </span>
           <el-select style="width:92%" v-model="user.dept" type="text" auto-complete="on" placeholder="部门">
-              <el-option label="财务部" value="1"></el-option>
-              <el-option label="市场部" value="2"></el-option>
+              <el-option
+              v-for="(item,i) in dept"
+              :key="i"
+              :label="item.deptName"
+              :value="item.deptId">
+              </el-option>
           </el-select>
       </el-form-item>
       <el-form-item prop="identity">
@@ -40,8 +51,12 @@
           <i class="el-icon-s-cooperation" />
         </span>
           <el-select style="width:92%" v-model="user.identity" type="text" auto-complete="on" placeholder="职位">
-              <el-option label="经理" value="1"></el-option>
-              <el-option label="总经理" value="2"></el-option>
+              <el-option
+              v-for="(item,i) in identity"
+              :key="i"
+              :label="item.identityName"
+              :value="item.identity">
+              </el-option>
           </el-select>
       </el-form-item>
        <el-form-item prop="jurisdiction">
@@ -49,12 +64,12 @@
           <i class="el-icon-s-operation" />
         </span>
           <el-select style="width:92%" v-model="user.jurisdiction" type="text" auto-complete="on" placeholder="权限级别">
-              <el-option label="root" value="0"></el-option>
-              <el-option label="管理者" value="1"></el-option>
-              <el-option label="流程管理者" value="2"></el-option>
-              <el-option label="顾问" value="3"></el-option>
-              <el-option label="代理" value="4"></el-option>
-              <el-option label="财务" value="5"></el-option>
+              <el-option
+              v-for="(item,i) in permitsaccess"
+              :key="i"
+              :label="item.jurisdictionName"
+              :value="item.jurisdiction">
+              </el-option>
           </el-select>
       </el-form-item>
         <el-button type="primary" style="width:100%;" @click.native.prevent="register">
@@ -65,11 +80,14 @@
 </template>
 
 <script>
- import user from '@/api/register'
- import { mapGetters } from 'vuex'
- import { Message } from 'element-ui'
- import { isvalidUsername } from '@/utils/validate'
-
+import user from '@/api/register'
+import user2 from '@/api/edu/user'
+import { mapGetters } from 'vuex'
+import { Message } from 'element-ui'
+import { isvalidUsername } from '@/utils/validate'
+import identity from '@/api/edu/identity'
+import dept from '@/api/edu/dept'
+import permitsaccess from '@/api/edu/permitsaccess'
 export default {
   computed: {
         ...mapGetters([
@@ -81,6 +99,8 @@ export default {
       if(this.roles.jurisdiction>1){
         Message.error('你的权限不够')
         this.$router.go(-1)
+      }else{
+        this.init()
       }
   },
   name: 'Login',
@@ -138,6 +158,10 @@ export default {
       }
     }
     return {
+      identity:{},
+      dept:{},
+      permitsaccess:{},
+      use:{},
       user: {
         uname:'',
         idnumber:'',
@@ -167,6 +191,24 @@ export default {
     }
   },
   methods: {
+    init(){
+        user2.getList()
+        .then(res=>{
+          this.use=res.data.list
+        })
+       identity.getList()
+        .then(res=>{
+          this.identity=res.data.list
+        })
+        dept.getList()
+        .then(res=>{
+          this.dept=res.data.list
+        })
+        permitsaccess.getList()
+        .then(res=>{
+          this.permitsaccess=res.data.list
+        })
+    },
     register(){
       this.$refs.user.validate(valid => {
         if (valid) {

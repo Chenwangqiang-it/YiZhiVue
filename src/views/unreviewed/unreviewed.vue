@@ -7,7 +7,7 @@
          </router-link>
     </el-button>
      <el-button type="primary">
-         <router-link class="inlineBlock" :to="'/flow/index/'+roles.uid">
+         <router-link class="inlineBlock" :to="'/flow/agency'">
             流程事项
          </router-link>
     </el-button>

@@ -82,14 +82,14 @@ export const constantRouterMap = [
     path: '/contract',
     component: Layout,
     redirect: '/contract/save',
-    name: '合同',
-    meta: { title: '合同', icon: 'contract' },
+    name: '合同制作',
+    meta: { title: '合同制作', icon: 'contract' },
     children: [
       {
         path: 'save',
         name: '合同制作',
         component: () => import('@/views/edu/contract/save'),
-        meta: { title: '合同制作', icon: 'table',show:true }
+        meta: { title: '特许经营', icon: 'table',show:true }
       },
       {
         path: 'addBrand',
@@ -99,9 +99,9 @@ export const constantRouterMap = [
       },
       {
         path: 'projectInfo/:id',
-        name: '合同信息',
+        name: '增加品牌合同信息',
         component: () => import('@/views/edu/contract/addbrand'),
-        meta: { title: '合同信息', icon: 'addoder',show:false },
+        meta: { title: '增加品牌合同信息', icon: 'addoder',show:false },
         hidden:true
       },
       {
@@ -182,14 +182,14 @@ export const constantRouterMap = [
     path: '/flow',
     component: Layout,
     redirect: '/flow/agency',
-    name: '流程',
-    meta: { title: '流程', icon: 'form' },
+    name: '流程列表',
+    meta: { title: '流程列表', icon: 'form' },
     children: [
       {
         path:'agency',
-        name: '代办事项',
+        name: '待办事项',
         component: () => import('@/views/flow/agency'),
-        meta: { title: '代办事项', icon: 'agency',show:true },
+        meta: { title: '待办事项', icon: 'agency',show:true },
       },
       {
         path:'closeout',
@@ -211,18 +211,17 @@ export const constantRouterMap = [
         hidden:true
       },
       {
-        path: 'index/:id',
-        name: '流程待办',
-        component: () => import('@/views/flow/index'),
-        meta: { title: '流程待办', icon: 'form',show:true },
-        hidden:true
+        path: 'abnormal',
+        name: '非正常结案',
+        component: () => import('@/views/flow/revocation'),
+        meta: { title: '非正常结案', icon: 'all',show:true }
       },
-      {
-        path: 'index',
-        name: '所有流程',
-        component: () => import('@/views/flow/index'),
-        meta: { title: '所有流程', icon: 'all',show:true }
-      },
+      // {
+      //   path: 'index',
+      //   name: '所有流程',
+      //   component: () => import('@/views/flow/index'),
+      //   meta: { title: '所有流程', icon: 'all',show:true },
+      // },
       {
         path: 'operation/:id',
         name: '流程操作',
@@ -236,6 +235,82 @@ export const constantRouterMap = [
         component: () => import('@/views/flow/record'),
         meta: { title: '流程操作', icon: 'form',show:3},
         hidden:true
+      },
+    ]
+  },
+  {
+    path: '/case',
+    component: Layout,
+    redirect: '/case/end',
+    name: '案件列表',
+    meta: { title: '案件列表', icon: 'form' },
+    children: [
+      {
+        path:'end',
+        name: '已结案',
+        component: () => import('@/views/case/index'),
+        meta: { title: '已结案', icon: 'agency',show:true},
+      },
+      {
+        path:'unfinished',
+        name: '未结案',
+        component: () => import('@/views/case/index'),
+        meta: { title: '未结案', icon: 'closeout',show:true },
+      },
+      {
+        path:'unpayment',
+        name: '已结案未付款',
+        component: () => import('@/views/case/index'),
+        meta: { title: '已结案未付款', icon: 'revocation',show:true },
+      },
+    ]
+  },
+  {
+    path: '/invoice',
+    component: Layout,
+    redirect: '/invoice/signed',
+    name: '开票列表',
+    meta: { title: '开票列表', icon: 'form' },
+    children: [
+      {
+        path:'signed',
+        name: '已签订合同',
+        component: () => import('@/views/invoice/index'),
+        meta: { title: '已签订合同', icon: 'agency',show:true},
+      },
+      {
+        path:'registered',
+        name: '已立案合同',
+        component: () => import('@/views/invoice/index'),
+        meta: { title: '已立案合同', icon: 'agency',show:true},
+      },
+      {
+        path:'make',
+        name: '发票开取',
+        component: () => import('@/views/invoice/makeInvoice'),
+        meta: { title: '发票开取', icon: 'agency',show:false},
+        hidden:true
+      },
+    ]
+  },
+  {
+    path: '/history',
+    component: Layout,
+    redirect: '/history/invoice',
+    name: '历史记录',
+    meta: { title: '历史记录', icon: 'form' },
+    children: [
+      {
+        path:'invoice',
+        name: '开票记录',
+        component: () => import('@/views/history/invoice'),
+        meta: { title: '开票记录', icon: 'agency',show:true},
+      },
+      {
+        path:'mail',
+        name: '邮寄记录',
+        component: () => import('@/views/invoice/index'),
+        meta: { title: '邮寄记录', icon: 'agency',show:true},
       },
     ]
   },

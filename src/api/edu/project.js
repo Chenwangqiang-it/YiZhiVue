@@ -19,6 +19,14 @@ export default{
             // params
           })
     },
+    remove(cid){
+        return request({
+            url: `/eduservice/project/remove/${cid}`,
+            method: 'delete',
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
     updateProject(project){
         return request({
             url: `/eduservice/project/updates`,

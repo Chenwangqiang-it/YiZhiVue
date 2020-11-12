@@ -1,7 +1,5 @@
 <template>
     <div class="app-container-flow">
-        <div v-if="roles.jurisdiction>2">我的流程</div>
-        <div v-if="roles.jurisdiction<2">所有流程</div>
          <template>
             <el-form :inline="true" class="demo-form-inline" style="text-align:center;" align="center">
               <el-form-item  >
@@ -12,30 +10,6 @@
               </el-form-item>
               <el-form-item  >
                   <el-input v-model="flowQuery.brandName" placeholder="品牌名称"></el-input>
-              </el-form-item>
-              <el-form-item>
-                  <el-select v-model="flowQuery.schedule" placeholder="流程进度">
-                      <el-option label="财务审核" value="1"></el-option>
-                      <el-option label="流程分案" value="2"></el-option>
-                      <el-option label="清单上传" value="3"></el-option>
-                      <el-option label="申报材料提供" value="4"></el-option>
-                      <el-option label="材料制作" value="5"></el-option>
-                      <el-option label="盖章材料提供" value="6"></el-option>
-                      <el-option label="盖章材料审核" value="7" ></el-option>
-                      <el-option label="管理部门审核" value="7" ></el-option>
-                      <el-option label="待商务局审查" value="8"></el-option>
-                      <el-option label="材料审核" value="8"></el-option>
-                      <el-option label="流程确认" value="9"></el-option>
-                      <el-option label="顾问确认" value="10"></el-option>
-                      <el-option label="尾款确认" value="11"></el-option>
-                      <el-option label="已交付" value="12"></el-option>
-                      <el-option label="发起撤案" value="40"></el-option>
-                      <el-option label="撤案资料审核" value="41"></el-option>
-                      <el-option label="管理审核" value="42"></el-option>
-                      <el-option label="流程审核" value="43"></el-option>
-                      <el-option label="退款审核" value="44"></el-option>
-                      <el-option label="已撤案" value="45"></el-option>
-                  </el-select>
               </el-form-item>
               <el-form-item >
                 <el-select v-model="flowQuery.agentName" placeholder="代理人">

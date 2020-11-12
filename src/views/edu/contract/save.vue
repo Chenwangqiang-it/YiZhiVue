@@ -6,11 +6,19 @@
                 <div class="top">
                     <img src="../../../assets/icon.png"/>
                     合同信息填写
+                    <div style="float:right;position: relative;top:-20px">
+                        <!-- <el-button type="primary" style="width:70px;height:30px;font-size:12px;text-">主要按钮</el-button> -->
+                        <div class="reData" @click="recommit">清空数据</div>
+                        <el-switch
+                        v-model="value1"
+                        inactive-text="保存数据">
+                        </el-switch>
+                    </div>
                 </div>
                 <div class="libox">
                     <div class="li">
                         <h3 >特许人基本信息
-                            <div class="show" @click="isShow(0)">
+                            <div class="show" @click="isShow(0)" style="position: relative;left:97px">
                                 <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                             </div>
                         </h3>
@@ -35,8 +43,8 @@
                             <el-form-item label="经办人职位" prop="respPost" >
                                 <el-input :disabled="!infoOrAdd" name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
                             </el-form-item>
-                            <el-form-item label="公司传真" >
-                                <el-input :disabled="!infoOrAdd" name="tax" v-model="contract.tax" placeholder="公司传真"></el-input>
+                            <el-form-item label="公司地址"  prop="companyAddrss" >
+                                <el-input :disabled="!infoOrAdd" name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
                             </el-form-item>
                             <!-- <div></div> -->
                             <el-form-item label="公司座机" >
@@ -84,11 +92,54 @@
                                 <el-option label="分期付款" :value="2"></el-option>
                             </el-select>
                             </el-form-item>
+                            <el-form-item >
+                            <el-select :disabled="!infoOrAdd"  v-model="installmentType"  v-if="paymentType==2" placeholder="请选择付款方式">
+                                <el-option label="二期付款" :value="1"></el-option>
+                                <el-option label="三期付款" :value="2"></el-option>
+                            </el-select>
+                            </el-form-item>
+                            <el-form-item  v-if="paymentType==2&&installmentType==2">
+                                <el-upload
+                                v-if="infoOrAdd"
+                                style="float:left"
+                                class="upload-demo"
+                                :action="BASE_API+'/eduservice/state/upcontract'"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :on-success="fileUploadSuccess"
+                                :before-upload="fileUpload"
+                                multiple
+                                :limit="1"
+                                :show-file-list=false
+                                :file-list="filelist">
+                                    <el-button size="small" style="background-color:#409EFF;color:#fff;margin-bottom:20px">合同上传</el-button>
+                                </el-upload>
+                                <div style="float:left;margin-left:5px" v-if="fileUploading">
+                                    <i class="el-icon-loading"></i>    
+                                </div>
+                                <div style="float:left;margin-left:20px" v-if="filelist.length!=0">
+                                    <el-dropdown trigger="click">
+                                        <span class="el-dropdown-link">
+                                            合同列表<i class="el-icon-arrow-down el-icon--right"></i>
+                                        </span>
+                                        <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item v-for="(filelist,i) in filelist" :key="filelist.value">
+                                                <el-link @click="dowload(filelist.response.data.url[i])" type="primary">{{filelist.name}}</el-link>
+                                            </el-dropdown-item>
+                                        </el-dropdown-menu>
+                                    </el-dropdown>
+                                </div>
+                            </el-form-item>
+                            
+                            <div v-if="paymentType==2"></div>
                             <el-form-item label="全款金额" prop="fullAmount">
                                 <el-input :disabled="!infoOrAdd" name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
                             </el-form-item>
                             <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
                                 <el-input :disabled="!infoOrAdd" name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
+                            </el-form-item>
+                            <el-form-item  label="中期金额" v-if="paymentType==2&&installmentType==2" prop="interimAmount">
+                                <el-input :disabled="!infoOrAdd" name="interimAmount" v-model="contract.interimAmount" placeholder="首款金额"></el-input>
                             </el-form-item>
                             <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
                                 <el-input :disabled="!infoOrAdd" name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
@@ -203,57 +254,80 @@
                     </h3>
                     </div>
                     <el-collapse-transition>
-                        <div class="lifroms" v-show="show.right">
-                            <el-form-item label="权利类别" prop="type">
-                                <div>
-                                        <el-checkbox :disabled="!infoOrAdd" v-model="checked1" label="商标权" ></el-checkbox>
-                                        <div v-if="checked1">
-                                            <el-input 
-                                                oninput="value=value.replace(/[^\d]/g,'')"
-                                                v-for="(city,i) in brand" 
-                                                :key="city"
-                                                :disabled="!infoOrAdd"
-                                                name="brand" 
-                                                class="rightNum"
-                                                v-model="brand[i].value"
-                                                placeholder="商标号">
-                                            </el-input>
-                                            <el-button @click="removeLi(brand)" size="mini" type="warning" icon="el-icon-minus" circle v-if="infoOrAdd"></el-button>
-                                            <el-button @click="addBrand()" size="mini" type="warning" icon="el-icon-plus" circle v-if="infoOrAdd"></el-button>
-                                        </div>
-                                        <el-checkbox :disabled="!infoOrAdd" v-model="checked2" label="著作权" ></el-checkbox>
-                                        <div v-if="checked2">
-                                            <el-input 
-                                                :disabled="!infoOrAdd"
-                                                v-for="(city,i) in work" 
-                                                :key="city"
-                                                name="work" 
-                                                class="rightNum"
-                                                v-model="work[i].value"
-                                                placeholder="著作号">
-                                            </el-input>
-                                            <el-button @click="removeLi(work)" size="mini" type="warning" icon="el-icon-minus" circle v-if="infoOrAdd"></el-button>
-                                            <el-button @click="addWork()" size="mini" type="warning" icon="el-icon-plus" circle v-if="infoOrAdd"></el-button>
-                                        </div>
-                                        <el-checkbox :disabled="!infoOrAdd" v-model="checked3" label="专利权" ></el-checkbox>
-                                        <div v-if="checked3">
-
-                                            <el-input 
-                                                :disabled="!infoOrAdd"
-                                                v-for="(city,i) in right" 
-                                                :key="city"
-                                                name="right" 
-                                                class="rightNum"
-                                                v-model="right[i].value"
-                                                placeholder="权利号">
-                                            </el-input>
-                                            <el-button @click="removeLi(right)" size="mini" type="warning" icon="el-icon-minus" circle v-if="infoOrAdd"></el-button>
-                                            <el-button @click="addRight()" size="mini" type="warning" icon="el-icon-plus" circle v-if="infoOrAdd"></el-button>
-                                        
-                                        
-                                        </div>
-                                </div>
-                            </el-form-item>
+                        <div class="lifroms"  style="margin-top:20px" v-show="show.right">
+                            <el-form v-for="(item,j) in right" :key="item.index" :model="item" :rules="saveRules">
+                                <h5 style="margin:0px;height:20px;margin-bottom:0px;margin-left:10px">
+                                    <h4 style="float:left;margin:0px">类型{{j+1}}:</h4>
+                                    <div style="float:right;margin-right:20px" v-if="infoOrAdd&&j!=0">
+                                        <el-link type="danger" @click="removeLi(j)" style="height:20px">删除类型-</el-link>
+                                    </div>
+                                </h5>
+                                <el-form-item  label="权利类型" prop="type">
+                                    <el-select :disabled="!infoOrAdd" v-model="item.type" filterable placeholder="请选择">
+                                        <el-option
+                                        v-for="item in type"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="权利号" prop="value">
+                                    <!-- oninput="value=value.replace(/[^\d]/g,'')" -->
+                                    <el-input 
+                                        :disabled="!infoOrAdd"
+                                        name="brand"
+                                        v-model="item.value"
+                                        placeholder="权利号">
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item label="权利性质" prop="pproperty">
+                                    <el-select :disabled="!infoOrAdd" v-model="item.pproperty" filterable placeholder="请选择">
+                                        <el-option label="所有权" value="所有权"></el-option>
+                                        <el-option label="使用权" value="使用权"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="权利期限" v-if="item.type=='2'&&infoOrAdd">
+                                    <el-date-picker
+                                    v-model="item.pbegin"
+                                    type="date"
+                                    format="yyyy.MM.dd"
+                                    value-format="yyyy.MM.dd"
+                                    placeholder="请选择开始日期">
+                                    </el-date-picker>
+                                    --
+                                    <el-date-picker
+                                    v-model="item.pend"
+                                    type="date"
+                                    format="yyyy.MM.dd"
+                                    value-format="yyyy.MM.dd"
+                                    placeholder="请选择结束日期">
+                                    </el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="权利期限" prop="pbegin" v-else-if="infoOrAdd">
+                                    <el-date-picker
+                                    v-model="item.pbegin"
+                                    type="date"
+                                    value-format="yyyy.MM.dd"
+                                    format="yyyy.MM.dd"
+                                    placeholder="请选择开始日期">
+                                    </el-date-picker>
+                                    --
+                                    <el-date-picker
+                                    v-model="item.pend"
+                                    type="date"
+                                    format="yyyy.MM.dd"
+                                    value-format="yyyy.MM.dd"
+                                    placeholder="请选择结束日期">
+                                    </el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="权利期限"  v-if="!infoOrAdd">
+                                    <span >{{item.pbegin}}-{{item.pend}}</span>
+                                </el-form-item>
+                                <el-form-item v-if="j==right.length-1" style="float:right;margin-right:20px" >
+                                    <el-link @click="addRight()" type="primary" style="height:20px" v-if="infoOrAdd">添加类型+</el-link>
+                                </el-form-item>
+                            </el-form>
                         </div>
                     </el-collapse-transition>
                 </div>
@@ -279,8 +353,8 @@
                         </el-form-item>
                         <div></div>
                         <el-form-item >
-                            <el-button type="primary"  @click.native.prevent="commit" v-if="!loading&&infoOrAdd">提交</el-button>
-                            <el-button disabled type="primary" @click.native.prevent="commit" v-if="loading">提交</el-button>
+                            <el-button type="primary"  @click.native.prevent="commit()" v-if="!loading&&infoOrAdd">提交</el-button>
+                            <el-button disabled type="primary" v-if="loading">提交</el-button>
                         </el-form-item>
                         <div></div>
                         <el-form-item style="color:aliceblue" v-if="loading">
@@ -297,8 +371,8 @@
 <script>
 import 'element-ui/lib/theme-chalk/base.css';
 import { mapGetters } from 'vuex'
- import contract from '@/api/edu/contract'
- import { Message } from 'element-ui'
+import contract from '@/api/edu/contract'
+import { Message } from 'element-ui'
 import message from '@/api/edu/message'
 import user from '@/api/edu/user'
 export default {
@@ -307,6 +381,12 @@ export default {
         'name',
         'roles',
         ])
+    },
+    destroyed() {
+        window.removeEventListener('beforeunload', this.updateHandler)
+    },
+    destroyed() {
+        this.updateHandler()
     },
     created(){ 
         let id=this.$route.params.id;
@@ -317,8 +397,20 @@ export default {
                 this.getContract(id);
             }
         }else{//制作合同
+            let contract={}
+            let paymentType=0
+            let installmentType=0
+            contract=JSON.parse(this.getCookie('contract'))
+            paymentType=JSON.parse(this.getCookie('paymentType'))
+            installmentType=JSON.parse(this.getCookie('installmentType'))
+            if(contract!=null){
+                this.contract=contract
+                this.paymentType=paymentType
+                this.installmentType=installmentType
+            }
             this.getManagement();
             this.infoOrAdd=true
+            window.addEventListener('beforeunload', this.updateHandler)
         if(this.roles.jurisdiction>3){
             Message.error('你的权限不够')
             this.$router.go(-1)
@@ -327,7 +419,7 @@ export default {
     },
     data(){
         const valiNotNull = (rule, value, callback) => {
-            if (value=='') {
+            if (value==''||value==null||value==undefined) {
                 callback(new Error('该字段不能为空'))
             } else {
                 callback()
@@ -363,25 +455,45 @@ export default {
             } 
         }
         const valiAmount = (rule, value, callback) => {
-            if (value=='') {
+            if (value==''||value==null) {
                 callback(new Error('请选择付款方式'))
             } else {
                 callback()
             }
         }
         const valiFirstAmount = (rule, value, callback) => {
-            if (parseInt(value)>=parseInt(this.contract.fullAmount)) {
+            if(value==''||value==null){
+                callback(new Error('中期款不能为空'))
+            }else if (parseInt(value)>=parseInt(this.contract.fullAmount)) {
                 callback(new Error('首款不可能大于或等于全款'))
             } else {
+                if(this.installmentType==1)
                 this.contract.lastAmount=this.contract.fullAmount-value
                 callback()
             }
         }
         const valilastAmount = (rule, value, callback) => {
-            if (parseInt(value)+parseInt(this.contract.firstAmount)!=this.contract.fullAmount) {
-                console.log(value+this.contract.firstAmount)
-                callback(new Error('收款加尾款必须等于全款'))
+            if(value==''||value==null){
+                callback(new Error('中期款不能为空'))
+            }else if(parseInt(value)+parseInt(this.contract.firstAmount)!=this.contract.fullAmount) {
+                if(this.installmentType==1)
+                callback(new Error('首款加尾款必须等于全款'))
+                else if(parseInt(value)+parseInt(this.contract.firstAmount)+parseInt(this.contract.interimAmount)!=this.contract.fullAmount){
+                    callback(new Error('首款加尾款加中期款必须等于全款'))
+                }else{
+                    callback()
+                }
             } else {
+                callback()
+            }
+        }
+        const valiinterimAmount = (rule, value, callback) => {
+            if(value==''||value==null){
+                callback(new Error('中期款不能为空'))
+            }else if(parseInt(value)+parseInt(this.contract.firstAmount)>this.contract.fullAmount) {
+                callback(new Error('收款加中期款必须小于全款'))
+            }else {
+                this.contract.lastAmount=this.contract.fullAmount-this.contract.firstAmount-value
                 callback()
             }
         }
@@ -427,22 +539,21 @@ export default {
                 }
             }else{
                 callback(new Error('该字段不能为空'))
-            }
-            
-            }
+            }    
+        }
         return{
+            type:[
+                {label:"商标权",value:1},
+                {label:"著作权",value:2},
+                {label:"专利权",value:3}
+            ],
+            fileUploading:false,
+            filelist:[],
             show:{info:true,time:true,money:true,shop:true,right:true,commit:true},
-            checked1:false,
-            checked2:false,
-            checked3:false,
+            value1:true,
+            installmentType:1,
             right:[
-                {index:0,value:'',type:3}
-            ],
-            brand:[
-                {index:0,value:'',type:1}
-            ],
-            work:[
-                {index:0,value:'',type:2}
+                {index:0,value:'',type:'',pproperty:'',pbegin:'',pend:''}
             ],
             infoOrAdd:false,
             management:{},
@@ -455,6 +566,7 @@ export default {
                 fullAmount:'',
                 firstAmount:'',
                 lastAmount:'',
+                interimAmount:'',
                 anticMonths:'',
                 companyName:'',
                 speialPlane:'',
@@ -471,7 +583,7 @@ export default {
                 addressOne:'',
                 estabDateTwo:'',
                 addressTwo:'',
-                src:'',
+                src:[],
                 rightCategory:'',
                 rightNum:''
             },
@@ -481,6 +593,7 @@ export default {
                 firstAmount:[{ required: true, trigger: 'blur', validator: valiFirstAmount}],
                 lastAmount:[{ required: true, trigger: 'blur', validator: valilastAmount}],
                 anticMonths:[{ required: true, trigger: 'blur', validator: valianticMonths}],
+                interimAmount:[{ required: true, trigger: 'blur', validator: valiinterimAmount}],
                 companyName:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 speialPlane:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 respName:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -497,7 +610,11 @@ export default {
                 estabDateTwo:[{ required: true, trigger: 'blur', validator: valiDate2}],
                 addressTwo:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 email:[{ required: true, trigger: 'blur', validator: email}],
-                type:[{ required: true, trigger: 'blur', validator: type}],
+                type:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                value:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                pproperty:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                pbegin:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                companyAddrss:[{ required: true, trigger: 'blur', validator: valiNotNull}],
             },
             BASE_API: process.env.BASE_API, // 接口API地址
             // OSS_PATH: process.env.OSS_PATH, // 阿里云OSS地址
@@ -506,7 +623,69 @@ export default {
             paymentType:1
         }
     },
-     methods:{
+    // mouted(){
+    //     window.onbeforeunload = () =>{//页面刷新或关闭之前执行
+    //         alert("sss")
+    //         this.setCookie('contract',JSON.stringify(this.contract), 360)
+    //         return 'tips';
+    //     }
+    // },
+    methods:{
+        fileUploadSuccess(response, file, fileList){
+            this.$message({
+                type:'success',
+                message:'上传成功'
+            })
+            this.filelist=fileList
+            this.fileUploading=false
+        },
+        fileUpload(){
+            this.fileUploading=true
+        },
+        handleRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+        handlePreview(file) {
+            console.log(file);
+        },
+        updateHandler() {
+            if(this.value1){
+                if(this.infoOrAdd){
+                    this.setCookie('contract',JSON.stringify(this.contract), 360)
+                    this.setCookie('paymentType',JSON.stringify(this.paymentType), 360)
+                    this.setCookie('installmentType',JSON.stringify(this.installmentType), 360)
+                }
+                
+            }else{
+                this.setCookie('contract',null, 360)
+                this.setCookie('paymentType',null, 360)
+                this.setCookie('installmentType',null, 360)
+            }  
+        },
+        setCookie (name, value, day) {
+            if (day !== 0) { //当设置的时间等于0时，不设置expires属性，cookie在浏览器关闭后删除
+                var curDate = new Date();
+                var curTamp = curDate.getTime();
+                var curWeeHours = new Date(curDate.toLocaleDateString()).getTime() - 1;
+                var passedTamp = curTamp - curWeeHours;
+                var leftTamp = 24 * 60 * 60 * 1000 - passedTamp;
+                var leftTime = new Date();
+                leftTime.setTime(leftTamp + curTamp);
+                document.cookie = name + "=" + escape(value) + ";expires=" + leftTime.toGMTString();
+            } else {
+                document.cookie = name + "=" + escape(value);
+                console.log(name)
+            }
+        },
+        getCookie(name) {
+            var arr;
+            var reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
+            if (arr = document.cookie.match(reg))
+                return unescape(arr[2]);
+            else
+                return null; ocument.cookie = name + "=" + escape(value);
+
+        },
         isShow(i){
             // let i=this.show.indexOf(key)
             let show=document.getElementsByClassName("show")[i]
@@ -541,19 +720,13 @@ export default {
             }          
             // console.log(this.show[i])
         },
-         addRight(){
-             this.right.push({index:this.right.length,value:'',type:3})
+        addRight(){
+             this.right.push({index:this.right.length,value:'',type:'',pproperty:'',pbegin:'',pend:''})
          },
-         addWork(){
-             this.work.push({index:this.work.length,value:'',type:2})
+        removeLi(li){
+             this.right.splice(li,1)
          },
-         addBrand(){
-             this.brand.push({index:this.brand.length,value:'',type:1})
-         },
-         removeLi(li){
-             li.pop()
-         },
-         vis1(){
+        vis1(){
              if(this.contract.estabDateOne!=''&&this.contract.estabDateOne!=null){
                 let str = this.contract.estabDateOne.toString();        // toString
                 str = str.replace('/-/g', '/')         //去空格字符等
@@ -569,7 +742,7 @@ export default {
                 }
              }
          },
-         vis2(){
+        vis2(){
              if(this.contract.estabDateOne!=''&&this.contract.estabDateOne!=null){
                 let str = this.contract.estabDateOne.toString();        // toString
                 str = str.replace('/-/g', '/')         //去空格字符等
@@ -586,88 +759,184 @@ export default {
              }
          },
         recommit(){
-             this.contract=[]
+            this.contract={
+                uid:'',
+                brandName:'',
+                fullAmount:'',
+                firstAmount:'',
+                lastAmount:'',
+                anticMonths:'',
+                companyName:'',
+                speialPlane:'',
+                respName:'',
+                respPost:'',
+                email:'',
+                trade:'',
+                tax:'',
+                phone:'',
+                url:'',
+                dssOne:'',
+                dssTwo:'',
+                estabDateOne:'',
+                addressOne:'',
+                estabDateTwo:'',
+                addressTwo:'',
+                src:'',
+                rightCategory:'',
+                rightNum:''
+            },
             this.contract.src=''
         },
-        commit(){
-            this.$refs.contract.validate(valid => {
-            if (valid) {
-            this.rightUtils();//把勾选的框转换为字符串，或者去除不勾选的
-            this.loading=true
-            this.contract.uid=this.roles.uid;
-            this.contract.brandName=this.contract.trade
-            let ls=[];
-            ls.push(this.brand)
-            ls.push(this.work)
-            ls.push(this.right)
-            this.contract.rightCategory=JSON.stringify(ls)
-            if(this.paymentType==1){
-                    this.contract.firstAmount=null
-                    this.contract.lastAmount=null
-                }
-            const loading = this.$loading({
-                lock: true,
-                text: '正在生成合同',
-                spinner: 'el-icon-loading',
-                background: 'rgba(0, 0, 0, 0.7)'
-            });
-            contract.addContract(this.contract)
-           .then(res=>{
-               this.loading=false
-                this.$message({
-                    type: 'success',
-                    message: '提交成功!'
-                });
-                let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
-                message.addMessages(messages)
-                .then(res=>{
-                    loading.close();
-                    this.$router.push({path:'/audit/list'})
-                })
-                .catch(error=>{
-                    loading.close();
-                    this.loading=false
-                    this.$message({
-                        type: 'error',
-                        message: '消息操作失败'
-                    });
-                })
-                
-                // this.contract.src=res.data.path
-            })
-            .catch(error=>{
-                 this.loading=false
-                 this.$message({
-                    type: 'error',
-                    message: '提交失败，请重新提交!'
-                });
-            })
-            }
-            })
+        dowload(url){
+            window.location.href=url
         },
-        rightUtils(){
-            if(this.checked1){
-                this.contract.rightNum+='1'
+        vismateria(){
+            if(this.paymentType==2&&this.installmentType==2&&this.filelist.length==0){
+                this.$message({
+                    type: 'warning',
+                    message: '暂无三期合同模板，请上传非标合同!'
+                });
+                return false
             }
-            if(this.checked2){
-                this.contract.rightNum+='2'
+            for(let i=0;i<this.right.length;i++){
+                if(this.right[i].type==''||this.right[i].type==null||this.right[i].type==undefined){
+                    this.$message({
+                        type: 'warning',
+                        message: '请选择权利类型!'
+                    });
+                    return false
+                }
+                if(this.right[i].value==''||this.right[i].value==null||this.right[i].value==undefined){
+                    this.$message({
+                        type: 'warning',
+                        message: '请输入权利号!'
+                    });
+                    return false
+                }
+                if(this.right[i].pproperty==''||this.right[i].pproperty==null||this.right[i].pproperty==undefined){
+                    this.$message({
+                        type: 'warning',
+                        message: '请选择权利性质!'
+                    });
+                    return false
+                }
+                if(this.right[i].pbegin==''||this.right[i].pbegin==null||this.right[i].pbegin==undefined){
+                    if(this.right[i].type!=2){
+                        this.$message({
+                            type: 'warning',
+                            message: '请选择权利期限开始日期!'
+                        });
+                        return false
+                    }
+                }
+                if(this.right[i].pend==''||this.right[i].pend==null||this.right[i].pend==undefined){
+                    if(this.right[i].type!=2){
+                        this.$message({
+                            type: 'warning',
+                            message: '请选择权利期限结束日期!'
+                        });
+                        return false
+                    }
+                }
             }
-            if(this.checked3){
-                this.contract.rightNum+='3'
-            }
-            
-            if(!this.checked1){
-                this.brand=[]
-                this.contract.rightNum=this.contract.rightNum.split("1").join("")
-            }
-            if(!this.checked2){
-                this.work=[]
-                this.contract.rightNum=this.contract.rightNum.split("2").join("")
-            }
-            if(!this.checked3){
-                this.right=[]
-                this.contract.rightNum=this.contract.rightNum.split("3").join("")
-            }
+            return true
+        },
+        commit(){
+            this.$refs['contract'].validate(valid => {
+                let valid2=this.vismateria()
+                if (valid&&valid2) {
+                    this.loading=true
+                    this.contract.uid=this.roles.uid;
+                    this.contract.brandName=this.contract.trade
+                    this.contract.rightCategory=JSON.stringify(this.right)
+                    if(this.paymentType==1){
+                        this.contract.firstAmount=null
+                        this.contract.lastAmount=null
+                        this.contract.interimAmount=null
+                    }
+                    if(this.installmentType==1){
+                        this.contract.interimAmount=null
+                    }
+                    const loading = this.$loading({
+                        lock: true,
+                        text: '正在生成合同',
+                        spinner: 'el-icon-loading',
+                        background: 'rgba(0, 0, 0, 0.7)'
+                    });
+                    if(this.installmentType==2){
+                        this.contract.src=JSON.stringify(this.filelist)
+                        contract.saveContract(this.contract)
+                        .then(res=>{
+                            this.loading=false
+                            this.$message({
+                                type: 'success',
+                                message: '提交成功!'
+                            });
+                            let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
+                            message.addMessages(messages)
+                            .then(res=>{
+                                loading.close();
+                                this.$router.push({path:'/audit/list'})
+                            })
+                            .catch(error=>{
+                                loading.close();
+                                this.loading=false
+                                this.$message({
+                                    type: 'error',
+                                    message: '消息操作失败'
+                                });
+                            })
+                        })
+                        .catch(error=>{
+                            this.loading=false
+                            loading.close();
+                            this.$message({
+                                type: 'error',
+                                message: '提交失败，请重新提交!'
+                            });
+                        })
+                    }else{
+                        this.contract.src=''
+                        let contractRight={}
+                        contractRight.uname=this.roles.uname
+                        contractRight.uphone=this.roles.phoneNum
+                        contractRight.right=this.right
+                        contractRight.contract=this.contract
+                        contract.addContract(contractRight)
+                        .then(res=>{
+                            this.loading=false
+                            this.$message({
+                                type: 'success',
+                                message: '提交成功!'
+                            });
+                            let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
+                            message.addMessages(messages)
+                            .then(res=>{
+                                loading.close();
+                                this.$router.push({path:'/audit/list'})
+                            })
+                            .catch(error=>{
+                                loading.close();
+                                this.loading=false
+                                this.$message({
+                                    type: 'error',
+                                    message: '消息操作失败'
+                                });
+                            })
+                        })
+                        .catch(error=>{
+                            this.loading=false
+                            loading.close();
+                            this.$message({
+                                type: 'error',
+                                message: '提交失败，请重新提交!'
+                            });
+                        })
+                    }
+                    
+                    
+                }
+            })
         },
         getManagement(){
             user.getManagement()
@@ -679,48 +948,37 @@ export default {
             contract.getContract(id)
             .then(res=>{
                 this.contract=res.data.contract
-                this.type();
                 if(this.contract.lastAmount!=0){
                     this.paymentType=2
                 }else{
                     this.paymentType=1
                 }
+                if(this.contract.interimAmount!=0){
+                     this.filelist=JSON.parse(this.contract.src)
+                    this.installmentType=2
+                }else{
+                    this.installmentType=1
+                }
+                this.dataCombing()
             })
         },
-        type(){
-            if(this.contract.rightNum.indexOf("1")>=0){
-                this.checked1=true
-                let l=JSON.parse(this.contract.rightCategory)
-                console.log(l)
-                let li=[];
-                for(let i=0;i<l[0].length;i++){
-                    if(l[0][i].type==1){
-                        li.push(l[0][i])
-                    }
-                }
-                this.brand=li;
+        dataCombing(){
+            let rightCategory=JSON.parse(this.contract.rightCategory)
+            let list=[]
+            for(let i=0;i<rightCategory.length;i++){
+               for(let j=0;j<rightCategory[i].length;j++){
+                   list.push(rightCategory[i][j])
+               } 
             }
-            if(this.contract.rightNum.indexOf("2")>=0){
-                this.checked2=true
-                let l=JSON.parse(this.contract.rightCategory)
-                let li=[];
-                for(let i=0;i<l[1].length;i++){
-                    if(l[1][i].type==2){
-                        li.push(l[1][i])
-                    }
-                }
-                this.work=li;
-            }
-            if(this.contract.rightNum.indexOf("3")>=0){
-                this.checked3=true
-                let l=JSON.parse(this.contract.rightCategory)
-                let li=[];
-                for(let i=0;i<l[2].length;i++){
-                    if(l[2][i].type==3){
-                        li.push(l[2][i])
-                    }
-                }
-                this.right=li;
+            [{"index":0,"value":"132156","type":1,"pproperty":"所有权","pbegin":"2020.10.01","pend":"2020.10.30"}],
+            [{"index":0,"value":"1234","type":1,"pproperty":"所有权","pbegin":"2020.10.01","pend":"2020.10.06"}]
+            //数据结构发生变化转换之后为空是新的数据结构
+            if(list.length!=0)
+            this.right=list
+            else
+            this.right=rightCategory
+            for(let i=0;i<this.right.length;i++){
+                this.$set(this.right[i],"type",this.right[i].type)
             }
         },
         msg(cid,serialNum){
@@ -740,6 +998,19 @@ export default {
 }
 </script>
 <style >
+.reData{
+    width: 100px;
+    height:30px;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #E6A23C;
+    padding-top: 6px;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    /* top:-20px */
+    cursor: pointer;
+}
 .container .el-input__inner{
     /* color: aliceblue; */
     /* background-color: transparent; */
@@ -855,8 +1126,8 @@ export default {
     /* color: aliceblue; */
     /* background-color: unset; */
     background-color: #fff;
-     border: 1px solid #DDDCDC;
-     box-shadow: inset 2px 1px 5px #cbc9c9;
+    border: 1px solid #DDDCDC;
+    box-shadow: inset 2px 1px 5px #cbc9c9;
     height: 70px;
 }
 .container .el-textarea__inner[disabled]{

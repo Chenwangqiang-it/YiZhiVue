@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="remind_link">
-          <router-link :to="'/flow/index/'+messages[i].categoryId" v-if="messages[i].category==1">
+          <router-link :to="'flow/agency'" v-if="messages[i].category==1">
             <span  @click="isRead(i)">点击处理</span>
           </router-link>
           <router-link  :to="'/audit/list/'+messages[i].categoryId" v-else>

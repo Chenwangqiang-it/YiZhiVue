@@ -6,12 +6,19 @@ export default{
                     //当前页，每页记录数，条件对象
     getUserListPage(current,limit,userQuery){
         return request({
-            url: `eduservice/user/pageUserCondition/${current}/${limit}`,//+current+"/"+limit,
+            url: `/eduservice/user-views/pageUserCondition/${current}/${limit}`,//+current+"/"+limit,
             method: 'post',
             //teacherQuery条件对象，后端使用RequestBody获取数据,需要json类型
             //data表示把对象转换json传递给接口
             data:userQuery
             // params
+          })
+    },
+    getList(){
+        return request({
+            url: `/eduservice/user/list`,
+            method: 'post',
+            timeout: 36000
           })
     },
     delteteacherId(id){//删除

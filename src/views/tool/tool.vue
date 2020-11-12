@@ -24,6 +24,7 @@
         class="upload-demo"
         drag
         :on-success="fileUploadSuccess"
+        :on-progress="fileUploading"
         :action="BASE_API+'/eduservice/tools/pdf2word'"
         multiple>
         <i class="el-icon-upload"></i>
@@ -174,7 +175,7 @@ export default {
         this.fileList2=fileList
     },
     submitUpload() {
-        if(fileList2.length!=0){
+        if(this.fileList2.length!=0){
             const loading = this.$loading({
                 lock: true,
                 text: '正在生成pdf',
@@ -234,7 +235,6 @@ export default {
             })
         },
     upSuccess(res){
-
             this.$notify({
                 title: '消息提示',
                 message: '文件转换成功',

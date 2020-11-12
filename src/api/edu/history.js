@@ -10,6 +10,14 @@ export default{
             timeout: 36000
           })
     },
+    updateHistory(history){
+        return request({
+            url: `/eduservice/history/update`,
+            method: 'post',
+            data:history,
+            timeout: 36000
+          })
+    },
     getHistorys(id){
         return request({
             url: `/eduservice/history/getHistory/${id}`,

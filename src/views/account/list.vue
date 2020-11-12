@@ -8,14 +8,22 @@
             </el-form-item>
             <el-form-item>
                 <el-select v-model="userQuery.identity" placeholder="职位">
-                    <el-option label="经理" value="1"></el-option>
-                    <el-option label="总经理" value="2"></el-option>
+                    <el-option
+                    v-for="(item,i) in identity"
+                    :key="i"
+                    :label="item.identityName"
+                    :value="item.identity">
+                    </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-select v-model="userQuery.dept" placeholder="部门">
-                    <el-option label="财务部" value="1"></el-option>
-                    <el-option label="市场理" value="2"></el-option>
+                    <el-option
+                    v-for="(item,i) in dept"
+                    :key="i"
+                    :label="item.deptName"
+                    :value="item.deptId">
+                    </el-option>
                 </el-select>
             </el-form-item>
              <el-form-item label="添加时间">
@@ -57,21 +65,21 @@
             <el-table-column prop="uname" label="名称" width="180"></el-table-column>
             <el-table-column prop="identity" label="职位" width="180">
                 <template slot-scope="scope">
-                    {{scope.row.identity==1?'经理':'总经理'}}
+                    {{scope.row.identityName}}
                 </template>
             </el-table-column>
             <el-table-column prop="dept" label="部门">
                 <template slot-scope="scope">
-                    {{scope.row.dept==1?'市场部':'财务部'}}
+                    {{scope.row.deptName}}
                 </template>
             </el-table-column>
             <el-table-column prop="gmtCreate" label="创建时间" width="180"></el-table-column>
             <el-table-column prop="phoneNum" label="电话号码" width="180"></el-table-column>
             <el-table-column prop="upassword" label="密码" width="180"></el-table-column>
-            <el-table-column prop="higherAuthority" label="上级主管" width="180"></el-table-column>
+            <el-table-column prop="higherAuthorityName" label="上级主管" width="180"></el-table-column>
             <el-table-column width="100" prop="jurisdiction" label="权限级别">
                 <template slot-scope="scope">
-                    {{scope.row.jurisdiction==0?'root':(scope.row.jurisdiction==1?'管理者':(scope.row.jurisdiction==2?'流程管理者':(scope.row.jurisdiction==3?'顾问':(scope.row.jurisdiction==4?'代理':'财务'))))}}
+                    {{scope.row.jurisdictionName}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="300" align="center">
@@ -101,8 +109,10 @@ import contract from '@/api/edu/contract'
 import flow from '@/api/edu/flow'
     //核心代码位置
 import { mapGetters } from 'vuex'
- import { Message } from 'element-ui'
-
+import { Message } from 'element-ui'
+import identity from '@/api/edu/identity'
+import dept from '@/api/edu/dept'
+import permitsaccess from '@/api/edu/permitsaccess'
 export default {//定义变量和初始值
     name: 'Dashboard',
     computed: {
@@ -118,15 +128,30 @@ export default {//定义变量和初始值
             limit:10,//每页记录数
             total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
-            userQuery:{}//条件封装
+            userQuery:{},//条件封装
+            identity:{},
+            dept:{},
+            permitsaccess:{}
         }
     },
     created() {//页面渲染之前执行，调用methods定义的方法
-      if(this.roles.jurisdiction!=0){
+      if(this.roles.jurisdiction>1){
         Message.error('你的权限不够')
         this.$router.go(-1)
       }else{
         this.getList()
+        identity.getList()
+        .then(res=>{
+          this.identity=res.data.list
+        })
+        dept.getList()
+        .then(res=>{
+          this.dept=res.data.list
+        })
+        permitsaccess.getList()
+        .then(res=>{
+          this.permitsaccess=res.data.list
+        })
       }
     },
     methods:{//创建具体的方法，调用teacher.js定义的方法
@@ -137,6 +162,7 @@ export default {//定义变量和初始值
             user.getUserListPage(this.page,this.limit,this.userQuery)
                 .then(res=>{
                     //res返回的数据
+                    console.log(res.data.rows)
                     this.list=res.data.rows
                     this.total=res.data.total
                 })//请求成功

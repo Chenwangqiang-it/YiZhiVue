@@ -31,6 +31,39 @@ export default{
             // params
           })
     },
+    getAwait(current,limit,flowQuery){
+        return request({
+            url: `/eduservice/flow-index/getAwait/${current}/${limit}`,//+current+"/"+limit,
+            method: 'post',
+            //teacherQuery条件对象，后端使用RequestBody获取数据,需要json类型
+            //data表示把对象转换json传递给接口
+            data:flowQuery,
+            timeout: 36000
+            // params
+          })
+    },
+    pageEnd(current,limit,flowQuery){
+        return request({
+            url: `/eduservice/flow-index/pageEnd/${current}/${limit}`,//+current+"/"+limit,
+            method: 'post',
+            //teacherQuery条件对象，后端使用RequestBody获取数据,需要json类型
+            //data表示把对象转换json传递给接口
+            data:flowQuery,
+            timeout: 36000
+            // params
+          })
+    },
+    pageUnfinished(current,limit,flowQuery){
+        return request({
+            url: `/eduservice/flow-index/pageUnfinished/${current}/${limit}`,//+current+"/"+limit,
+            method: 'post',
+            //teacherQuery条件对象，后端使用RequestBody获取数据,需要json类型
+            //data表示把对象转换json传递给接口
+            data:flowQuery,
+            timeout: 36000
+            // params
+          })
+    },
     getFlowById(id){
         return request({
             url: `/eduservice/flow-index/getFlow/${id}`,
