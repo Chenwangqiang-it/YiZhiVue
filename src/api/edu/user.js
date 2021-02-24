@@ -83,4 +83,11 @@ export default{
             timeout: 36000
         })
     },
+    getCounselor(){//获取顾问
+        return request({
+            url: `eduservice/user/getCounselor`,
+            method: 'post',
+            timeout: 36000
+        })
+    },
 }

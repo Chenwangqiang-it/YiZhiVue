@@ -20,6 +20,15 @@ export default{
             // params
           })
     },
+    getUntreatedCount(flowQuery){
+        return request({
+            url: `/eduservice/flow-index/getUntreatedCount`,
+            method: 'post',
+            data:flowQuery,
+            timeout: 36000
+            // params
+        })
+    },
     getUntreated(current,limit,flowQuery){
         return request({
             url: `/eduservice/flow-index/getUntreated/${current}/${limit}`,//+current+"/"+limit,

@@ -77,7 +77,7 @@
                     <el-form-item label="退款金额" style="margin-bottom:0px;margin-top:15px;" v-if="value1&&this.list.schedules<41">
                         <el-input v-model="form.reAmount" placeholder="请输入退款金额" name="reAmount"></el-input>
                     </el-form-item>
-                     <span style="font-size:10px;margin-left:240px" v-if="value1&&this.list.schedules<41">金额不能大于{{list.paidFirstAmount+list.paidLastAmount}}</span>
+                     <span style="font-size:10px;margin-left:240px" v-if="value1&&this.list.schedules<41">金额不能大于{{list.paidFirstAmount+list.paidLastAmount+list.paidInterimAmount}}</span>
                     <el-form-item  label="资料上传" style="width:300px;margin:0;margin-top:20px" v-if="list.schedules<41">
                         <el-upload
                         class="upload-demo"
@@ -489,7 +489,7 @@ export default {//定义变量和初始值
                         })
                         return false
                     }
-                    if(this.form.reAmount>this.list.paidFirstAmount+this.list.paidLastAmount){
+                    if(this.form.reAmount>this.list.paidFirstAmount+this.list.paidLastAmount+this.list.paidInterimAmount){
                         this.$message({
                             type:'warning',
                             message:'退款金额不能大于已收金额'

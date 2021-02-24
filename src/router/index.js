@@ -105,6 +105,20 @@ export const constantRouterMap = [
         hidden:true
       },
       {
+        path: 'projectUpdate/:id',
+        name: '草稿箱修改',
+        component: () => import('@/views/edu/contract/addbrand'),
+        meta: { title: '草稿箱修改', icon: 'addoder',show:true },
+        hidden:true
+      },
+      {
+        path: 'defaultUpdate/:id',
+        name: '草稿箱修改',
+        component: () => import('@/views/edu/contract/save'),
+        meta: { title: '草稿箱修改', icon: 'addoder',show:true },
+        hidden:true
+      },
+      {
         path: 'info/:id',
         name: '合同信息',
         component: () => import('@/views/edu/contract/save'),
@@ -133,6 +147,13 @@ export const constantRouterMap = [
         name: '合同列表',
         component: () => import('@/views/edu/audit/list'),
         meta: { title: '合同列表', icon: 'tree',show:true},
+      },
+      { 
+        path: 'drafts',
+        name: '草稿箱',
+        component: () => import('@/views/edu/audit/list'),
+        meta: { title: '草稿箱', icon: 'tree',show:true},
+        hidden:true
       },
       {
         path: 'list/:id',
@@ -189,7 +210,7 @@ export const constantRouterMap = [
         path:'agency',
         name: '待办事项',
         component: () => import('@/views/flow/agency'),
-        meta: { title: '待办事项', icon: 'agency',show:true },
+        meta: { title: '待办事项', icon: 'agency',show:true,count:0},
       },
       {
         path:'closeout',
@@ -246,10 +267,10 @@ export const constantRouterMap = [
     meta: { title: '案件列表', icon: 'form' },
     children: [
       {
-        path:'end',
-        name: '已结案',
+        path:'all',
+        name: '所有案件',
         component: () => import('@/views/case/index'),
-        meta: { title: '已结案', icon: 'agency',show:true},
+        meta: { title: '所有案件', icon: 'revocation',show:true },
       },
       {
         path:'unfinished',
@@ -258,10 +279,63 @@ export const constantRouterMap = [
         meta: { title: '未结案', icon: 'closeout',show:true },
       },
       {
+        path:'end',
+        name: '已结案',
+        component: () => import('@/views/case/index'),
+        meta: { title: '已结案', icon: 'agency',show:true},
+      },
+      {
         path:'unpayment',
         name: '已结案未付款',
         component: () => import('@/views/case/index'),
         meta: { title: '已结案未付款', icon: 'revocation',show:true },
+      },
+    ]
+  },
+  {
+    path: '/mail',
+    component: Layout,
+    redirect: '/mail/make',
+    name: '资料邮寄',
+    meta: { title: '资料邮寄', icon: 'form' },
+    children: [
+      // {
+      //   path:'table',
+      //   name: '邮寄列表',
+      //   component: () => import('@/views/mail/table'),
+      //   meta: { title: '邮寄列表', icon: 'agency',show:true},
+      // },
+      {
+        path:'add',
+        name: '邮寄',
+        component: () => import('@/views/mail/addMail'),
+        meta: { title: '邮寄', icon: 'agency',show:true},
+      },
+      {
+        path:'make',
+        name: '资料邮寄',
+        component: () => import('@/views/mail/makeMail'),
+        meta: { title: '资料邮寄', icon: 'agency',show:true},
+        hidden:true
+      },
+      {
+        path:'table',
+        name: '待处理',
+        component: () => import('@/views/mail/table'),
+        meta: { title: '待处理', icon: 'agency',show:true,count:0},
+      },
+      {
+        path:'receipt',
+        name: '收件确认',
+        component: () => import('@/views/history/mail'),
+        meta: { title: '收件确认', icon: 'agency',show:true,count:0},
+      },
+      {
+        path:'make/:id',
+        name: '邮寄流程',
+        component: () => import('@/views/mail/makeMail'),
+        meta: { title: '邮寄流程', icon: 'agency',show:true},
+        hidden:true
       },
     ]
   },
@@ -274,21 +348,28 @@ export const constantRouterMap = [
     children: [
       {
         path:'signed',
-        name: '已签订合同',
+        name: '可开票',
         component: () => import('@/views/invoice/index'),
-        meta: { title: '已签订合同', icon: 'agency',show:true},
+        meta: { title: '可开票', icon: 'agency',show:true},
       },
       {
         path:'registered',
-        name: '已立案合同',
-        component: () => import('@/views/invoice/index'),
-        meta: { title: '已立案合同', icon: 'agency',show:true},
+        name: '待开票',
+        component: () => import('@/views/history/invoice'),
+        meta: { title: '待开票', icon: 'agency',show:true,count:0},
       },
       {
         path:'make',
         name: '发票开取',
         component: () => import('@/views/invoice/makeInvoice'),
-        meta: { title: '发票开取', icon: 'agency',show:false},
+        meta: { title: '发票开取', icon: 'agency',show:true},
+        hidden:true
+      },
+      {
+        path:'make/:id',
+        name: '修改发票',
+        component: () => import('@/views/invoice/makeInvoice'),
+        meta: { title: '修改发票', icon: 'agency',show:true},
         hidden:true
       },
     ]
@@ -307,10 +388,24 @@ export const constantRouterMap = [
         meta: { title: '开票记录', icon: 'agency',show:true},
       },
       {
+        path:'make/:id',
+        name: '开票处理',
+        component: () => import('@/views/history/makeInvoice'),
+        meta: { title: '开票处理', icon: 'agency',show:true},
+        hidden:true
+      },
+      {
         path:'mail',
         name: '邮寄记录',
-        component: () => import('@/views/invoice/index'),
+        component: () => import('@/views/history/mail'),
         meta: { title: '邮寄记录', icon: 'agency',show:true},
+      },
+      {
+        path:'mail/:id',
+        name: '邮寄历史',
+        component: () => import('@/views/mail/record'),
+        meta: { title: '邮寄历史', icon: 'agency',show:3},
+        hidden:true
       },
     ]
   },

@@ -46,19 +46,21 @@
             <el-table
             :data="list"
             border
+            @cell-contextmenu="cellClick"
+            @cell-dblclick="cellClick"
             v-loading="loading"
             :span-method="objectSpanMethod"
             element-loading-text="数据加载中"
             @selection-change="handleSelectionChange"
-            style="width: 93%">
-            <el-table-column
+            style="width:93%">
+            <!-- <el-table-column
                 label="序号"
                 width="60"
                 align="center">
                 <tempate slot-scope="scope">
                     {{(page-1)*limit+scope.$index+1}}
                 </tempate>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column width="140" align="center"  label="合同编号">
                  <template slot-scope="scope">
                     <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.serialNum}}</el-link>
@@ -74,16 +76,16 @@
             </el-table-column>
             <el-table-column width="90" align="center" label="已付金额">
                 <tempate slot-scope="scope">
-                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
+                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount+scope.row.paidInterimAmount}}
                 </tempate>
             </el-table-column>
-            <el-table-column width="230" align="center"  label="客户名称">
+            <el-table-column width="230" align="center" show-overflow-tooltip="true"  label="客户名称">
                 <template slot-scope="scope">
                     <el-link style="width:220px" @click="info(scope.row.cid)"  v-if="scope.row.type!=1">{{scope.row.companyName}}</el-link>
                     <el-link style="width:210px" @click="projectInfo(scope.row.cid)" v-else>{{scope.row.companyName}}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column width="160" align="center" label="项目名称">
+            <el-table-column width="160" align="center" show-overflow-tooltip="true" label="项目名称">
                 <template slot-scope="scope">
                     <!-- {{scope.row}} -->
                     <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.brandName}}</el-link>
@@ -91,22 +93,34 @@
                 </template>
             </el-table-column>
             <el-table-column width="90" align="center" prop="uname" label="顾问"></el-table-column>
+            <el-table-column width="90" align="center" label="专票数量">
+                <tempate slot-scope="scope" >
+                    <span>{{scope.row.specializedSum?scope.row.specializedSum:0}}</span>
+                </tempate>
+            </el-table-column>
+            <el-table-column width="90" align="center"  label="普票数量">
+                 <tempate slot-scope="scope" >
+                    <span>{{scope.row.commonSum?scope.row.commonSum:0}}</span>
+                </tempate>
+            </el-table-column>
             <el-table-column width="130" align="center" label="可开票金额">
                 <tempate slot-scope="scope" >
-                    <span style="color:#00a74a" v-if="scope.row.paidFirstAmount!=null">{{(scope.row.paidFirstAmount+scope.row.paidLastAmount-(scope.row.ipayment!=''?scope.row.ipayment:0))}}</span>
-                    <span style="color:#00a74a" v-else>{{(scope.row.lastAmount==0?scope.row.fullAmount:scope.row.firstAmount)-(scope.row.ipayment!=''?scope.row.ipayment:0)}}</span>
+                    <!-- {{scope.row.schedules}} -->
+                    <span style="color:#00a74a" v-if="(scope.row.firstAmount!=null&&scope.row.firstAmount!=0)&&(scope.row.schedules>8&&scope.row.schedules<13)">{{(scope.row.firstAmount+scope.row.lastAmount+scope.row.interimAmount-(scope.row.ipayment!=''?scope.row.ipayment:0))}}</span>
+                    <span style="color:#00a74a" v-else-if="(scope.row.firstAmount!=null&&scope.row.firstAmount!=0)&&scope.row.schedules<=8">{{(scope.row.firstAmount+scope.row.interimAmount-(scope.row.ipayment!=''?scope.row.ipayment:0))}}</span>
+                    <span style="color:#00a74a" v-else>{{scope.row.fullAmount-(scope.row.ipayment!=''?scope.row.ipayment:0)}}</span>
                 </tempate>
             </el-table-column>
             <el-table-column width="130" align="center" label="已开票金额">
                 <tempate slot-scope="scope" >
-                    <span style="color:#4d90fe">{{scope.row.ipayment!=''?scope.row.ipayment:0}}</span>
+                    <span style="color:#4d90fe">{{scope.row.ipayment?scope.row.ipayment:0}}</span>
                 </tempate>
             </el-table-column>
-            <el-table-column width="170" align="center" prop="gmtCreate" label="创建时间" ></el-table-column>
-            <el-table-column width="200" align="right" label="操作">
+            <el-table-column  align="center" show-overflow-tooltip="true" prop="gmtCreate" label="创建时间" ></el-table-column>
+            <el-table-column width="80"  label="操作" v-if="roles.jurisdiction==0||roles.jurisdiction==3">
                 <template slot-scope="scope">
                     <el-button @click="to2(scope.row.sid,scope.row.cid,scope.row.url,0)" type="primary" size="mini" v-if="scope.row.sstate>=3">开票</el-button>
-                    <el-button type="primary" @click="to(scope.row.cid,scope.row.sstate,'/audit/schedule/')" size="mini">开票记录</el-button>
+                    <!-- <el-button type="primary" @click="to(scope.row.cid,scope.row.sstate,'/audit/schedule/')" size="mini">开票记录</el-button> -->
                 </template>
             </el-table-column>
             </el-table>
@@ -170,6 +184,29 @@ export default {//定义变量和初始值
         }
     },
     methods:{
+        prohibitContextmenu(){
+            //禁止浏览器默认右键事件
+            let table=document.getElementsByClassName("el-table")[0]
+            table.oncontextmenu = function(){
+            　　return false;
+            }
+        },
+        cellClick(row, column, cell, event){
+            this.copy(event.srcElement.innerText)
+        },
+        copy(data){
+            let url = data;
+            let oInput = document.createElement('input');
+            oInput.value = url;
+            document.body.appendChild(oInput);
+            oInput.select(); // 选择对象;
+            document.execCommand("Copy"); // 执行浏览器复制命令
+            this.$message({
+            message: '复制成功',
+            type: 'success'
+            });
+            oInput.remove()
+        },
         open(sid,uid,cid,fid) {
             this.$prompt('', '描述（可选）', {
             confirmButtonText: '确定',
@@ -217,17 +254,16 @@ export default {//定义变量和初始值
             })
         },
         init(){
-            if(this.$route.path=="/invoice/signed"){
-              this.stateQuery.sstate=3
-            }
-            if(this.$route.path=="/invoice/registered"){
-              this.stateQuery.sstate=4
-            }
             if(this.list!=null){
                 this.loading=false
             }
             this.getList()
             this.getFinance()
+            this.$nextTick(()=>{
+                //浏览器加载完成之后执行
+                // 禁止表格右键浏览器默认菜单
+                this.prohibitContextmenu();
+            });
         },
         info(id){
             let routeData = this.$router.resolve({
@@ -251,19 +287,19 @@ export default {//定义变量和初始值
             this.win3=window.open(routeData.href,'win3','width=692px,height=420px,top=300px,left=700px,resizable=yes,scrollbars')
         },
         to2(id,cid,url,isaudit){
-            let routeData = this.$router.resolve({
+            this.$router.push({
                 path: '/invoice/make/',query: {id,cid,url,isaudit}
             })
             // this.$router.push({name:'/audit/update/',query: {id,cid,url,isaudit}})
-            if(this.win4!=null){
-                 this.win4.close()
-            }
-            this.win4=window.open(routeData.href,'win4','width=570px,height=800px,top=0px,left=0px,resizable=yes,scrollbars')
-            window['logoClickBtn'] = (url) => {
-                // Toast({ message: url, position: 'bottom', duration: 5000 });
-                //将init方法公示到window 子页面可以调用该方法
-                this.init()
-            }
+            // if(this.win4!=null){
+            //      this.win4.close()
+            // }
+            // this.win4=window.open(routeData.href,'win4','width=570px,height=800px,top=100px,left=700px,resizable=yes,scrollbars')
+            // window['logoClickBtn'] = (url) => {
+            //     // Toast({ message: url, position: 'bottom', duration: 5000 });
+            //     //将init方法公示到window 子页面可以调用该方法
+            //     this.init()
+            // }
         },
         handleSelectionChange(val) {
             this.multipleSelection = val;
@@ -425,7 +461,7 @@ export default {//定义变量和初始值
             }else{
                 this.loading=true
                 this.page=page
-                if(this.roles.jurisdiction>=2&&this.roles.jurisdiction!=5){
+                if(this.roles.jurisdiction==3){
                     this.stateQuery.uid=this.roles.uid
                 }
                 invoice.getInvoiceListPage(this.page,this.limit,this.stateQuery)

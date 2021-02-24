@@ -12,6 +12,9 @@
     <router-link class="inlineBlock" :to="'/unreviewed/unreviewed'">
       <span class="loginout" style="margin-right:15px;font-size:12px" >待办事项</span>
     </router-link>
+    <router-link class="inlineBlock" :to="'/audit/drafts'">
+      <span class="loginout" style="margin-right:15px;font-size:12px" >草稿箱</span>
+    </router-link>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
@@ -35,6 +38,7 @@ import { Message } from 'element-ui'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import message from '@/api/edu/message'
+import { initCount } from './count'
 export default {
   data(){
       return{
@@ -49,8 +53,8 @@ export default {
     if(this.$route.meta.show==true){
       this.msg()
       this.openSocket()
+      initCount(this.roles)
     }
-      
   },
   components: {
     Breadcrumb,
@@ -98,12 +102,15 @@ export default {
                 if(data.data.count!=undefined){
                   that.size=data.data.count
                 }
+                if(data.data.fush){
+                  // 更新数据
+                  initCount(that.roles)
+                }
                 if(that.size!=0){
                   document.title = "一帜管理系统    --您有新消息";
                 }else{
                   document.title = "一帜管理系统";
                 }
-                
                 if(data.data.message!=undefined)
                 that.reload()
                 //发现消息进入    开始处理前端触发逻辑

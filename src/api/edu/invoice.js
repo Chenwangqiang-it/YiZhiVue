@@ -9,6 +9,14 @@ export default{
             timeout: 36000
           })
     },
+    updateInvoice(invoice){
+        return request({
+            url: `/eduservice/invoice/update`,
+            method: 'post',
+            data:invoice,
+            timeout: 36000
+          })
+    },
     getInvoiceListPage(current,limit,stateQuery){
         return request({
             url: `/eduservice/invoice-views/pageInvoiceCondition/${current}/${limit}`,//+current+"/"+limit,
@@ -20,11 +28,27 @@ export default{
             // params
           })
     },
+    getInvoiceById(id){
+        return request({
+            url: `/eduservice/history-invoice/getInvoiceById/${id}`,
+            method: 'post',
+            timeout: 36000
+          })
+    },
     getInvoice(id){
         return request({
             url: `/eduservice/invoice-views/getInvoiceById/${id}`,
             method: 'post',
             timeout: 36000
+          })
+    },
+    countInvoice(historyQuery){
+        return request({
+            url: `/eduservice/history-invoice/countInvoice`,//+current+"/"+limit,
+            method: 'post',
+            data:historyQuery,
+            timeout: 36000
+            // params
           })
     },
     pageHistoryInvoiceCondition(current,limit,historyQuery){

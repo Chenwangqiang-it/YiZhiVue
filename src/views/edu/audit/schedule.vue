@@ -16,6 +16,7 @@
                     <span v-if="lists.sstate==3">合同签订</span>
                     <span v-if="lists.sstate==4&&lists.accessory==null">合同修改</span>
                     <span v-if="lists.sstate==4&&lists.accessory!=null">非标合同修改</span>
+                    <span v-if="lists.sstate==6">特许人基本信息修改</span>
                     <span v-if="lists.sstate==5">发起立案</span>
                     <span style="float:right;margin-right:50px;">提交状态:
                       <span style="color:#e82816" v-if="lists.sstate==-1">删除成功</span>
@@ -31,6 +32,24 @@
                   </p>
               </el-card>
             </el-timeline-item>
+            <el-timeline-item v-if="list[list.length-1].sstate!=-1" placement="top">
+              <el-card>
+                <h4>
+                  <span v-if="list[list.length-1].sstate==0||list[list.length-1].sstate==4">待合同审核</span>
+                  <span v-if="list[list.length-1].sstate==1">待修改合同</span>
+                  <span v-if="list[list.length-1].sstate==2">待签订合同</span>
+                  <span v-if="list[list.length-1].sstate==3||list[list.length-1].sstate==6">待发起立案</span>
+                  <span v-if="list[list.length-1].sstate==5">完成立案</span>
+                  <span style="float:right;margin-right:50px;">提交状态:
+                    <span style="color:#909399"  v-if="list[list.length-1].sstate==0||list[list.length-1].sstate==4">待审核</span>
+                    <span style="color:#909399"  v-if="list[list.length-1].sstate==1">待修改</span>
+                    <span style="color:#909399"  v-if="list[list.length-1].sstate==2">待签订</span>
+                    <span style="color:#909399"  v-if="list[list.length-1].sstate==3||list[list.length-1].sstate==6">待立案</span>
+                    <span style="color:#0bbd87"  v-if="list[list.length-1].sstate==5">完成</span>
+                  </span>
+                </h4>
+              </el-card>
+          </el-timeline-item>
         </el-timeline>
 
     </div>

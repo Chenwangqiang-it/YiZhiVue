@@ -8,7 +8,7 @@
                     <el-card @click.native="info(0)">
                         <h4>发起立案<span style="float:right;color:#0bbd87">成功</span></h4>
                         <p>立案时间:{{gmtCreate}}<span style="float:right">立案人:{{fname}}</span></p>
-                        <p>描述:{{describes}}</p>
+                        描述:<pre>{{describes}}</pre>
                     </el-card>
                 </el-timeline-item>
                 
@@ -48,6 +48,7 @@
                             <span style="float:right;color:#0bbd87" v-if="lists.result==9">已公示</span>
                             <span style="float:right;color:#ec2303" v-else>驳回</span>
                         </h4>
+                        <h4 v-if="lists.schedules==13">中期到款<span style="float:right;color:#0bbd87">已确认</span></h4>
                         <h4 v-if="lists.schedules==11">尾款确认<span style="float:right;color:#0bbd87">已公示</span></h4>
                         <h4 v-if="lists.schedules==9">流程确认<span style="float:right;color:#0bbd87">已公示</span></h4>
                         <h4 v-if="lists.schedules==10">顾问确认<span style="float:right;color:#0bbd87">已公示</span></h4>
@@ -67,7 +68,7 @@
                         <h4 v-if="lists.schedules==19">文件上传<span style="float:right;color:#0bbd87">成功</span></h4>
                         <p>操作者:{{lists.uname}}</p>
                         <p v-if="lists.schedules==2">代理人:{{lists.agentName}}</p>
-                        <pre v-if="lists.schedules!=19">描述:{{lists.describes}}</pre>
+                        描述:<pre v-if="lists.schedules!=19">{{lists.describes}}</pre>
                         <p v-else>上传文件:
                             <el-link :href="li.url" target="_blank" v-for="(li,index2) in lists.describes" :key="index2">{{li.name}}</el-link>
                         </p>
@@ -81,6 +82,14 @@
                                 <p>付款日期:{{lists.paidFirstAmountDate}}</p>
                                 <p>付款方:{{lists.paymentFirstAmount}}</p>
                                 <p>收款方:{{lists.gatheringFirstAmount}}</p>
+                            </el-collapse-item>
+                        </el-collapse>
+                        <el-collapse @click.native.stop="doSomething()" v-if="lists.schedules==13">
+                            <el-collapse-item title="更多" name="1">
+                                <p>付款金额:{{lists.paidInterimAmount}}</p>
+                                <p>付款日期:{{lists.paidInterimAmountDate}}</p>
+                                <p>付款方:{{lists.paymentInterimAmount}}</p>
+                                <p>收款方:{{lists.gatheringInterimAmount}}</p>
                             </el-collapse-item>
                         </el-collapse>
                         <el-collapse @click.native.stop="doSomething()" v-if="lists.schedules==40">
@@ -326,6 +335,9 @@ export default {//定义变量和初始值
             }else if(l.schedules==11&&list[0].type==1){
                 this.history.title="尾款确认"
                 this.value1=true
+            }else if(l.schedules==13&&list[0].type==1){
+                this.history.title="中期付款"
+                this.value1=true
             }else if(l.schedules==12&&list[0].type==1){
                 this.history.title="交付"
                 this.value1=true
@@ -429,6 +441,7 @@ export default {//定义变量和初始值
             history.getHistorysByfid(id)
             .then(res=>{
                 this.list=res.data.list
+                console.log(this.list)
                 for(let i=this.list.length-1;i>-1;i--){
                     if(this.list[i].schedules!=20){
                         this.result=this.list[i].result
@@ -455,6 +468,13 @@ export default {//定义变量和初始值
 <style>
     pre{
        font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+       /* width: 470px; */
+       /* display:inline; */
+        white-space: pre-wrap;       /* CSS-3 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        Word-wrap: break-word;
     }
     p {
          word-wrap:break-word; 

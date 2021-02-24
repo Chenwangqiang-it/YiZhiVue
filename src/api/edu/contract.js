@@ -35,6 +35,15 @@ export default{
             // params
           })
     },
+    updateNoChange(contract){
+        return request({
+            url: `/eduservice/contract/updateNoChange`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 // request timeou
+            // params
+          })
+    },
     change(contract){
         return request({
             url: `/eduservice/contract/change`,
@@ -132,6 +141,14 @@ export default{
             // params
         })
     },
+    getContractByCid(cid){
+        return request({
+            url: `/eduservice/contract/getContractByCid/${cid}`,
+            method: 'post',
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
     updateContract2(contract){
         return request({
             url: `/eduservice/contract/update2`,
@@ -140,5 +157,41 @@ export default{
             timeout: 60000 // request timeou
             // params
           })
+    },
+    saveDrafts(addProject){
+        return request({
+            url: `/eduservice/contract/saveDrafts`,
+            method: 'post',
+            data:addProject,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    updateDrafts(addProject){
+        return request({
+            url: `/eduservice/contract/updateDrafts`,
+            method: 'post',
+            data:addProject,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    saveDraftsT(contract){
+        return request({
+            url: `/eduservice/contract/saveDraftsT`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 // request timeou
+            // params
+        })
+    },
+    updateDraftsT(contract){
+        return request({
+            url: `/eduservice/contract/updateDraftsT`,
+            method: 'post',
+            data:contract,
+            timeout: 60000 // request timeou
+            // params
+        })
     }
 }

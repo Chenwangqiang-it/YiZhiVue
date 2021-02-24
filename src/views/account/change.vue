@@ -4,7 +4,7 @@
             <div  class="selectBox">
                 <h3 style="text-align: center;width:200px;float:left;margin:0px;height:40px;line-height:40px">业务转移</h3>
                 <div class="select">
-                    <el-select @change="selectChange" v-model="values" placeholder="请选择转移对象">
+                    <el-select style="width:100px" @change="selectChange" v-model="values" placeholder="请选择转移对象">
                         <el-option
                         v-for="item in options"
                         :key="item.uid"
@@ -272,6 +272,7 @@ export default {//定义变量和初始值
                             cid:[]
                         })
                     }
+                    console.log(this.options)
                 })
                 if(this.user1.jurisdiction==3){
                     contract.getChangeContract(this.user1.uid)
@@ -392,7 +393,7 @@ export default {//定义变量和初始值
     position: relative;
 }
 .el-transfer{
-    width:590px;
+    width:600px;
     height:328px;
     text-align: left;
     display: inline-block;

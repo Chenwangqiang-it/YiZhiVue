@@ -3,16 +3,26 @@
          <template>
             <el-form :inline="true" class="demo-form-inline" style="text-align:center;" align="center">
               <el-form-item  >
-                  <el-input v-model="flowQuery.serialNum" placeholder="合同编号"></el-input>
+                  <el-input style="width:150px"  v-model="flowQuery.serialNum" placeholder="合同编号"></el-input>
               </el-form-item>
               <el-form-item  >
-                  <el-input v-model="flowQuery.companyName" placeholder="客户名称"></el-input>
+                  <el-input style="width:220px" v-model="flowQuery.companyName" placeholder="客户名称"></el-input>
               </el-form-item>
               <el-form-item  >
                   <el-input v-model="flowQuery.brandName" placeholder="品牌名称"></el-input>
               </el-form-item>
+              <el-form-item v-if="roles.jurisdiction!=3">
+                    <el-select style="width:110px" v-model="flowQuery.uid" placeholder="顾问名称">
+                        <el-option
+                        v-for="item in counselor"
+                        :key="item.value"
+                        :label="item.uname"
+                        :value="item.uid">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
               <el-form-item >
-                <el-select v-model="flowQuery.agentName" placeholder="代理人">
+                <el-select style="width:120px" v-model="flowQuery.agentName" placeholder="代理人">
                       <el-option
                       v-for="item in agent"
                       :key="item.value"
@@ -24,6 +34,7 @@
               
               <el-form-item >
                 <el-date-picker
+                style="width:180px"
                 v-model="flowQuery.begin"
                 type="datetime"
                 placeholder="选择开始时间"
@@ -33,6 +44,7 @@
               </el-form-item>
               <el-form-item>
                 <el-date-picker
+                style="width:180px"
                 v-model="flowQuery.end"
                 type="datetime"
                 placeholder="选择截至时间"
@@ -48,6 +60,8 @@
             <el-table
               :data="list"
               v-loading="loading"
+              @cell-contextmenu="cellClick"
+              @cell-dblclick="cellClick"
               element-loading-text="数据加载中"
               style="width: 100%">
               <el-table-column type="expand">
@@ -168,7 +182,7 @@
                 label="已付金额"
                 >
                 <tempate slot-scope="scope">
-                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
+                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount+scope.row.paidInterimAmount}}
                 </tempate>
               </el-table-column>
               <el-table-column width="130" align="center" prop="schedule" label="流程状态" >
@@ -223,7 +237,7 @@
                     <span v-if="scope.row.schedules==12" >无</span>
                 </template>
               </el-table-column>
-              <el-table-column width="260px" align="right" label="操作">
+              <el-table-column  align="right" label="操作">
                 <template slot-scope="scope">
                   <el-button  
                     type="primary" 
@@ -295,7 +309,7 @@ export default {//定义变量和初始值
             record:{},
             list:null,//查询之后接口返回集合
             page:1,//当前页
-            limit:22,//每页记录数
+            limit:20,//每页记录数
             total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
             flowQuery:{},//条件封装
@@ -397,11 +411,13 @@ export default {//定义变量和初始值
                 paidLastAmountDate:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 paymentLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
                 gatheringLastAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
-            }
+            },
+            counselor:[],
         }
     },
     created() {//页面渲染之前执行，调用methods定义的方法
-        this.init()
+      this.getCounselor()
+       this.init()
     },
     methods:{
       projectInfo(id){
@@ -410,9 +426,43 @@ export default {//定义变量和初始值
             })
             window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
+      getCounselor(){
+            user.getCounselor()
+            .then(res=>{
+                this.counselor=res.data.counselor
+            })
+        },
       init(){
         this.getList()
         this.getAgent()
+        this.$nextTick(()=>{
+            //浏览器加载完成之后执行
+            // 禁止表格右键浏览器默认菜单
+            this.prohibitContextmenu();
+        });
+      },
+      prohibitContextmenu(){
+          //禁止浏览器默认右键事件
+          let table=document.getElementsByClassName("el-table")[0]
+          table.oncontextmenu = function(){
+          　　return false;
+          }
+      },
+      cellClick(row, column, cell, event){
+          this.copy(event.srcElement.innerText)
+      },
+      copy(data){
+          let url = data;
+          let oInput = document.createElement('input');
+          oInput.value = url;
+          document.body.appendChild(oInput);
+          oInput.select(); // 选择对象;
+          document.execCommand("Copy"); // 执行浏览器复制命令
+          this.$message({
+          message: '复制成功',
+          type: 'success'
+          });
+          oInput.remove()
       },
       info(id){
             let routeData = this.$router.resolve({
@@ -1100,7 +1150,7 @@ export default {//定义变量和初始值
                 this.list=res.data.rows
                 for(let i=0;i<this.list.length;i++){
                     this.list[i].inventory=JSON.parse(this.list[i].inventory)
-                    this.list[i].disposeshow=this.disposeShow(this.list[i].schedules)
+                    this.list[i].disposeshow=this.disposeShow(this.list[i])
                 }
                 this.total=res.data.total
                 this.loading=false
@@ -1109,23 +1159,33 @@ export default {//定义变量和初始值
                 console.log(error)
             })//请求失败
         },
-        disposeShow(s){//判断处理按钮是否存在
+        disposeShow(list){//判断处理按钮是否存在
           let j=this.roles.jurisdiction
+          let s=list.schedules
           if(s>11){
             return false
           }
           if(j==6){
-            if(s==1||s==2||s==9||s==11){
-              return true
+            if(list.interimAmount!=0&&(list.paidInterimAmount==0||!list.paidInterimAmount)){
+              if(s==1||s==2||s==3||s==4||s==5||s==6||s==7||s==8||s==9||s==11){
+                return true
+              }
+            }else{
+              if(s==1||s==2||s==9||s==11){
+                return true
+              }
             }
             return false
           }
           if(j==5){
-            if(s==1||s==11){
-              return true
-            }
-            if(s==11){
-              return true
+            if(list.interimAmount!=0&&(list.paidInterimAmount==0||!list.paidInterimAmount)){
+              if(s==1||s==2||s==3||s==4||s==5||s==6||s==7||s==8||s==9||s==11){
+                return true
+              }
+            }else{
+              if(s==1||s==11){
+                return true
+              }
             }
             return false
           }

@@ -51,4 +51,12 @@ export default{
             timeout: 36000
         })
     },
+    readAll(uid){
+        return request({
+            url: `eduservice/message/readAll/${uid}`,
+            method: 'post',
+            async: false,
+            timeout: 36000
+        })
+    },
 }

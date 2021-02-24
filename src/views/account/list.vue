@@ -4,10 +4,10 @@
          <template>
             <el-form :inline="true" class="demo-form-inline" align="center">
             <el-form-item label="用户">
-                <el-input v-model="userQuery.uname" placeholder="用户名"></el-input>
+                <el-input style="width:100px" v-model="userQuery.uname" placeholder="用户名"></el-input>
             </el-form-item>
-            <el-form-item>
-                <el-select v-model="userQuery.identity" placeholder="职位">
+            <el-form-item label="职位">
+                <el-select style="width:130px" v-model="userQuery.identity" placeholder="职位">
                     <el-option
                     v-for="(item,i) in identity"
                     :key="i"
@@ -16,8 +16,8 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item>
-                <el-select v-model="userQuery.dept" placeholder="部门">
+            <el-form-item label="部门">
+                <el-select style="width:120px" v-model="userQuery.dept" placeholder="部门">
                     <el-option
                     v-for="(item,i) in dept"
                     :key="i"
@@ -174,7 +174,7 @@ export default {//定义变量和初始值
             let routeData = this.$router.resolve({
                 path: '/account/change/'+id
             })
-            window.open(routeData.href,"_blank",'width=640px,height=350px,top=300px,left=800px,resizable=yes,scrollbars')
+            window.open(routeData.href,"_blank",'width=640px,height=400px,top=500px,left=800px,resizable=yes,scrollbars')
             window['logoClickBtn'] = (url) => {
                 // Toast({ message: url, position: 'bottom', duration: 5000 });
                 //将init方法公示到window 子页面可以调用该方法

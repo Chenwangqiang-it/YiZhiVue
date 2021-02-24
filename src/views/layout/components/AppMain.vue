@@ -41,6 +41,7 @@
 import { mapGetters } from 'vuex'
 import { Message } from 'element-ui'
 import message from '@/api/edu/message'
+import merge from 'webpack-merge'
 export default {
   computed: {
         ...mapGetters([
@@ -51,7 +52,8 @@ export default {
   name: 'AppMain',
   data(){
     return{
-      messages:[]
+      messages:[],
+      invoice:0,
     }
   },
   methods: {
@@ -102,11 +104,19 @@ export default {
       .then(res=>{
         this.messages=res.data.message
       })
-    }
+    },
+    init(){
+      // this.$router.push({
+      //     query:merge(this.$route.mate,{'count':'1'})
+      // })
+      // console.log(router)
+    },
+    
   },
   created(){
       this.getremind()
       // this.openSocket()
+      this.init()
   },
 }
 </script>

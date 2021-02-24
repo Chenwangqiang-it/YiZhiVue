@@ -2,73 +2,102 @@
     <div class="app-container">
          <template>
             <div class="box">
-                <el-form ref="invoice" :model="invoice" style="width:400px" :rules="saveRules" label-width="80px" >
-                    <div class="li">
-                        <h3>开票信息</h3>
-                    </div> 
-                    <el-form-item label="发票类型" prop="itype">
-                        <el-select v-model="invoice.itype" @change="change" placeholder="请选择发票类型">
-                            <el-option label="普通发票" value="0"></el-option>
-                            <el-option label="专用发票" value="1"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="普票名义" v-if="invoice.itype==0">
-                       <el-switch
-                        @change="change"
-                        v-model="value1"
-                        active-text="个人"
-                        inactive-text="公司">
-                        </el-switch>
-                    </el-form-item>
-                    <el-form-item label="姓名" prop="iname" v-if="value1&&invoice.itype==0">
-                        <el-input v-model="invoice.iname" placeholder="请输入姓名"></el-input>
-                    </el-form-item>
-                    <el-form-item label="身份证号" prop="iidNumber" v-if="value1&&invoice.itype==0">
-                        <el-input v-model="invoice.iidNumber" placeholder="请输入身份证号"></el-input>
-                    </el-form-item>
-                    <el-form-item label="公司全称" prop="icompany" v-if="!value1||invoice.itype==1">
-                        <el-input v-model="invoice.icompany" placeholder="请输入公司全称"></el-input>
-                    </el-form-item>
-                    <el-form-item label="信用代码" prop="icode" v-if="!value1||invoice.itype==1">
-                        <el-input v-model="invoice.icode" placeholder="请输入统一信用代码"></el-input>
-                    </el-form-item>
-                    <el-form-item label="开票金额" prop="ipayment">
-                        <el-input type="number" step="0.0000000001" v-model="invoice.ipayment" placeholder="请输入开票金额"></el-input>
-                    </el-form-item>
-                    <span style="font-size:10px;margin-left:290px">可开最高金额:{{maxPaymant}}</span>
-                    <el-form-item label="开户行" prop="ibankOfDeposit" v-if="invoice.itype==1">
-                        <el-input v-model="invoice.ibankOfDeposit" placeholder="请输入开户行"></el-input>
-                    </el-form-item>
-                    <el-form-item label="账号" prop="iaccount" v-if="invoice.itype==1">
-                        <el-input v-model="invoice.iaccount" placeholder="请输入账号"></el-input>
-                    </el-form-item>
-                    <el-form-item label="地址" prop="iaddress" v-if="invoice.itype==1">
-                        <el-input v-model="invoice.iaddress" placeholder="请输入地址"></el-input>
-                    </el-form-item>
-                    <el-form-item label="电话" prop="iphone" v-if="invoice.itype==1">
-                        <el-input v-model="invoice.iphone" placeholder="请输入电话"></el-input>
-                    </el-form-item>
-                    <el-form-item label="补充协议" prop="accessory" v-if="showUpload">
-                        <el-upload
-                            class="upload-demo"
-                            :action="BASE_API+'/eduservice/state/upcontract'"
-                            list-type="text"
-                            :on-preview="handlePreview"
-                            :on-remove="handleRemove"
-                            :before-remove="beforeRemove"
-                            :on-success="fileUploadSuccess"
-                            :on-error="fileUploadError"
-                            :disabled="importBtnDisabled"
-                            multiple
-                            :limit="fileAmount"
-                            :on-exceed="handleExceed"
-                            :file-list="fileList2">
-                        <el-button size="small" type="primary" >点击上传</el-button>
-                        </el-upload>
-                    </el-form-item>
-                </el-form>
-                <span slot="footer" class="dialog-footer" style="margin-left:230px">
-                    <el-button type="primary" style="width:150px;height:45px;margin-top:35px;" @click.native.prevent="submit" >提 交</el-button>
+                <el-steps :active="0" finish-status="success" align-center>
+                    <el-step title="开票信息填写"></el-step>
+                    <el-step title="开票审核"></el-step>
+                    <el-step title="完成开票"></el-step>
+                </el-steps>
+                <div style="text-align:center">
+                    <el-divider></el-divider>
+                    <div class="mail-li"  style="display: inline-block;">
+                        <h4  style="text-align:left;margin-left:40px;margin-top:10px;margin-left:10px;margin-bottom:10px">
+                           <span v-if="addOrUpdate">开票信息</span>
+                            <span v-else>发票修改</span>
+                            <span v-if="addOrUpdate" style="font-size:10px;float:right">可开最高金额:{{maxPaymant}}</span>
+                            <span v-else style="font-size:10px;float:right">可开最高金额:{{maxPaymant}}</span>
+                        </h4>
+                        <el-form ref="invoice" :model="invoice" style="text-align:left"  :inline="true" :rules="saveRules" label-width="80px" >
+                            <el-form-item label="发票类型" prop="itype">
+                                <el-select style="width:120px" v-model="invoice.itype" @change="change" placeholder="请选择发票类型">
+                                    <el-option label="普通发票" value="0"></el-option>
+                                    <el-option label="专用发票" value="1"></el-option>
+                                </el-select>
+                            </el-form-item>
+                            <!-- <div></div> -->
+                            <el-form-item label="普票名义" v-if="invoice.itype==0">
+                            <el-switch
+                                @change="change"
+                                v-model="value1"
+                                active-text="个人"
+                                inactive-text="公司">
+                                </el-switch>
+                            </el-form-item>
+                            <el-form-item label="姓名" prop="iname" v-if="value1&&invoice.itype==0">
+                                <el-input  style="width:120px" v-model="invoice.iname" placeholder="请输入姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="身份证号" prop="iidNumber" v-if="value1&&invoice.itype==0">
+                                <el-input v-model="invoice.iidNumber" placeholder="请输入身份证号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="公司全称" prop="icompany" v-if="!value1||invoice.itype==1">
+                                <el-input  style="width:230px" v-model="invoice.icompany" placeholder="请输入公司全称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="信用代码" prop="icode" v-if="!value1||invoice.itype==1">
+                                <el-input  style="width:120px" v-model="invoice.icode" placeholder="统一信用代码"></el-input>
+                            </el-form-item>
+                            <el-form-item label="开票金额" prop="ipayment">
+                                <el-input  style="width:100px" type="number" step="0.0000000001" v-model="invoice.ipayment" placeholder="请输入开票金额"></el-input>
+                            </el-form-item>
+                            <!-- <div></div> -->
+                            <el-form-item label="开户行" prop="ibankOfDeposit" v-if="invoice.itype==1">
+                                <el-input v-model="invoice.ibankOfDeposit" placeholder="请输入开户行"></el-input>
+                            </el-form-item>
+                            <el-form-item label="账号" prop="iaccount" v-if="invoice.itype==1">
+                                <el-input style="width:110px" v-model="invoice.iaccount" placeholder="请输入账号"></el-input>
+                            </el-form-item>
+                            <el-form-item label="地址" prop="iaddress" v-if="invoice.itype==1">
+                                <el-input style="width:220px" v-model="invoice.iaddress" placeholder="请输入地址"></el-input>
+                            </el-form-item>
+                            <el-form-item label="电话" prop="iphone" v-if="invoice.itype==1">
+                                <el-input style="width:120px" v-model="invoice.iphone" placeholder="请输入电话"></el-input>
+                            </el-form-item>
+                            <el-form-item label="类型" prop="brandOrRecords">
+                                <el-radio-group v-model="invoice.brandOrRecords">
+                                    <el-radio label="0" >商标</el-radio>
+                                    <el-radio label="1" >备案</el-radio>
+                                </el-radio-group>
+                                <!-- <el-radio v-model="invoice.brandOrRecords" label="0"></el-radio> -->
+                                <!-- <el-radio v-model="invoice.brandOrRecords" label="1">备案</el-radio> -->
+                            </el-form-item>
+                            <el-form-item label="业务明细" v-if="isVis" prop="detail">
+                                <el-input type="textarea" v-model="invoice.detail"></el-input>
+                            </el-form-item>
+                            <el-form-item label="业务明细" v-else >
+                                <el-input type="textarea" v-model="invoice.detail"></el-input>
+                            </el-form-item>
+                            <el-form-item label="补充协议" prop="accessory" v-if="showUpload">
+                                <el-upload
+                                    class="upload-demo"
+                                    :action="BASE_API+'/eduservice/state/upcontract'"
+                                    list-type="text"
+                                    :on-preview="handlePreview"
+                                    :on-remove="handleRemove"
+                                    :before-remove="beforeRemove"
+                                    :on-success="fileUploadSuccess"
+                                    :on-error="fileUploadError"
+                                    :disabled="importBtnDisabled"
+                                    multiple
+                                    :limit="fileAmount"
+                                    :on-exceed="handleExceed"
+                                    :file-list="fileList2">
+                                <el-button size="small" type="primary" >点击上传</el-button>
+                                </el-upload>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </div>
+                
+                <span slot="footer" class="dialog-footer" style="margin-left:170px">
+                    <el-button type="primary" style="width:150px;height:45px;margin-top:0px;" @click.native.prevent="subOrUpdate()" >提 交</el-button>
                 </span>
             </div>
          </template>
@@ -86,6 +115,7 @@ import record from '@/api/edu/record'
 import history from '@/api/edu/history'
 import contract from '@/api/edu/contract'
 import message from '@/api/edu/message'
+import { countInvoice } from '../layout/components/count'
 export default {//定义变量和初始值
     computed: {
         ...mapGetters([
@@ -132,7 +162,30 @@ export default {//定义变量和初始值
                 callback()
             }
       }
+      const valiDetail = (rule, value, callback) => {
+            if (value==''||value==null||value==undefined) {
+               callback(new Error("该字段不能为空"))
+            } else {
+                
+                if(value=="1"){
+                    this.isVis=false
+                }else{
+                    this.isVis=true
+                }
+                callback()
+            }
+      }
+      const valiIcode = (rule, value, callback) => {
+            if (value==''||value==null||value==undefined) {
+               callback(new Error("该字段不能为空"))
+            } else {
+                this.invoice.icode = value.toUpperCase()
+                callback()
+            }
+      }
     return{
+            isVis:false,
+            addOrUpdate:true,
             showUpload:false,
             flowmanager:{},
             finance:{},
@@ -162,7 +215,7 @@ export default {//定义变量和初始值
             message:{},
             schedu:'',
             agentId2:'',
-            maxPaymant:'',
+            maxPaymant:0,
             invoice:{
                 
             },
@@ -171,14 +224,16 @@ export default {//定义变量和初始值
                 iname:[{ required: true, trigger: 'blur', validator: valiAccessory}],
                 iidNumber:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 icompany:[{ required: true, trigger: 'blur', validator: valiAccessory}],
-                icode:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                icode:[{ required: true, trigger: 'blur', validator: valiIcode}],
                 ibankOfDeposit:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 iaccount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 iaddress:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 ipayment:[{ required: true, trigger: 'blur', validator: valiPanyment}],
-                iphone:[{ required: true, trigger: 'blur', validator: valiPhone}],
+                iphone:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 // accessory:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 from:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                detail:[{ required: true, blur: 'blur', validator: valiNotNull}],
+                brandOrRecords:[{ required: true, blur: 'change', validator: valiDetail}],
             },
         }
     },
@@ -224,22 +279,52 @@ export default {//定义变量和初始值
             let cid=this.$route.query.cid
             this.fileList2=[]
             this.$set(this.invoice,"itype",'1');
-            this.getList(cid)
+            if(this.$route.params.id){
+                this.addOrUpdate=false
+                invoice.getInvoiceById(this.$route.params.id)
+                .then(res=>{
+                    // console.log(res.data.invoice)
+                    this.$set(this,"invoice",res.data.invoice);
+                    this.fileList2=JSON.parse(this.invoice.accessory)
+                    if(this.fileList2.length!=0){
+                        this.showUpload=true
+                    }
+                    if(this.invoice.iidNumber){
+                        this.value1=true
+                    }else{
+                        this.value1=false
+                    }
+                    this.maxPaymant=this.invoice.ipayment
+                    this.$set(this.invoice,"brandOrRecords", res.data.invoice.brandOrRecords+"");
+                    this.$set(this.invoice,"ipayment", res.data.invoice.ipayment);
+                    this.$set(this.invoice,"itype",res.data.invoice.itype+"");
+                })
+            }else{
+                this.getList(cid)
+                this.getContract()
+            }
+        },
+        getContract(){
+            contract.getContractByCid(this.$route.query.cid)
+            .then(res=>{
+                this.$set(this.invoice,"icompany",res.data.contract.companyName);
+            })
         },
         getList(cid){
             invoice.getInvoice(cid)
             .then(res=>{
                 this.list=res.data.list
-                if(this.list.paidFirstAmount!=null){
-                    this.maxPaymant=this.list.paidFirstAmount+this.list.paidLastAmount-(this.list.ipayment!=''?this.list.ipayment:0)
+                if((this.list.firstAmount!=null&&this.list.firstAmount!=0)&&(this.list.schedules>8&&this.list.schedules<13)){
+                    this.maxPaymant=this.list.firstAmount+this.list.interimAmount+this.list.lastAmount-(this.list.ipayment!=''?this.list.ipayment:0)
+                }else if((this.list.firstAmount!=null&&this.list.firstAmount!=0)&&this.list.schedules<=8){
+                    this.maxPaymant=this.list.firstAmount+this.list.interimAmount-(this.list.ipayment!=''?this.list.ipayment:0)
                 }else{
-                    if(this.list.lastAmount==0){
-                        this.maxPaymant=this.list.fullAmount-(this.list.ipayment!=''?this.list.ipayment:0)
-                    }else{
-                        this.maxPaymant=this.list.firstAmount-(this.list.ipayment!=''?this.list.ipayment:0)
-                    }
+                    this.maxPaymant=this.list.fullAmount-(this.list.ipayment!=''?this.list.ipayment:0)
                 }
-                
+                if(this.invoice.ipayment){
+                    this.maxPaymant+=this.invoice.ipayment
+                }
+                this.$set(this.invoice,"ipayment",this.maxPaymant)
                 // this.getHistorys(fid)
                 this.isfileupdate=false
             })
@@ -266,14 +351,41 @@ export default {//定义变量和初始值
             }
         },
         SpecialVerify(){
-           if(this.showUpload&&this.fileList2.length==0){
-                this.$message({
-                    type:'warning',
-                    message:'请上传补充协议'
-                })
-                return false
-            }
+        //    if(this.showUpload&&this.fileList2.length==0){
+        //         this.$message({
+        //             type:'warning',
+        //             message:'请上传补充协议'
+        //         })
+        //         return false
+        //     }
             return true
+        },
+        subOrUpdate(){
+            if(this.addOrUpdate){
+                this.submit()
+            }else{
+                this.updateInvoice()
+            }
+        },
+        updateInvoice(){
+            this.$refs.invoice.validate(valid => {
+                if (valid&&this.SpecialVerify()) {
+                    this.invoice.withdraw=false//取消回撤字段
+                    if(this.fileList2.length!=0){
+                        this.invoice.accessory=JSON.stringify(this.fileList2)
+                    }else {
+                        this.invoice.accessory='[]'
+                    }
+                    invoice.updateInvoice(this.invoice)
+                    .then(res=>{
+                        this.$message({
+                            type:'success',
+                            message:'修改成功'
+                        })
+                        this.to()
+                    }) 
+                }
+            })
         },
         submit(){
             this.$refs.invoice.validate(valid => {
@@ -285,7 +397,6 @@ export default {//定义变量和初始值
                     }else {
                         this.invoice.accessory='[]'
                     }
-                    console.log(this.invoice)
                 // this.formtoflow()
                     invoice.addInvoice(this.invoice)
                     .then(res=>{
@@ -294,12 +405,20 @@ export default {//定义变量和初始值
                             message:'提交成功'
                         })
                             //调用父窗口方法
-                        window.opener.logoClickBtn()
-                    
+                        this.to()
                         this.isfileupdate=false
                     })          
                 }     
             })
+        },
+        to(){
+            let that=this
+            countInvoice(this.roles)
+            setTimeout(function(){
+                that.$router.push({
+                    path: '/invoice/registered'
+                })
+            },100)
         },
         fileUploadSuccess(response, file, fileList){
             this.fileList2.push({
@@ -318,293 +437,6 @@ export default {//定义变量和初始值
         beforeRemove(file, fileList) {
             return this.$confirm(`确定移除 ${ file.name }？`);
         },
-        msg(cid,isupdate,i){
-            let messages=[]
-            this.message={}
-            this.message.category=1
-            this.message.send=this.roles.uid
-                if(isupdate==1){
-                    if(this.schedu!=this.flow.schedules){
-                        contract.getContract(cid)
-                        .then(res=>{
-                            if(i==6){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至顾问确认'
-                            }else if(i==5){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至尾款确认'
-                            }else if(i==4){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至申报材料提交'
-                            }else if(i==3){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至清单提交'
-                            }else if(i==2){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至流程分案'
-                            }else if(i==1){
-                                this.message.msg='您的流程'+res.data.contract.serialNum+'已被撤回至财务审核'
-                            }
-                            this.message.categoryId=this.flow.fid
-                            this.message.category=1
-                            this.message.uid=res.data.contract.uid;
-                            message.addMessage(this.message)
-                        })
-                    }else{
-                        contract.getContract(cid)
-                        .then(res=>{
-                            if(this.form3.a_desc!=this.form2.a_desc){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'财务审核阶段描述已被修改'
-                            }else if(this.form3.agentId!=this.form2.agentId){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'流程分案阶段已被重新分案'
-                            }else if(this.form3.i_desc!=this.form2.i_desc){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'清单上传阶段描述已被修改'
-                            }else if(this.form3.d_desc!=this.form2.d_desc){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'申报材料上传阶段描述已被修改'
-                            }else if(this.form3.l_desc!=this.form2.l_desc){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'尾款确认阶段描述已被修改'
-                            }else if(this.form3.s_desc!=this.form2.s_desc){
-                            this.message.msg='您的流程'+res.data.contract.serialNum+'顾问确认阶段描述已被修改'
-                            }
-                            this.message.categoryId=this.flow.fid
-                            this.message.category=1
-                            this.message.uid=res.data.contract.uid;
-                            if(this.message.msg!=''){
-                            message.addMessage(this.message)
-                            }
-                        })
-                    }
-                }else{
-                    if(i.length==19){
-                        this.message.msg='您的流程'+this.list.serialNum+'已被删除'
-                        this.message.categoryId=i
-                    }else {
-                        this.message.categoryId=this.flow.fid
-                    }
-                    // if(i==2){//流程分案
-                    //     this.message.msg='您的流程'+this.list.serialNum+'已通过财务审核'
-                    //     this.message.uid=this.list.uid;
-                    //     messages.push(this.message);
-                    // }else if(i==3){//清单上传
-                    //     this.message.msg='您的流程'+this.list.serialNum+'已通过流程分案'
-                    //     this.message.uid=this.list.uid;
-                    //     messages.push(this.message);
-                    // }
-                    if(i==4){//申报材料上传
-                        if(this.materials=='撤回'){
-                            this.message.msg='您的流程'+this.list.serialNum+'材料处理问题,流程撤销至补充'
-                            this.message.uid=this.list.uid;
-                            messages.push(this.message);
-                        }else if(this.addOrSubtract==1){//驳回
-                            this.message.msg='您的流程'+this.list.serialNum+'被驳回,流程退至申报材料上传，请及时修改'
-                            this.message.uid=this.list.uid;
-                            messages.push(this.message);
-                        }else{
-                            this.message.msg='您的流程'+this.list.serialNum+'已通过清单上传,等待您提交申报材料'
-                            this.message.uid=this.list.uid;
-                            messages.push(this.message);
-                        }
-                    }else if(i==5){//材料制作
-                        if(this.flow.type==1){
-                            if(this.addOrSubtract==1){//驳回
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.msg='流程'+this.list.serialNum+'被驳回,需要重新进行材料制作，请确认'
-                                m.send=this.roles.uid
-                                messages.push(m);
-                            }else if(this.materials=='撤回'){
-                                this.message.msg='流程'+this.list.serialNum+'材料存在问题,流程已撤回，请重新确认材料'
-                                this.message.uid=this.list.agentId
-                                messages.push(this.message);
-                            }else{
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.send=this.roles.uid
-                                m.msg='增加品牌流程'+this.list.serialNum+'已分案给您，需要进行材料制作，请确认'
-                                messages.push(m);
-                            }
-                        }else{
-                            if(this.materials=='撤回'){
-                                this.message.msg='流程'+this.list.serialNum+'材料制作存在问题,流程撤销至材料制作'
-                                this.message.uid=this.list.agentId;
-                                messages.push(this.message);
-                            }else if(this.addOrSubtract==1){//驳回
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.msg='流程'+this.list.serialNum+'被驳回,需要重新进行材料制作，请确认'
-                                m.send=this.roles.uid
-                                messages.push(m);
-                            }else{
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.send=this.roles.uid
-                                m.msg='流程'+this.list.serialNum+'已通过申报材料提供，需要进行材料制作，请确认'
-                                messages.push(m);
-                            }
-                        }
-                        
-                    }else if(i==6){//盖章材料制作
-                        if(this.materials=='撤回'){
-                            this.message.msg='流程'+this.list.serialNum+'盖章材料存在问题,流程已撤回，请重新确认盖章材料'
-                            this.message.uid=this.list.uid;
-                            messages.push(this.message);
-                        }else{
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.uid
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已通过材料制作，需要提供盖章材料，请确认'
-                            messages.push(m);
-                        }
-                    }else if(i==7){//盖章材料审核
-                        if(this.list.type==1){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'材料已制作完成，等待管理部门审核结果'
-                            messages.push(m);
-                        }else{
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.uid
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'盖章材料已提供，需要审核，请确认'
-                            messages.push(m);
-                        }
-                        
-                    }
-                    else if(i==10){//顾问确认
-                        this.message.msg='您的流程'+this.list.serialNum+'已通过流程确认，需要您确认'
-                        this.message.uid=this.list.uid;
-                        messages.push(this.message);
-                    }
-                    // else if(i==6){//商务局审核
-                    //     if(this.list.uporadd==''||this.list.uporadd==null){
-                    //        this.message.msg='您的流程'+this.list.serialNum+'已通过材料制作'
-                    //        this.message.uid=this.list.uid;
-                    //        messages.push(this.message);
-                    //     }else if(this.list.uporadd==0){
-                    //        this.message.msg='您的流程'+this.list.serialNum+'已完成对‘申报材料提供’的修改'
-                    //        this.message.uid=this.list.uid;
-                    //         messages.push(this.message);
-                    //     }else if(this.list.uporadd==1){
-                    //         this.message.msg='您的流程'+this.list.serialNum+'已完成对‘材料制作’的修改'
-                    //         this.message.uid=this.list.uid;
-                    //         messages.push(this.message);
-                    //     }
-                    // }
-                    else if(i==12){//已交互
-                        this.message.uid=this.list.uid;
-                        if(this.list.lastAmount==0){
-                            this.message.msg='您的流程'+this.list.serialNum+'已通过流程确认,进入已交互状态'
-                        }else{
-                            this.message.msg='您的流程'+this.list.serialNum+'已通过尾款确认,进入已交互状态'
-                        }
-                        messages.push(this.message)
-                    }
-                    // else if(i==9){//尾款审核
-                    //     this.message.msg='您的流程'+this.list.serialNum+'已通过顾问确认'
-                    //     this.message.uid=this.list.uid;
-                    //     messages.push(this.message);
-                    // }
-                    
-                    if(i==2){//流程分案
-                        for(let i=0;i<this.flowmanager.length;i++){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.flowmanager[i].uid
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'需要进行流程分案，请确认'
-                            messages.push(m);
-                        }
-                    }else if(i==3){//清单上传
-                        let m={}
-                        m.category=1
-                        m.categoryId=this.flow.fid
-                        m.uid=this.list.agentId
-                        m.send=this.roles.uid
-                        m.msg='流程'+this.list.serialNum+'需要进行清单上传，请确认'
-                        messages.push(m);
-                    
-                    }else if(i==9){//流程审核
-                        for(let i=0;i<this.flowmanager.length;i++){
-                            if(this.list.type!=1){
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.flowmanager[i].uid
-                                m.send=this.roles.uid
-                                m.msg='流程'+this.list.serialNum+'已通过商务局审核，需要流程确认，请确认'
-                                messages.push(m);
-                            }else{
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.flowmanager[i].uid
-                                m.send=this.roles.uid
-                                m.msg='增加品牌流程'+this.list.serialNum+'已通过材料审核，需要流程确认，请确认'
-                                messages.push(m);
-                            }
-                            
-                        }
-                    }else if(i==8){//商务局审核
-                        if(this.list.uporadd==''||this.list.uporadd==null){
-                            if(this.list.type!=1){
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.send=this.roles.uid
-                                m.msg='流程'+this.list.serialNum+'已通过盖章材料审核，需要商务局审核，请确认'
-                                messages.push(m)
-                            }else{
-                                let m={}
-                                m.category=1
-                                m.categoryId=this.flow.fid
-                                m.uid=this.list.agentId
-                                m.send=this.roles.uid
-                                m.msg='流程'+this.list.serialNum+'已通过管理部门审核，等待资料审核中'
-                                messages.push(m)
-                            }
-                        }else if(this.list.uporadd==0){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'申报材料提供已修改（补充），请确认'
-                            messages.push(m);
-                        }else if(this.list.uporadd==1){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.list.agentId
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已完成‘材料制作’的修改，请确认'
-                            messages.push(m);
-                        }
-                    }else if(i==11){//尾款审核
-                        for(let i=0;i<this.finance.length;i++){
-                            let m={}
-                            m.category=1
-                            m.categoryId=this.flow.fid
-                            m.uid=this.finance[i].uid
-                            m.send=this.roles.uid
-                            m.msg='流程'+this.list.serialNum+'已通过顾问确认，需要尾款审核，请确认'
-                            messages.push(m);
-                        }
-                    }
-                    return messages
-                }
-        },
         handlePreview(file) {
             console.log(file);
         },
@@ -614,19 +446,32 @@ export default {//定义变量和初始值
 
 }
 </script>
-<style>
-.el-form-item{
+<style scoped>
+.box .el-checkbox{
+    margin-right: 10px;
+}
+.box .el-form-item{
     margin: 0px;
     margin-top:20px;
 }
+.box .mail-li{
+    /*  */
+    width: 1220px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+    /* width: 450px; */
+}
 .box{
-    width: 550px;
-    /* height: 400px; */
+    /* width: 550px; */
+    /* height: 850px; */
     padding: 20px;
     padding-left: 60px;
+    padding-top: 50px;
     background-color: #fff;
-    border: 1px solid #DDDCDC;
-    box-shadow: 0px 5px 10px #AFAEAE;
+    /* border: 1px solid #DDDCDC; */
+    /* box-shadow: 0px 5px 10px #AFAEAE; */
 }
 .app-container{
     height: 100%; 

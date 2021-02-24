@@ -17,7 +17,7 @@
                 </div>
                 <div class="libox">
                     <div class="li">
-                        <h3 >特许人基本信息
+                        <h3><i class="el-icon-document"></i> 特许人基本信息
                             <div class="show" @click="isShow(0)" style="position: relative;left:97px">
                                 <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                             </div>
@@ -26,35 +26,35 @@
                     <el-collapse-transition>
                         <div class="lifroms" v-show="show.info">
                             <el-form-item label="公司全称"  prop="companyName" >
-                                <el-input :disabled="!infoOrAdd" name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
+                                <el-input style="width:250px" :disabled="!infoOrAdd" name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
                             </el-form-item>
                             <el-form-item label="联系人" prop="respName" >
-                                <el-input :disabled="!infoOrAdd" name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
+                                <el-input style="width:120px" :disabled="!infoOrAdd" name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
                             </el-form-item>
                             <el-form-item label="联系电话" prop="phone" >
-                                <el-input :disabled="!infoOrAdd"  name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                <el-input style="width:150px" :disabled="!infoOrAdd"  name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
                             </el-form-item>
                             <el-form-item label="公司地址"  prop="companyAddrss" >
-                                <el-input :disabled="!infoOrAdd" name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
+                                <el-input style="width:250px" :disabled="!infoOrAdd" name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
                             </el-form-item>
                             <el-form-item label="电子邮件"  >
-                                <el-input :disabled="!infoOrAdd" name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
+                                <el-input style="width:170px" :disabled="!infoOrAdd" name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
                             </el-form-item>
                             <el-form-item label="经办人职位"  >
-                                <el-input :disabled="!infoOrAdd" name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                <el-input style="width:110px" :disabled="!infoOrAdd" name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
                             </el-form-item>
                             <el-form-item label="公司座机" >
                                 <el-input :disabled="!infoOrAdd" name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
                             </el-form-item>
                             <el-form-item label="公司网址" >
-                                <el-input :disabled="!infoOrAdd" name="url" v-model="contract.url" placeholder="公司网址"></el-input>
+                                <el-input style="width:150px" :disabled="!infoOrAdd" name="url" v-model="contract.url" placeholder="公司网址"></el-input>
                             </el-form-item>
                         </div>
                     </el-collapse-transition>
-                </div>
+                </div>   
                 <div class="libox">
                     <div class="li">
-                        <h3>时间
+                        <h3><i class="el-icon-date"></i> 时间
                             <div class="show" @click="isShow(1)">
                                 <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                             </div>
@@ -63,15 +63,38 @@
                     <el-collapse-transition>
                         <div class="lifroms" v-show="show.time">
                             <el-form-item label="预计月数" prop="anticMonths">
-                            <el-input-number :disabled="!infoOrAdd" name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                            <el-input-number style="width:150px" :disabled="!infoOrAdd" name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                            </el-form-item>
+                        </div>
+                    </el-collapse-transition>
+                </div>
+                <div class="libox">
+                    <div class="li">
+                        <h3><i class="el-icon-link"></i> 签约主体
+                            <div class="show" @click="isShow(2)">
+                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                            </div>
+                        </h3>
+                    </div>
+                    <el-collapse-transition>
+                        <div class="lifroms" v-show="show.accountInfo">
+                            <el-form-item label="签约主体" prop="accountInfo">
+                                <el-select style="width:270px" :disabled="!infoOrAdd" v-model="contract.accountInfo" filterable placeholder="请选择">
+                                    <el-option
+                                    v-for="item in myCompany"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                                    </el-option>
+                                </el-select>
                             </el-form-item>
                         </div>
                     </el-collapse-transition>
                 </div>
                 <div class="libox">
                     <div class="li" >
-                    <h3 style="margin-bottom:15px">备案项目
-                         <div class="show" @click="isShow(2)">
+                    <h3><i class="el-icon-coin"></i> 备案项目
+                        <div class="show" @click="isShow(3)">
                             <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                         </div>
                     </h3>
@@ -126,38 +149,38 @@
                                 </div>
                             </div>
                             <el-form v-for="(list,i) in contract.project" :key="list.value" :model="list" :rules="saveRules" ref="project">
-                                <h4 style="margin-bottom:0px;height:40px;line-height:40px">项目{{i+1}}:
-                                    <div style="float:right" v-if="infoOrAdd&&i!=0">
-                                         <el-link type="danger" @click="removeProject(i)" style="height:20px">删除项目-</el-link>
-                                    </div>
-                                </h4>
+                               
                                 <el-form v-for="(item,j) in list" :key="item.value" :model="item" :rules="saveRules" ref="project[j]">
                                     <h5 style="margin-bottom:0px;line-height:40px" v-if="j==0">
+                                         <h4 class="projects">项目{{i+1}}: </h4>
                                         <el-form-item style="margin-top:0px" label="付款方式" prop="paymentType">
-                                            <el-select :disabled="!infoOrAdd"  @change="firstAmountSum()" v-model="paymentType" placeholder="请选择付款方式">
+                                            <el-select style="width:110px" :disabled="!infoOrAdd"  @change="firstAmountSum()" v-model="paymentType" placeholder="请选择付款方式">
                                                 <el-option label="全额付款" :value="1"></el-option>
                                                 <el-option label="分期付款" :value="2"></el-option>
                                             </el-select>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px" label="付款方式" prop="installmentType" v-if="paymentType==2">
-                                            <el-select :disabled="!infoOrAdd" @change="firstAmountSum()" v-model="installmentType" placeholder="请选择支付方式">
+                                            <el-select style="width:110px" :disabled="!infoOrAdd" @change="firstAmountSum()" v-model="installmentType" placeholder="请选择支付方式">
                                                 <el-option label="二期付款" :value="1"></el-option>
                                                 <el-option label="三期付款" :value="2"></el-option>
                                             </el-select>
                                         </el-form-item>
-                                        <div v-if="paymentType==2"></div>
+                                        <!-- <div v-if="paymentType==2"></div> -->
                                         <el-form-item style="margin-top:0px" label="单价金额" prop="price">
-                                            <el-input oninput="value=value.replace(/[^\d]/g,'')" :disabled="!infoOrAdd" name="fullAmount" v-model="item.price" placeholder="单件价格"></el-input>
+                                            <el-input style="width:90px" oninput="value=value.replace(/[^\d]/g,'')" :disabled="!infoOrAdd" name="fullAmount" v-model="item.price" placeholder="单件价格"></el-input>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px"  label="首款金额" v-if="paymentType==2" prop="firstAmount">
-                                            <el-input :disabled="!infoOrAdd" name="firstAmount" v-model="item.firstAmount" placeholder="首款金额"></el-input>
+                                            <el-input style="width:90px" :disabled="!infoOrAdd" name="firstAmount" v-model="item.firstAmount" placeholder="首款金额"></el-input>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px"  label="中期金额" v-if="installmentType==2" prop="interimAmount">
-                                            <el-input :disabled="!infoOrAdd" name="interimAmount" v-model="item.interimAmount" placeholder="中期金额"></el-input>
+                                            <el-input style="width:90px" :disabled="!infoOrAdd" name="interimAmount" v-model="item.interimAmount" placeholder="中期金额"></el-input>
                                         </el-form-item>
                                         <el-form-item style="margin-top:0px" label="尾款金额" v-if="paymentType==2" prop="lastAmount">
-                                            <el-input :disabled="!infoOrAdd" name="lastAmount" v-model="item.lastAmount" placeholder="尾款金额"></el-input>
+                                            <el-input style="width:90px" :disabled="!infoOrAdd" name="lastAmount" v-model="item.lastAmount" placeholder="尾款金额"></el-input>
                                         </el-form-item>
+                                        <div style="float:right" v-if="infoOrAdd&&i!=0">
+                                            <el-link type="danger" @click="removeProject(i)" style="height:20px">删除项目-</el-link>
+                                        </div>
                                     </h5>
                                     <h5 style="margin:0px;height:20px;margin-bottom:0px;margin-left:10px">
                                         <div style="float:left">类型{{j+1}}:</div>
@@ -166,7 +189,7 @@
                                         </div>
                                     </h5>
                                     <el-form-item  label="权利类型" prop="ptype">
-                                        <el-select :disabled="!infoOrAdd" v-model="item.ptype" filterable placeholder="请选择">
+                                        <el-select style="width:100px" :disabled="!infoOrAdd" v-model="item.ptype" filterable placeholder="请选择">
                                             <el-option label="商标权" value="商标权"></el-option>
                                             <el-option label="著作权" value="著作权"></el-option>
                                             <el-option label="专利权" value="专利权"></el-option>
@@ -178,6 +201,7 @@
                                     <el-form-item label="权利号" prop="pnumber">
                                         <!-- oninput="value=value.replace(/[^\d]/g,'')" -->
                                         <el-input 
+                                            style="width:110px"
                                             :disabled="!infoOrAdd"
                                             name="brand"
                                             v-model="item.pnumber"
@@ -185,45 +209,49 @@
                                         </el-input>
                                     </el-form-item>
                                     <el-form-item label="权利性质" prop="pproperty">
-                                        <el-select :disabled="!infoOrAdd" v-model="item.pproperty" filterable placeholder="请选择">
+                                        <el-select style="width:90px" :disabled="!infoOrAdd" v-model="item.pproperty" filterable placeholder="请选择">
                                             <el-option label="所有权" value="所有权"></el-option>
                                             <el-option label="使用权" value="使用权"></el-option>
                                         </el-select>
                                     </el-form-item>
                                     <el-form-item label="权利期限" v-if="item.ptype=='著作权'&&infoOrAdd">
                                         <el-date-picker
+                                        style="width:140px"
                                         v-model="item.pbegin"
                                         type="date"
                                         value-format="yyyy-MM-dd"
-                                        placeholder="请选择开始日期">
+                                        placeholder="开始日期">
                                         </el-date-picker>
                                         --
                                         <el-date-picker
+                                        style="width:140px"
                                         v-model="item.pend"
                                         type="date"
                                         value-format="yyyy-MM-dd"
-                                        placeholder="请选择结束日期">
+                                        placeholder="结束日期">
                                         </el-date-picker>
                                     </el-form-item>
                                     <el-form-item label="权利期限" prop="pbegin" v-else-if="infoOrAdd">
                                         <el-date-picker
+                                        style="width:140px"
                                         v-model="item.pbegin"
                                         type="date"
                                         value-format="yyyy-MM-dd"
-                                        placeholder="请选择开始日期">
+                                        placeholder="开始日期">
                                         </el-date-picker>
                                         --
                                         <el-date-picker
+                                        style="width:140px"
                                         v-model="item.pend"
                                         type="date"
                                         value-format="yyyy-MM-dd"
-                                        placeholder="请选择结束日期">
+                                        placeholder="结束日期">
                                         </el-date-picker>
                                     </el-form-item>
                                     <el-form-item label="权利期限"  v-if="!infoOrAdd">
                                         <span >{{item.pbegin}}-{{item.pend}}</span>
                                     </el-form-item>
-                                    <el-form-item v-if="j==contract.project[i].length-1" style="float:right;margin-right:20px" >
+                                    <el-form-item v-if="j==contract.project[i].length-1" style="float:right;margin-right:0px" >
                                         <el-link @click="addType(i)" type="primary" style="height:20px" v-if="infoOrAdd">添加类型+</el-link>
                                     </el-form-item>
                                     <el-form-item>
@@ -252,8 +280,8 @@
                                                     资料列表<i class="el-icon-arrow-down el-icon--right"></i>
                                                 </span>
                                                 <el-dropdown-menu slot="dropdown">
-                                                    <el-dropdown-item v-for="(filelist,i) in contract.project[i][j].materia" :key="filelist.value">
-                                                        <el-link @click="dowload(filelist.response.data.url[i])" type="primary">{{filelist.name}}</el-link>
+                                                    <el-dropdown-item v-for="(filelist) in contract.project[i][j].materia" :key="filelist.value">
+                                                        <el-link @click="dowload(filelist.response.data.url[0])" type="primary">{{filelist.name}}</el-link>
                                                     </el-dropdown-item>
                                                 </el-dropdown-menu>
                                             </el-dropdown>
@@ -269,8 +297,8 @@
                 </div>
                 <div class="libox">
                     <div class="li">
-                    <h3>金额
-                        <div class="show" @click="isShow(3)">
+                    <h3><i class="el-icon-coin"></i> 金额
+                        <div class="show" @click="isShow(4)">
                             <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                         </div>
                     </h3>
@@ -302,16 +330,16 @@
                 </div>
                 <div class="libox">
                     <div class="li">
-                    <h3 style="margin-bottom:15px">提交信息
-                        <div class="show" @click="isShow(4)">
+                    <h3 style="margin-bottom:15px"><i class="el-icon-position"></i> 提交信息
+                        <div class="show" @click="isShow(5)">
                             <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                         </div>
                     </h3>
                     </div>
                     <el-collapse-transition>
                     <div class="lifroms" v-show="show.commit">
-                        <h4 style="margin-bottom:15px">描述信息</h4>
-                        <el-form-item style="margin:0px;margin-left:32px">
+                        <!-- <h4 style="margin-bottom:15px">描述信息</h4> -->
+                        <el-form-item label="描述信息" style="margin:0px;margin-top:20px">
                             <el-input
                             :disabled="!infoOrAdd"
                             style="width:300px"
@@ -322,8 +350,10 @@
                         </el-form-item>
                         <div></div>
                         <el-form-item v-if="infoOrAdd">
-                            <el-button type="primary" v-if="!loading"  @click.native.prevent="commit" >提交</el-button>
-                            <el-button disabled type="primary" v-if="loading">提交</el-button>
+                            <el-button type="primary" v-if="!loading&&$route.params.id!=undefined&&$route.params.id.length==19" icon="el-icon-finished" @click.native.prevent="commitDrafts" >提交</el-button>
+                            <el-button type="primary" v-else-if="!loading" icon="el-icon-finished" @click.native.prevent="commit" >提交</el-button>
+                            <el-button disabled type="primary" icon="el-icon-finished" v-if="loading">提交</el-button>
+                            <el-button type="info" icon="el-icon-edit-outline" @click.native.prevent="saveOrUpdate" v-if="!loading">保存至草稿箱</el-button>
                         </el-form-item>
                         <div></div>
                         <el-form-item style="color:aliceblue" v-if="loading">
@@ -333,6 +363,7 @@
                     </div>
                     </el-collapse-transition>
                 </div>
+                <el-backtop target=".page-component__scroll .el-scrollbar__wrap"></el-backtop>
             </el-form>
          </template>
     </div>
@@ -346,6 +377,7 @@ import { mapGetters } from 'vuex'
 import message from '@/api/edu/message'
 import user from '@/api/edu/user'
 import project from '@/api/edu/project'
+import company from '@/api/edu/company'
 export default {
     computed: {
         ...mapGetters([
@@ -354,9 +386,14 @@ export default {
         ])
     },
     created(){ 
+        this.getCompany()
         let id=this.$route.params.id;
         if(id!=undefined&&id.length==19){//查看信息
-            this.infoOrAdd=false
+            if(this.$route.path.indexOf("/contract/projectUpdate")<0){
+                this.infoOrAdd=false
+            }else{
+                this.infoOrAdd=true
+            }
             this.getManagement();
             if(id!=null){
                 this.getContract(id);
@@ -365,7 +402,6 @@ export default {
             let c=null
             c=JSON.parse(this.getCookie('addbrand'))
             if(c!=null&&c!=undefined&&c!=''){
-                
                 this.contract=c
                 if(this.contract.firstAmount!=0&&this.contract.firstAmount!=''&&this.contract.firstAmount!=null){
                     this.paymentType=2
@@ -508,12 +544,13 @@ export default {
             paymentType:1,
             projectIndex:-1,
             num:1,
-            show:{info:true,time:true,money:true,shop:true,right:true,commit:true},
+            show:{info:true,time:true,money:true,accountInfo:true,shop:true,right:true,commit:true},
             infoOrAdd:false,
             management:{},
             visible1:false,
             visible2:false,
             vis:false,
+            myCompany:[],
             message:{},
             contract:{
                 uid:'',
@@ -579,6 +616,7 @@ export default {
                 companyAddrss:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pname:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 ptype:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                accountInfo:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pnumber:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pproperty:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pbegin:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -593,6 +631,182 @@ export default {
         }
     },
      methods:{
+        saveOrUpdate(){
+            let id=this.$route.params.id;
+            if(id!=undefined&&id.length==19){
+                this.updateDrafts()
+            }else{
+               this.saveDrafts() 
+            }
+        },
+        saveDrafts(){
+            this.loading=true
+            this.value1=false
+            this.contract.uid=this.roles.uid;
+            this.contract.uname=this.roles.uname
+            this.contract.uphone=this.roles.phoneNum
+            for(let i=0;i<this.contract.project.length;i++){
+                for(let j=0;j<this.contract.project[i].length;j++){
+                    if(this.contract.project[i][j].materia[0]){
+                        if(this.contract.project[i][j].materia[0].name!=undefined){
+                            this.contract.project[i][j].materia=JSON.stringify(this.contract.project[i][j].materia)
+                        }
+                    }else{
+                        this.contract.project[i][j].materia="[]"
+                    }
+                    if(this.contract.project[i][j].pbegin!=null){
+                        this.contract.project[i][j].pbegin=moment(this.contract.project[i][j].pbegin).valueOf()
+                        this.contract.project[i][j].pend=moment(this.contract.project[i][j].pend).valueOf()
+                    }
+                    if(this.paymentType==1){
+                        this.contract.project[i][j].firstAmount=null
+                        this.contract.project[i][j].lastAmount=null
+                        this.contract.firstAmount=null
+                        this.contract.lastAmount=null
+                    }
+                }
+            }
+            let ls=[];
+            const loading = this.$loading({
+                lock: true,
+                text: '正在生成合同',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            if(this.installmentType==2){
+                this.contract.src=JSON.stringify(this.filelist)
+            }else{
+                this.contract.src=''
+            }
+            contract.saveDrafts(this.contract)
+            .then(res=>{
+                this.$message({
+                    type: 'success',
+                    message: '提交成功!'
+                });
+                //禁止存放cookie
+                for(let i=0;i<this.contract.project.length;i++){
+                    for(let j=0;j<this.contract.project[i].length;j++){
+                        this.contract.project[i][j].cid=res.data.contract.cid
+                    }
+                }
+                project.addProject(this.contract.project)
+                .then(resp=>{
+                    loading.close();
+                    this.loading=false
+                    this.$router.push({path:'/audit/drafts'})
+                })
+                .catch(error=>{
+                    loading.close();
+                    this.loading=false
+                    this.$message({
+                        type: 'error',
+                        message: '项目插入出错..'
+                    });
+                })
+            })
+            .catch(error=>{
+                loading.close();
+                this.loading=false
+                this.$message({
+                    type: 'error',
+                    message: '提交失败，请重新提交!'
+                });
+            })
+        },
+        commitDrafts(){
+            this.$refs['contract'].validate(valid => {
+                let valid2=this.vismateria()
+                // console.log(this.$refs.project)
+                // this.$refs.project.validate(valid2=>{
+                    if (valid&&valid2) {
+                        this.updateDrafts(false)
+                    }
+            })
+        },
+        updateDrafts(isDrafts=true){
+            this.loading=true
+            this.value1=false
+            for(let i=0;i<this.contract.project.length;i++){
+                for(let j=0;j<this.contract.project[i].length;j++){
+                    if(this.contract.project[i][j].materia[0]){
+                        if(this.contract.project[i][j].materia[0].name!=undefined){
+                            this.contract.project[i][j].materia=JSON.stringify(this.contract.project[i][j].materia)
+                        }
+                    }else{
+                        this.contract.project[i][j].materia="[]"
+                    }
+                    if(this.contract.project[i][j].pbegin!=null){
+                        this.contract.project[i][j].pbegin=moment(this.contract.project[i][j].pbegin).valueOf()
+                        this.contract.project[i][j].pend=moment(this.contract.project[i][j].pend).valueOf()
+                    }
+                    if(this.paymentType==1){
+                        this.contract.project[i][j].firstAmount=null
+                        this.contract.project[i][j].lastAmount=null
+                        this.contract.firstAmount=null
+                        this.contract.lastAmount=null
+                    }
+                }
+            }
+            let ls=[];
+            const loading = this.$loading({
+                lock: true,
+                text: '正在生成合同',
+                spinner: 'el-icon-loading',
+                background: 'rgba(0, 0, 0, 0.7)'
+            });
+            if(this.installmentType==2){
+                this.contract.src=JSON.stringify(this.filelist)
+            }else{
+                this.contract.src=''
+            }
+            this.contract.isDrafts=isDrafts
+            contract.updateDrafts(this.contract)
+            .then(res=>{
+                //禁止存放cookie
+                for(let i=0;i<this.contract.project.length;i++){
+                    for(let j=0;j<this.contract.project[i].length;j++){
+                        this.contract.project[i][j].cid=res.data.contract.cid
+                    }
+                }
+                project.remove(res.data.contract.cid)
+                .then(rest=>{
+                    project.addProject(this.contract.project)
+                    .then(rest=>{
+                        this.loading2=false
+                        this.$message({
+                            type: 'success',
+                            message: '提交成功!'
+                        });
+                        if(!isDrafts){
+                            let messages=this.msg(res.data.contract.cid,res.data.contract.serialNum)
+                            message.addMessages(messages)
+                            .then(respons=>{
+                            })
+                        }
+                        loading.close();
+                        this.$router.push({path:'/audit/drafts'})
+                    // this.contract.src=res.data.path
+                    })
+                    .catch(error=>{
+                        loading.close();
+                        this.loading=false
+                        this.$message({
+                            type: 'error',
+                            message: '项目修改出错..'
+                        });
+                    })
+                })
+            })
+            .catch(error=>{
+                loading.close();
+                this.loading=false
+                this.$message({
+                    type: 'error',
+                    message: '提交失败，请重新提交!'
+                });
+            })
+        },
         contractUploadSuccess(response, file, fileList){
             this.$message({
                 type:'success',
@@ -717,13 +931,16 @@ export default {
             }else if(i==1){
                 pd=this.show.time
                 this.show.time=!this.show.time
-            }else if(i==3){
+            }else if(i==4){
                 pd=this.show.money
                 this.show.money=!this.show.money
             }else if(i==2){
+                pd=this.show.accountInfo
+                this.show.accountInfo=!this.show.accountInfo
+            }else if(i==3){
                 pd=this.show.right
                 this.show.right=!this.show.right
-            }else if(i==4){
+            }else if(i==5){
                 pd=this.show.commit
                 this.show.commit=!this.show.commit
             }
@@ -758,6 +975,12 @@ export default {
                     }]
                 this.contract.project.push(project)
             }
+        },
+        getCompany(){
+            company.getCompany()
+            .then(res=>{
+                this.myCompany=res.data.company
+            })
         },
         addType(i){
             let project={
@@ -853,6 +1076,13 @@ export default {
             this.contract.src=''
         },
         vismateria(){
+            if(!this.contract.accountInfo){
+                this.$message({
+                    type: 'warning',
+                    message: '请选择签约主体!'
+                });
+                return false
+            }
             if(this.paymentType==2&&this.installmentType==2&&this.filelist.length==0){
                 this.$message({
                     type: 'warning',
@@ -950,7 +1180,6 @@ export default {
                     
                 }
             }
-            
             return true
         },
         updateHandler() {
@@ -1130,7 +1359,8 @@ export default {
             contract.getContract(id)
             .then(res=>{
                 this.contract=res.data.contract
-                this.contract.project=res.data.projects
+                this.$set(this.contract,"project",res.data.projects)
+                // this.contract.project=res.data.projects
                 if(res.data.projects.length!=0){
                     this.fileTransform()
                 }else{
@@ -1150,17 +1380,17 @@ export default {
         },
         fileTransform(){
             for(let i=0;i<this.contract.project.length;i++){
-                        // console.log(this.contract.project[i][0].materia)
-                        for(let j=0;j<this.contract.project[i].length;j++){
-                            this.contract.project[i][j].materia=JSON.parse(this.contract.project[i][j].materia)
-                            this.contract.project[i][j].cid=this.contract.cid
-                            // console.log(this.contract.project[i][j].pbegin)
-                            if(this.contract.project[i][j].pbegin!=null){
-                                this.contract.project[i][j].pbegin=moment(this.contract.project[i][j].pbegin).format('YYYY.MM.DD')
-                                this.contract.project[i][j].pend=moment(this.contract.project[i][j].pend).format('YYYY.MM.DD')
-                            }
-                        }
+                // console.log(this.contract.project[i][0].materia)
+                for(let j=0;j<this.contract.project[i].length;j++){
+                    this.contract.project[i][j].materia=JSON.parse(this.contract.project[i][j].materia)
+                    this.contract.project[i][j].cid=this.contract.cid
+                    // console.log(this.contract.project[i][j].pbegin)
+                    if(this.contract.project[i][j].pbegin!=null){
+                        this.contract.project[i][j].pbegin=moment(this.contract.project[i][j].pbegin).format('YYYY.MM.DD')
+                        this.contract.project[i][j].pend=moment(this.contract.project[i][j].pend).format('YYYY.MM.DD')
                     }
+                }
+            }
         },
         type(){
             if(this.contract.rightNum.indexOf("1")>=0){
@@ -1269,12 +1499,13 @@ export default {
     box-shadow: inset 2px 1px 5px #cbc9c9;
 }
 .container .el-form-item{
-    margin-top: 30px;
-    margin-left: 30px;
+    margin-top: 15px;
+    /* margin-left: 30px; */
+    margin-bottom: 15px;
     /* width: 300px; */
 }
 .container .el-form-item__label{
-    width: 93px;
+    /* width: 93px; */
 }
 .container h3{
     background:url('../../../assets/white-title.png');
@@ -1290,7 +1521,8 @@ export default {
     /* top:13px; */
 }
 .container .lifroms{
-    padding:0px 130px;
+    position: relative;
+    padding:0px 90px;
 }
 .container .libox{
     /* transition: height 0.3s; */
@@ -1343,6 +1575,16 @@ export default {
     border-radius: 50%;
     float:right;
 }
+.projects{
+    margin-bottom:0px;
+    margin-top:0px;
+    height:40px;
+    line-height:40px;
+    float:left;
+    font-size:20px;
+    position:absolute;
+    left: 25px;
+}
 .el-dropdown-link {
     cursor: pointer;
     color: #66aef5;
@@ -1387,8 +1629,8 @@ export default {
     border: none;
 }
 .container .el-button--primary{
-    width: 200px;
-    height: 45px;
+    width: 140px;
+    /* height: 45px; */
     /* background-color: #ffac02; */
 }
 .container .el-input__inner[disabled]{
@@ -1405,6 +1647,9 @@ export default {
 .el-checkbox{
     margin: 0px;
     margin-right: 10px ;
+}
+.el-divider--horizontal{
+    margin: 5px 0; 
 }
 .reData{
     width: 100px;

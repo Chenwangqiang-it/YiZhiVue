@@ -23,8 +23,13 @@
           :base-path="resolvePath(child.path)"
           class="nest-menu" />
         <app-link v-else :to="resolvePath(child.path)" :key="child.name">
-          <el-menu-item :index="resolvePath(child.path)">
-            <item v-if="child.meta" :icon="child.meta.icon" :title="child.meta.title" />
+          <el-badge :value="child.meta.count" class="item" v-if="child.meta.count&&child.meta.count!=0">
+            <el-menu-item :index="resolvePath(child.path)">
+                <item v-if="child.meta" :icon="child.meta.icon" :title="child.meta.title" />
+            </el-menu-item>
+          </el-badge>
+          <el-menu-item :index="resolvePath(child.path)" v-else>
+              <item v-if="child.meta" :icon="child.meta.icon" :title="child.meta.title" />
           </el-menu-item>
         </app-link>
       </template>
@@ -34,11 +39,19 @@
 
 <script>
 import path from 'path'
+import invoice from '@/api/edu/invoice'
 import { isExternal } from '@/utils'
 import Item from './Item'
+import { mapGetters } from 'vuex'
 import AppLink from './Link'
 
 export default {
+  computed: {
+      ...mapGetters([
+      'name',
+      'roles'
+      ])
+  },
   name: 'SidebarItem',
   components: { Item, AppLink },
   props: {
@@ -58,9 +71,13 @@ export default {
   },
   data() {
     return {
-      onlyOneChild: null
+      onlyOneChild: null,
+      invoice:{}
     }
   },
+  // created(){
+  //     this.init()
+  // },
   methods: {
     hasOneShowingChild(children, parent) {
       const showingChildren = children.filter(item => {
@@ -72,7 +89,7 @@ export default {
           return true
         }
       })
-
+      
       // When there is only one child router, the child router is displayed by default
       if (showingChildren.length === 1) {
         return true
@@ -86,6 +103,10 @@ export default {
 
       return false
     },
+    // init(){
+    //   this.countInvoice()
+    //   console.log(Item)
+    // },
     resolvePath(routePath) {
       if (this.isExternalLink(routePath)) {
         return routePath
@@ -98,3 +119,9 @@ export default {
   }
 }
 </script>
+<style>
+.el-badge__content.is-fixed{
+    top: 20px;
+    right: 50px;
+}
+</style>

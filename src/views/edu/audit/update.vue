@@ -9,41 +9,47 @@
                  <el-form :inline="true" ref="contract" :model="contract" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px" >                  
                     <div class="libox">
                         <div class="li">
-                            <h3 >特许人基本信息
-                                <div class="show" @click="isShow(0)">
+                            <h3><i class="el-icon-document"></i> 特许人基本信息
+                                <div class="show" @click="isShow(0)" style="position: relative;">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
+                            <!-- <h3 >特许人基本信息
+                                <div class="show" @click="isShow(0)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3> -->
                         </div>
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.info">
                                 <el-form-item label="公司全称"  prop="companyName" >
-                                    <el-input  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
-                                </el-form-item>
-                                <el-form-item label="经办人姓名" prop="respName" >
-                                    <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
-                                </el-form-item>
-                                <el-form-item label="联系电话" prop="phone" >
-                                    <el-input   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
-                                </el-form-item>
-                                <el-form-item label="电子邮件" prop="email" >
-                                    <el-input  name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
+                                    <el-input  style="width:250px"  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
                                 </el-form-item>
                                 <el-form-item label="项目名称" prop="trade" >
                                     <el-input  name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
                                 </el-form-item>
-                                <el-form-item label="经办人职位" prop="respPost" >
-                                    <el-input  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                <el-form-item label="电子邮件" prop="email" >
+                                    <el-input  name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
                                 </el-form-item>
-                                <el-form-item label="公司地址"  prop="companyAddrss" >
-                                    <el-input  name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
-                                </el-form-item>
-                                <!-- <div></div> -->
-                                <el-form-item label="公司座机" >
+                                <el-form-item  label="公司座机" >
                                     <el-input  name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
                                 </el-form-item>
+                                
+                                <el-form-item label="经办人姓名" prop="respName" >
+                                    <el-input style="width:120px"   name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人职位" prop="respPost" >
+                                    <el-input style="width:120px"  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                </el-form-item>
+                                <el-form-item label="联系电话" prop="phone" >
+                                    <el-input style="width:150px"   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                </el-form-item>
+                                <!-- <div></div> -->
+                                <el-form-item label="公司地址"  prop="companyAddrss" >
+                                    <el-input style="width:250px"  name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
+                                </el-form-item>
                                 <el-form-item label="公司网址" >
-                                    <el-input  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
+                                    <el-input style="width:150px"  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
                                 </el-form-item>
                             <!-- <div></div> -->
                             </div>
@@ -51,7 +57,7 @@
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3>时间
+                            <h3><i class="el-icon-date"></i> 时间
                                 <div class="show" @click="isShow(1)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
@@ -63,15 +69,38 @@
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.time">
                                 <el-form-item label="预计月数" prop="anticMonths">
-                                <el-input-number  name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                                    <el-input-number style="width:150px" name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                    <div class="li">
+                            <h3><i class="el-icon-link"></i> 签约主体
+                                <div class="show" @click="isShow(2)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.accountInfo">
+                                <el-form-item label="签约主体" prop="accountInfo">
+                                    <el-select style="width:270px" v-model="contract.accountInfo" filterable placeholder="请选择">
+                                        <el-option
+                                        v-for="item in myCompany"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                        </el-option>
+                                    </el-select>
                                 </el-form-item>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3>金额
-                                <div class="show" @click="isShow(2)">
+                            <h3><i class="el-icon-coin"></i> 金额
+                                <div class="show" @click="isShow(3)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
@@ -79,13 +108,13 @@
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.money">
                                 <el-form-item label="付款方式" >
-                                <el-select   v-model="paymentType" placeholder="请选择付款方式">
+                                <el-select style="width:130px"   v-model="paymentType" placeholder="请选择付款方式">
                                     <el-option label="全额付款" :value="1"></el-option>
                                     <el-option label="分期付款" :value="2"></el-option>
                                 </el-select>
                                 </el-form-item>
                                 <el-form-item >
-                                <el-select  v-model="installmentType"  v-if="paymentType==2" placeholder="请选择付款方式">
+                                <el-select style="width:130px"   v-model="installmentType"  v-if="paymentType==2" placeholder="请选择付款方式">
                                     <el-option label="二期付款" :value="1"></el-option>
                                     <el-option label="三期付款" :value="2"></el-option>
                                 </el-select>
@@ -97,8 +126,8 @@
                                     :action="BASE_API+'/eduservice/state/upcontract'"
                                     :on-preview="handlePreview"
                                     :on-remove="handleRemove"
-                                    :on-success="fileUploadSuccess2"
-                                    :before-upload="fileUpload2"
+                                    :on-success="fileUploadSuccess"
+                                    :before-upload="fileUpload"
                                     multiple
                                     :limit="1"
                                     :show-file-list=false
@@ -122,33 +151,33 @@
                                     </div>
                                 </el-form-item>
                                 
-                                <div v-if="paymentType==2"></div>
+                                <!-- <div v-if="paymentType==2"></div> -->
                                 <el-form-item label="全款金额" prop="fullAmount">
-                                    <el-input  name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
+                                    <el-input style="width:100px"  name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
                                 </el-form-item>
                                 <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
-                                    <el-input  name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
+                                    <el-input style="width:100px" name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
                                 </el-form-item>
                                 <el-form-item  label="中期金额" v-if="paymentType==2&&installmentType==2" prop="interimAmount">
-                                    <el-input  name="interimAmount" v-model="contract.interimAmount" placeholder="首款金额"></el-input>
+                                    <el-input style="width:100px" name="interimAmount" v-model="contract.interimAmount" placeholder="首款金额"></el-input>
                                 </el-form-item>
                                 <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
-                                    <el-input  name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
+                                    <el-input style="width:100px" name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
                                 </el-form-item>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3 style="margin-bottom:15px">直营店情况
-                                <div class="show" @click="isShow(3)">
+                            <h3 style="margin-bottom:15px"><i class="el-icon-school"></i> 直营店情况
+                                <div class="show" @click="isShow(4)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
                         </div>
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.shop">
-                                <h4 style="margin-bottom:15px;">直营店1</h4>
+                                <h4 style="margin-bottom:15px;float:left;height:50px;line-height:25px">直营店1</h4>
                                 <el-form-item label="直营店全称" prop="dssOne">
                                     <el-input  name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
                                 </el-form-item>
@@ -191,7 +220,8 @@
                                 <el-form-item label="经营地址" prop="addressOne">
                                     <el-input   name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
                                 </el-form-item>
-                                <h4 style="margin-bottom:15px;">直营店2</h4>
+                                <el-divider style="margin:10px 0"></el-divider>
+                                <h4 style="margin-bottom:15px;float:left;height:50px;line-height:25px">直营店2</h4>
                                 <el-form-item label="直营店全称" prop="dssTwo">
                                     <el-input  name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
                                 </el-form-item>
@@ -238,23 +268,23 @@
                     </div>
                     <div class="libox">
                         <div class="li" >
-                        <h3 style="margin-bottom:15px">知识产权
-                            <div class="show" @click="isShow(4)">
-                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
-                            </div>
-                        </h3>
+                            <h3 style="margin-bottom:15px"><i class="el-icon-collection"></i> 知识产权
+                                <div class="show" @click="isShow(5)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
                         </div>
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.right">
                                 <el-form v-for="(item,j) in right" style="margin-top:10px" :key="item.index" :model="item" :rules="saveRules">
                                     <h5 style="margin:0px;height:20px;margin-bottom:0px;margin-left:10px">
                                         <h4 style="float:left;margin:0px">类型{{j+1}}:</h4>
-                                        <div style="float:right;margin-right:20px" v-if="j!=0">
-                                            <el-link type="danger" @click="removeLi(j)" style="height:20px">删除类型-</el-link>
+                                        <div style="float:right;margin-right:20px" v-if="right.length!=1">
+                                            <el-link type="danger"  @click="removeLi(j)" style="height:20px">删除类型-</el-link>
                                         </div>
                                     </h5>
                                     <el-form-item  label="权利类型" prop="type">
-                                        <el-select  v-model="item.type" filterable placeholder="请选择">
+                                        <el-select style="width:100px"  v-model="item.type" filterable placeholder="请选择">
                                             <el-option
                                             v-for="item in type"
                                             :key="item.value"
@@ -266,13 +296,15 @@
                                     <el-form-item label="权利号" prop="value">
                                         <!-- oninput="value=value.replace(/[^\d]/g,'')" -->
                                         <el-input 
+                                            style="width:150px"
+                                            
                                             name="brand"
                                             v-model="item.value"
                                             placeholder="权利号">
                                         </el-input>
                                     </el-form-item>
                                     <el-form-item label="权利性质" prop="pproperty">
-                                        <el-select  v-model="item.pproperty" filterable placeholder="请选择">
+                                        <el-select style="width:100px"  v-model="item.pproperty" filterable placeholder="请选择">
                                             <el-option label="所有权" value="所有权"></el-option>
                                             <el-option label="使用权" value="使用权"></el-option>
                                         </el-select>
@@ -312,18 +344,19 @@
                                         </el-date-picker>
                                     </el-form-item>
                                     <el-form-item v-if="j==right.length-1" style="float:right;margin-right:20px" >
-                                        <el-link @click="addRight()" type="primary" style="height:20px" >添加类型+</el-link>
+                                        <el-link @click="addRight()" type="primary" style="height:20px">添加类型+</el-link>
                                     </el-form-item>
+                                    <el-divider style="margin:10px 0"></el-divider>
                                 </el-form>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li"> 
-                            <h3 style="margin-bottom:15px;">合同原件
+                            <h3 style="margin-bottom:15px"><i class="el-icon-document-copy"></i> 合同原件
                                 <span v-if="isStandard"> (标准合同) </span>
                                 <span v-else> (非标合同) </span>
-                                <div class="show" @click="isShow(6)">
+                                <div class="show" @click="isShow(7)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
@@ -367,8 +400,8 @@
                     </div>
                     <div class="libox">
                         <div class="li"> 
-                            <h3 style="margin-bottom:15px">审核
-                                <div class="show" @click="isShow(5)">
+                            <h3 style="margin-bottom:15px"><i class="el-icon-position"></i> 提交信息
+                                <div class="show" @click="isShow(6)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
@@ -412,7 +445,7 @@
             </el-row>
             <el-button style="boder:none" icon="el-icon-back" @click="standard=false;atypia=false" v-if="isaudit==2&&(atypia||standard)"></el-button>
             <!-- <i class="el-icon-back" v-if="isaudit==2&&(atypia||standard)"></i> -->
-            <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:60px;height:900px" v-if="isaudit==2&&atypia&&!standard">
+            <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="height:900px" v-if="isaudit==2&&atypia&&!standard">
                 <div class="libox" style="padding-bottom:30px">
                     <div class="li" >
                         <h3>非标合同修改</h3>
@@ -461,7 +494,7 @@
                     </el-collapse-transition>
                 </div>
             </el-form>
-            <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:60px" v-if="isaudit==2&&!atypia&&standard">
+            <el-form  ref="state"  :model="state" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" v-if="isaudit==2&&!atypia&&standard">
                 <div class="top">
                     <img src="../../../assets/icon.png"/>
                     标准合同修改
@@ -469,8 +502,8 @@
                 <el-form :inline="true" ref="contract" :model="contract" :rules="saveRules" auto-complete="on" label-position="left" class="demo-form-inline" style="padding-left:30px">
                     <div class="libox">
                         <div class="li">
-                            <h3 >特许人基本信息
-                                <div class="show" @click="isShow(0)">
+                            <h3><i class="el-icon-document"></i> 特许人基本信息
+                                <div class="show" @click="isShow(0)" style="position: relative;">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
@@ -478,32 +511,33 @@
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.info">
                                 <el-form-item label="公司全称"  prop="companyName" >
-                                    <el-input  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
+                                    <el-input :disabled="stateuts>2" style="width:250px"  name="companyName" v-model="contract.companyName" placeholder="公司全称"></el-input>
                                 </el-form-item>
-                                <el-form-item label="经办人姓名" prop="respName" >
-                                    <el-input  name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
-                                </el-form-item>
-                                <el-form-item label="联系电话" prop="phone" >
-                                    <el-input   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                <el-form-item label="项目名称" prop="trade" >
+                                    <el-input :disabled="stateuts>2"  name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
                                 </el-form-item>
                                 <el-form-item label="电子邮件" prop="email" >
                                     <el-input  name="email" v-model="contract.email" placeholder="电子邮件"></el-input>
                                 </el-form-item>
-                                <el-form-item label="项目名称" prop="trade" >
-                                    <el-input  name="trade" v-model="contract.trade" placeholder="备案项目名称"></el-input>
-                                </el-form-item>
-                                <el-form-item label="经办人职位" prop="respPost" >
-                                    <el-input  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
-                                </el-form-item>
-                                <el-form-item label="公司地址"  prop="companyAddrss" >
-                                    <el-input name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
-                                </el-form-item>
-                                <!-- <div></div> -->
-                                <el-form-item label="公司座机" >
+                                <el-form-item  label="公司座机" >
                                     <el-input  name="speialPlane" v-model="contract.speialPlane" placeholder="公司座机"></el-input>
                                 </el-form-item>
+                                
+                                <el-form-item label="经办人姓名" prop="respName" >
+                                    <el-input style="width:120px"   name="respName" v-model="contract.respName" placeholder="经办人姓名"></el-input>
+                                </el-form-item>
+                                <el-form-item label="经办人职位" prop="respPost" >
+                                    <el-input style="width:120px"  name="respPost" v-model="contract.respPost" placeholder="经办人职位"></el-input>
+                                </el-form-item>
+                                <el-form-item label="联系电话" prop="phone" >
+                                    <el-input style="width:150px"   name="phone" v-model="contract.phone" placeholder="联系电话"></el-input>
+                                </el-form-item>
+                                <!-- <div></div> -->
+                                <el-form-item label="公司地址"  prop="companyAddrss" >
+                                    <el-input :disabled="stateuts>2" style="width:250px"  name="companyAddrss" v-model="contract.companyAddrss" placeholder="公司地址"></el-input>
+                                </el-form-item>
                                 <el-form-item label="公司网址" >
-                                    <el-input  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
+                                    <el-input :disabled="stateuts>2" style="width:150px"  name="url" v-model="contract.url" placeholder="公司网址"></el-input>
                                 </el-form-item>
                             <!-- <div></div> -->
                             </div>
@@ -511,7 +545,7 @@
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3>时间
+                            <h3><i class="el-icon-date"></i> 时间
                                 <div class="show" @click="isShow(1)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
@@ -523,15 +557,38 @@
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.time">
                                 <el-form-item label="预计月数" prop="anticMonths">
-                                <el-input-number  name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
+                                    <el-input-number :disabled="stateuts>2" style="width:150px" name="anticMonths"  v-model="contract.anticMonths" :min="1" :max="100" label="描述文字"></el-input-number>
                                 </el-form-item>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3>金额
+                            <h3><i class="el-icon-link"></i> 签约主体
                                 <div class="show" @click="isShow(2)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
+                        </div>
+                        <el-collapse-transition>
+                            <div class="lifroms" v-show="show.accountInfo">
+                                <el-form-item label="签约主体" prop="accountInfo">
+                                    <el-select :disabled="stateuts>2" style="width:270px" v-model="contract.accountInfo" filterable placeholder="请选择">
+                                        <el-option
+                                        v-for="item in myCompany"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </div>
+                        </el-collapse-transition>
+                    </div>
+                    <div class="libox">
+                        <div class="li">
+                            <h3><i class="el-icon-coin"></i> 金额
+                                <div class="show" @click="isShow(3)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
@@ -539,26 +596,27 @@
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.money">
                                 <el-form-item label="付款方式" >
-                                <el-select   v-model="paymentType" placeholder="请选择付款方式">
+                                <el-select style="width:130px" :disabled="stateuts>2"  v-model="paymentType" placeholder="请选择付款方式">
                                     <el-option label="全额付款" :value="1"></el-option>
                                     <el-option label="分期付款" :value="2"></el-option>
                                 </el-select>
                                 </el-form-item>
                                 <el-form-item >
-                                <el-select  v-model="installmentType"  v-if="paymentType==2" placeholder="请选择付款方式">
+                                <el-select style="width:130px" :disabled="stateuts>2"  v-model="installmentType"  v-if="paymentType==2" placeholder="请选择付款方式">
                                     <el-option label="二期付款" :value="1"></el-option>
                                     <el-option label="三期付款" :value="2"></el-option>
                                 </el-select>
                                 </el-form-item>
                                 <el-form-item  v-if="paymentType==2&&installmentType==2">
                                     <el-upload
+                                    :disabled="stateuts>2"
                                     style="float:left"
                                     class="upload-demo"
                                     :action="BASE_API+'/eduservice/state/upcontract'"
                                     :on-preview="handlePreview"
                                     :on-remove="handleRemove"
-                                    :on-success="fileUploadSuccess2"
-                                    :before-upload="fileUpload2"
+                                    :on-success="fileUploadSuccess"
+                                    :before-upload="fileUpload"
                                     multiple
                                     :limit="1"
                                     :show-file-list=false
@@ -582,38 +640,39 @@
                                     </div>
                                 </el-form-item>
                                 
-                                <div v-if="paymentType==2"></div>
+                                <!-- <div v-if="paymentType==2"></div> -->
                                 <el-form-item label="全款金额" prop="fullAmount">
-                                    <el-input  name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
+                                    <el-input style="width:100px" :disabled="stateuts>2" name="fullAmount" v-model="contract.fullAmount" placeholder="全款金额"></el-input>
                                 </el-form-item>
                                 <el-form-item  label="首款金额" v-if="paymentType==2" prop="firstAmount">
-                                    <el-input  name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
+                                    <el-input style="width:100px" :disabled="stateuts>2" name="firstAmount" v-model="contract.firstAmount" placeholder="首款金额"></el-input>
                                 </el-form-item>
                                 <el-form-item  label="中期金额" v-if="paymentType==2&&installmentType==2" prop="interimAmount">
-                                    <el-input  name="interimAmount" v-model="contract.interimAmount" placeholder="首款金额"></el-input>
+                                    <el-input style="width:100px" :disabled="stateuts>2" name="interimAmount" v-model="contract.interimAmount" placeholder="首款金额"></el-input>
                                 </el-form-item>
-                                <el-form-item style="margin-left:10px" label="尾款金额" v-if="paymentType==2" prop="lastAmount">
-                                    <el-input  name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
+                                <el-form-item  label="尾款金额" v-if="paymentType==2" prop="lastAmount">
+                                    <el-input style="width:100px" :disabled="stateuts>2" name="lastAmount" v-model="contract.lastAmount" placeholder="尾款金额"></el-input>
                                 </el-form-item>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li">
-                            <h3 style="margin-bottom:15px">直营店情况
-                                <div class="show" @click="isShow(3)">
+                            <h3 style="margin-bottom:15px"><i class="el-icon-school"></i> 直营店情况
+                                <div class="show" @click="isShow(4)">
                                     <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                                 </div>
                             </h3>
                         </div>
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.shop">
-                                <h4 style="margin-bottom:15px;">直营店1</h4>
+                                <h4 style="margin-bottom:15px;float:left;height:50px;line-height:25px">直营店1</h4>
                                 <el-form-item label="直营店全称" prop="dssOne">
-                                    <el-input  name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
+                                    <el-input :disabled="stateuts>2" name="dssOne" v-model="contract.dssOne" placeholder="直营店全称"></el-input>
                                 </el-form-item>
                                 <el-form-item label="成立日期" prop="estabDateOne">
                                     <el-popover
+                                    :disabled="stateuts>2"
                                     placement="bottom"
                                     width="200"
                                     trigger="manual"
@@ -621,7 +680,7 @@
                                     <p><i class="el-icon-info"></i>您所选年限距今不满足1年，是否继续？</p>
                                     <el-button class="upload" size="mini" @click="visible1=false" style="float:right">确认</el-button>
                                         <el-date-picker
-                                            
+                                            :disabled="stateuts>2"
                                             slot="reference"
                                             v-model="contract.estabDateOne"
                                             type="date"
@@ -634,7 +693,7 @@
                                             >
                                             </el-date-picker>
                                             <el-date-picker
-                                            
+                                            :disabled="stateuts>2"
                                             slot="reference"
                                             v-model="contract.estabDateOne"
                                             type="date"
@@ -649,11 +708,12 @@
                                                     <!-- <el-input v-model="contract.estadateone" placeholder="成立日期"></el-input> -->
                                 </el-form-item>
                                 <el-form-item label="经营地址" prop="addressOne">
-                                    <el-input   name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
+                                    <el-input :disabled="stateuts>2"  name="addressOne" v-model="contract.addressOne" placeholder="经营地址"></el-input>
                                 </el-form-item>
-                                <h4 style="margin-bottom:15px;">直营店2</h4>
+                                <el-divider style="margin:10px 0"></el-divider>
+                                <h4 style="margin-bottom:15px;float:left;height:50px;line-height:25px">直营店2</h4>
                                 <el-form-item label="直营店全称" prop="dssTwo">
-                                    <el-input  name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
+                                    <el-input :disabled="stateuts>2" name="dssTwo" v-model="contract.dssTwo" placeholder="直营店全称"></el-input>
                                 </el-form-item>
                                 <el-form-item label="成立日期" prop="estabDateTwo">
                                     <el-popover
@@ -665,7 +725,7 @@
                                     <p>您所选年限距今不满足1年，是否继续？</p>
                                     <el-button class="upload" size="mini" @click="visible2=false" style="float:right">确认</el-button>
                                         <el-date-picker
-                                            
+                                            :disabled="stateuts>2"
                                             name="estabDateTwo"
                                             slot="reference"
                                             v-model="contract.estabDateTwo"
@@ -677,7 +737,7 @@
                                             @change="vis2()"
                                             />
                                             <el-date-picker
-                                            
+                                            :disabled="stateuts>2"
                                             name="estabDateTwo"
                                             slot="reference"
                                             v-model="contract.estabDateTwo"
@@ -691,31 +751,32 @@
                                     <!-- <el-input v-model="contract.estadatetwo" placeholder="成立日期"></el-input> -->
                                 </el-form-item>
                                 <el-form-item label="经营地址" prop="addressTwo">
-                                    <el-input  name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
+                                    <el-input :disabled="stateuts>2"  name="addressTwo" v-model="contract.addressTwo" placeholder="经营地址"></el-input>
                                 </el-form-item>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li" >
-                        <h3 style="margin-bottom:15px">知识产权
-                            <div class="show" @click="isShow(4)">
-                                <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
-                            </div>
-                        </h3>
+                            <h3 style="margin-bottom:15px"><i class="el-icon-collection"></i> 知识产权
+                                <div class="show" @click="isShow(5)">
+                                    <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
+                                </div>
+                            </h3>
                         </div>
                         <el-collapse-transition>
                             <div class="lifroms" v-show="show.right">
                                 <el-form v-for="(item,j) in right" style="margin-top:10px" :key="item.index" :model="item" :rules="saveRules">
                                     <h5 style="margin:0px;height:20px;margin-bottom:0px;margin-left:10px">
                                         <h4 style="float:left;margin:0px">类型{{j+1}}:</h4>
-                                        <div style="float:right;margin-right:20px" v-if="j!=0">
-                                            <el-link type="danger" @click="removeLi(j)" style="height:20px">删除类型-</el-link>
+                                        <div style="float:right;margin-right:20px" v-if="right.length!=1">
+                                            <el-link type="danger"  v-if="!(stateuts>2)" @click="removeLi(j)" style="height:20px">删除类型-</el-link>
                                         </div>
                                     </h5>
                                     <el-form-item  label="权利类型" prop="type">
-                                        <el-select  v-model="item.type" filterable placeholder="请选择">
+                                        <el-select style="width:100px" :disabled="stateuts>2"  v-model="item.type" filterable placeholder="请选择">
                                             <el-option
+                                            :disabled="stateuts>2"
                                             v-for="item in type"
                                             :key="item.value"
                                             :label="item.label"
@@ -726,19 +787,22 @@
                                     <el-form-item label="权利号" prop="value">
                                         <!-- oninput="value=value.replace(/[^\d]/g,'')" -->
                                         <el-input 
+                                            style="width:150px"
+                                            :disabled="stateuts>2"
                                             name="brand"
                                             v-model="item.value"
                                             placeholder="权利号">
                                         </el-input>
                                     </el-form-item>
                                     <el-form-item label="权利性质" prop="pproperty">
-                                        <el-select  v-model="item.pproperty" filterable placeholder="请选择">
+                                        <el-select style="width:100px" :disabled="stateuts>2"  v-model="item.pproperty" filterable placeholder="请选择">
                                             <el-option label="所有权" value="所有权"></el-option>
                                             <el-option label="使用权" value="使用权"></el-option>
                                         </el-select>
                                     </el-form-item>
                                     <el-form-item label="权利期限" v-if="item.type=='2'">
                                         <el-date-picker
+                                        :disabled="stateuts>2"
                                         v-model="item.pbegin"
                                         type="date"
                                         format="yyyy.MM.dd"
@@ -747,6 +811,7 @@
                                         </el-date-picker>
                                         --
                                         <el-date-picker
+                                        :disabled="stateuts>2"
                                         v-model="item.pend"
                                         type="date"
                                         format="yyyy.MM.dd"
@@ -756,6 +821,7 @@
                                     </el-form-item>
                                     <el-form-item label="权利期限" prop="pbegin" v-else>
                                         <el-date-picker
+                                        :disabled="stateuts>2"
                                         v-model="item.pbegin"
                                         type="date"
                                         value-format="yyyy.MM.dd"
@@ -764,6 +830,7 @@
                                         </el-date-picker>
                                         --
                                         <el-date-picker
+                                        :disabled="stateuts>2"
                                         v-model="item.pend"
                                         type="date"
                                         format="yyyy.MM.dd"
@@ -772,16 +839,17 @@
                                         </el-date-picker>
                                     </el-form-item>
                                     <el-form-item v-if="j==right.length-1" style="float:right;margin-right:20px" >
-                                        <el-link @click="addRight()" type="primary" style="height:20px" >添加类型+</el-link>
+                                        <el-link @click="addRight()"  v-if="!(stateuts>2)" type="primary" style="height:20px">添加类型+</el-link>
                                     </el-form-item>
+                                    <el-divider style="margin:10px 0"></el-divider>
                                 </el-form>
                             </div>
                         </el-collapse-transition>
                     </div>
                     <div class="libox">
                         <div class="li">
-                        <h3 style="margin-bottom:15px">提交信息
-                            <div class="show" @click="isShow(5)">
+                        <h3 style="margin-bottom:15px"><i class="el-icon-position"></i> 提交信息
+                            <div class="show" @click="isShow(6)">
                                 <i style="color:#e6e7e8" class="el-icon-arrow-down"></i>
                             </div>
                         </h3>
@@ -791,6 +859,7 @@
                             <h4 style="margin-bottom:15px">描述信息</h4>
                             <el-form-item style="margin:0px;margin-left:32px">
                                 <el-input
+                                :disabled="stateuts>2"
                                 style="width:300px"
                                 type="textarea"
                                 placeholder="请输入描述信息"
@@ -824,7 +893,7 @@ import contract from '@/api/edu/contract'
 import message from '@/api/edu/message'
 import user from '@/api/edu/user'
 import cookieUtil from '@/utils/cookie'
-
+import company from '@/api/edu/company'
 export default {
     computed: {
         ...mapGetters([
@@ -962,7 +1031,7 @@ export default {
             fileUploading:false,
             filelist:[],
             installmentType:1,
-            show:{info:true,time:true,money:true,shop:true,right:true,commit:true,contract:true},
+            show:{info:true,time:true,money:true,shop:true,accountInfo:true,right:true,commit:true,contract:true},
             checked1:false,
             checked2:false,
             checked3:false,
@@ -988,6 +1057,7 @@ export default {
             isaudit:'',
             value1:true,
             url:'',
+            stateuts:'',
             state:{
                 sstate:'',
                 notStandardMsg:''
@@ -1002,6 +1072,7 @@ export default {
             importBtnDisabled: false, // 按钮是否禁用,
             fileList: [],
             fileList2: [],
+            myCompany:[],
             saveRules:{
                 brandName:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 fullAmount:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -1029,6 +1100,7 @@ export default {
                 value:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pproperty:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 pbegin:[{ required: true, trigger: 'blur', validator: valiNotNull}],
+                accountInfo:[{ required: true, trigger: 'blur', validator: valiNotNull}],
                 companyAddrss:[{ required: true, trigger: 'blur', validator: valiNotNull}],
             },
         }
@@ -1067,18 +1139,21 @@ export default {
                 pd=this.show.time
                 this.show.time=!this.show.time
             }else if(i==2){
+                pd=this.show.accountInfo
+                this.show.accountInfo=!this.show.accountInfo
+            }else if(i==3){
                 pd=this.show.money
                 this.show.money=!this.show.money
-            }else if(i==3){
+            }else if(i==4){
                 pd=this.show.shop
                 this.show.shop=!this.show.shop
-            }else if(i==4){
+            }else if(i==5){
                 pd=this.show.right
                 this.show.right=!this.show.right
-            }else if(i==5){
+            }else if(i==6){
                 pd=this.show.commit
                 this.show.commit=!this.show.commit
-            }else if(i==6){
+            }else if(i==7){
                 pd=this.show.contract
                 this.show.contract=!this.show.contract
             }
@@ -1093,6 +1168,7 @@ export default {
             // console.log(this.show[i])
         },
         init(){
+            this.getCompany()
             //  console.log(this.$route.query.id==undefined)
             if(this.$route.query.id==undefined){
                 let lis={}
@@ -1101,16 +1177,19 @@ export default {
                 this.url=lis.url
                 this.record.cid=lis.cid
                 this.id=lis.id
+                this.stateuts=lis.state
             }else{
                 let lis={}
                 this.isaudit=this.$route.query.isaudit
                 this.url=this.$route.query.url
                 this.record.cid=this.$route.query.cid
                 this.id=this.$route.query.id
+                this.stateuts=this.$route.query.state
                 lis.isaudit=this.$route.query.isaudit
                 lis.url=this.$route.query.url
                 lis.cid=this.$route.query.cid
                 lis.id=this.$route.query.id
+                lis.state=this.$route.query.state
                 this.setCookie('lis',JSON.stringify(lis), 360)
             }
             this.getManagement()
@@ -1179,6 +1258,13 @@ export default {
             window.open('http://ow365.cn/?i=22376&ssl=1&furl='+encodeURIComponent(url));
         },
         visUpload(){
+            if(!this.contract.accountInfo){
+                this.$message({
+                    type: 'warning',
+                    message: '请选择签约主体!'
+                });
+                return false
+            }
             if(this.paymentType==2&&this.installmentType==2&&this.filelist.length==0){
                     this.$message({
                         type: 'warning',
@@ -1297,6 +1383,18 @@ export default {
                     contractRight.uphone=this.roles.phoneNum
                     contractRight.right=this.right
                     contractRight.contract=this.contract
+                    if(this.stateuts>2){//流程到达待立案
+                        contractRight.isChangeFlow=1
+                        if(this.isStandard){//是否是标准合同
+                            contractRight.type=0//0则生成合同，1则不生成
+                        }else{
+                            contractRight.type=1
+                        }
+                    }else{
+                        contractRight.isChangeFlow=0
+                        contractRight.type=0
+                    }
+                    
                     contract.updateContract(contractRight)
                     .then(res=>{
                     this.loading2=false
@@ -1324,6 +1422,12 @@ export default {
                 
                 
                 }
+            })
+        },
+        getCompany(){
+            company.getCompany()
+            .then(res=>{
+                this.myCompany=res.data.company
             })
         },
         commit3(){//审核
@@ -1473,7 +1577,7 @@ export default {
             .then(res=>{
                 this.contract=res.data.contract
                 if(res.data.contract.type==1){
-                    this.$router.push({path:'/audit/updatepro',query: {id:this.id,cid:this.record.cid,url:this.url,isaudit:this.isaudit}})
+                    this.$router.push({path:'/audit/updatepro',query: {id:this.id,cid:this.record.cid,url:this.url,isaudit:this.isaudit,state:this.$route.query.state}})
                 }else{
                     this.standard=!this.standard
                     this.dataCombing()
@@ -1649,6 +1753,157 @@ export default {
 }
 </script>
 <style >
+
+.reData{
+    width: 100px;
+    height:30px;
+    font-size: 14px;
+    border-radius: 5px;
+    background-color: #E6A23C;
+    padding-top: 6px;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    /* top:-20px */
+    cursor: pointer;
+}
+.container2 .el-input__inner{
+    /* color: aliceblue; */
+    /* background-color: transparent; */
+     background-color: #fff;
+     border: 1px solid #DDDCDC;
+}
+.container2 .el-divider--horizontal{
+    margin:10px 0;
+}
+.container2 .el-input__inner[disabled]{
+    /* color: aliceblue; */
+    /* background-color: transparent; */
+}
+
+.container2 input{
+    /* color: aliceblue; */
+    /* background-color: #fff; */
+    /* width: 200px; */
+    box-shadow: inset 2px 1px 5px #cbc9c9;
+}
+.container2 .el-form-item{
+    margin-top: 15px;
+    margin-left: 10px;
+    /* width: 300px; */
+}
+.container2 .el-form-item__label{
+    /* width: 93px; */
+}
+.container2 h3{
+    background:url('../../../assets/white-title.png');
+    color: #2c2c2c;
+    height: 35px;
+    position: relative;
+    margin: 0px;
+    padding: 0px 10px;
+    text-shadow: 0px 1px #fff;
+    line-height: 34px;
+    /* padding-top: 10px; */
+    left: 0px;
+    /* top:13px; */
+}
+.container2 .lifroms{
+    padding:0px 100px;
+}
+.container2 .libox{
+    /* transition: height 0.3s; */
+    /* margin-top:20px ; */
+    width: 95%;
+    /* border: 1px solid red; */
+    margin: 0px auto;
+    background-color: #f7f7f7;
+    /* padding: 20px; */
+    /* box-shadow: -5px -2px 10px rgba(0, 0, 0,.3); */
+    box-shadow: 0px 5px 10px #AFAEAE;
+    margin-top: 20px;
+}
+.container2{
+    overflow:visible;
+    position: relative;
+    background:url('../../../assets/bg.png');
+    /* background-size: 100% 100%; */
+    padding-left: 30px;
+    padding-bottom: 20px;
+}
+.container2 .top{
+    margin: 0px auto;
+    /* height: 50px; */
+    width: 95%;
+    font-size: 27px;
+    /* padding-left: 30px; */
+    margin-bottom: 20px;
+    /* background:url('../../../assets/icon.png') no-repeat; */
+}
+.container2 .li{
+    height: 35px;
+    width: 100%;
+    position: relative;
+    /* left: -35px; */
+    /* background:url('../../../assets/li.png'); */
+    background-size: 100% 100%;
+}
+.container2 .el-input__inner[disabled]{
+    cursor: text;
+}
+.container2 .el-textarea__inner[disabled]{
+    cursor: text;
+}
+   
+
+.container2 .show i{
+    position: relative;
+    bottom: 4px;
+}
+.container2 .el-form-item__label{
+    /* color:aliceblue; */
+}
+.container2 .dialog-footer{
+     position: relative;
+     left: 80px;
+     top: 20px;
+}
+.container2 .el-textarea__inner{
+    /* color: aliceblue; */
+    /* background-color: unset; */
+    background-color: #fff;
+    border: 1px solid #DDDCDC;
+    box-shadow: inset 2px 1px 5px #cbc9c9;
+    height: 70px;
+}
+.container2 .el-textarea__inner[disabled]{
+    /* color: aliceblue; */
+    /* background-color: unset; */
+    height: 70px;
+}
+.container2 .upload{
+    color:aliceblue;
+    background-color: #ffac02;
+}
+.container2 .primary{
+    color:aliceblue;
+    background-color: #91601e;
+    border: none;
+}
+.container2 .el-button--primary{
+    width: 200px;
+    height: 45px;
+    /* background-color: #ffac02; */
+}
+.rightNum{
+    width: 200px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+.el-checkbox{
+    margin: 0px;
+    margin-right: 10px ;
+}
 .container2 .el-input__inner{
     /* color: aliceblue; */
     /* background-color: transparent; */
@@ -1666,14 +1921,7 @@ export default {
     /* width: 200px; */
     box-shadow: inset 2px 1px 5px #cbc9c9;
 }
-.container2 .el-form-item{
-    margin-top: 30px;
-    margin-left: 30px;
-    /* width: 300px; */
-}
-.container2 .el-form-item__label{
-    width: 93px;
-}
+
 .container2 h3{
     background:url('../../../assets/white-title.png');
     color: #2c2c2c;
@@ -1686,39 +1934,6 @@ export default {
     /* padding-top: 10px; */
     left: 0px;
     /* top:13px; */
-}
-.container2 .lifroms{
-    padding:0px 130px;
-}
-.container2 .libox{
-    /* transition: height 0.3s; */
-    /* margin-top:20px ; */
-    width: 95%;
-    /* border: 1px solid red; */
-    margin: 0px auto;
-    background-color: #f7f7f7;
-    /* padding: 20px; */
-    /* box-shadow: -5px -2px 10px rgba(0, 0, 0,.3); */
-    box-shadow: 0px 5px 10px #AFAEAE;
-    margin-top: 20px;
-}
-.container2{
-    /* overflow:visible; */
-    position: relative;
-    background:url('../../../assets/bg.png');
-    /* background-size: 100% 100%; */
-    padding-left: 30px;
-    padding-bottom: 20px;
-}
-.container2 .top{
-    margin: 0px auto;
-    /* height: 50px; */
-    width: 95%;
-    font-size: 27px;
-    padding-top:35px;
-    /* padding-left: 30px; */
-    margin-bottom: 20px;
-    /* background:url('../../../assets/icon.png') no-repeat; */
 }
 .el-textarea.is-disabled .el-textarea__inner{
     cursor: text;
@@ -1742,12 +1957,6 @@ export default {
     background-color: #bfc2c5;
     border-radius: 50%;
     float:right;
-}
-   
-
-.container2 .show i{
-    position: relative;
-    bottom: 4px;
 }
 .container2 .el-form-item__label{
     /* color:aliceblue; */

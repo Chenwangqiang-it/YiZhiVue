@@ -5,16 +5,16 @@
          <template>
             <el-form :inline="true" class="demo-form-inline" style="text-align:center;" align="center">
               <el-form-item  >
-                  <el-input v-model="flowQuery.serialNum" placeholder="合同编号"></el-input>
+                  <el-input  style="width:150px" v-model="flowQuery.serialNum" placeholder="合同编号"></el-input>
               </el-form-item>
               <el-form-item  >
-                  <el-input v-model="flowQuery.companyName" placeholder="客户名称"></el-input>
+                  <el-input style="width:220px" v-model="flowQuery.companyName" placeholder="客户名称"></el-input>
               </el-form-item>
               <el-form-item  >
                   <el-input v-model="flowQuery.brandName" placeholder="品牌名称"></el-input>
               </el-form-item>
               <el-form-item v-if="!isRevocation">
-                  <el-select v-model="flowQuery.schedule" placeholder="撤案进度">
+                  <el-select style="width:150px" v-model="flowQuery.schedule" placeholder="撤案进度">
                       <el-option label="财务审核" value="1"></el-option>
                       <el-option label="流程分案" value="2"></el-option>
                       <el-option label="清单上传" value="3"></el-option>
@@ -38,7 +38,7 @@
                   </el-select>
               </el-form-item>
               <el-form-item >
-                <el-select v-model="flowQuery.agentName" placeholder="代理人">
+                <el-select style="width:110px" v-model="flowQuery.agentName" placeholder="代理人">
                       <el-option
                       v-for="item in agent"
                       :key="item.value"
@@ -50,6 +50,7 @@
               
               <el-form-item >
                 <el-date-picker
+                style="width:180px"
                 v-model="flowQuery.begin"
                 type="datetime"
                 placeholder="选择开始时间"
@@ -59,6 +60,7 @@
               </el-form-item>
               <el-form-item>
                 <el-date-picker
+                style="width:180px"
                 v-model="flowQuery.end"
                 type="datetime"
                 placeholder="选择截至时间"
@@ -74,6 +76,8 @@
             <el-table
               :data="list"
               v-loading="loading"
+              @cell-contextmenu="cellClick"
+              @cell-dblclick="cellClick"
               element-loading-text="数据加载中"
               style="width: 1200px;margin:0 auto">
               <el-table-column
@@ -117,7 +121,7 @@
                 label="已付金额"
                 >
                 <tempate slot-scope="scope">
-                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
+                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount+scope.row.paidInterimAmount}}
                 </tempate>
               </el-table-column>
               <el-table-column
@@ -241,7 +245,7 @@ export default {//定义变量和初始值
           record:{},
           list:null,//查询之后接口返回集合
           page:1,//当前页
-          limit:22,//每页记录数
+          limit:20,//每页记录数
           total:0,//总记录数
             //字段不写也可以，会根据表单自己生成
           flowQuery:{},//条件封装
@@ -359,6 +363,29 @@ export default {//定义变量和初始值
             })
             window.open(routeData.href,"_blank",'width=1500px,height=900px,top=50px,left=330px,resizable=yes,scrollbars')
         },
+      prohibitContextmenu(){
+          //禁止浏览器默认右键事件
+          let table=document.getElementsByClassName("el-table")[0]
+          table.oncontextmenu = function(){
+          　　return false;
+          }
+      },
+      cellClick(row, column, cell, event){
+          this.copy(event.srcElement.innerText)
+      },
+      copy(data){
+          let url = data;
+          let oInput = document.createElement('input');
+          oInput.value = url;
+          document.body.appendChild(oInput);
+          oInput.select(); // 选择对象;
+          document.execCommand("Copy"); // 执行浏览器复制命令
+          this.$message({
+          message: '复制成功',
+          type: 'success'
+          });
+          oInput.remove()
+      },
       init(){
         let router_path = this.$route.path
         if(router_path=='/flow/abnormal'){
@@ -370,6 +397,11 @@ export default {//定义变量和初始值
         }
         this.getList()
         this.getAgent()
+        this.$nextTick(()=>{
+            //浏览器加载完成之后执行
+            // 禁止表格右键浏览器默认菜单
+            this.prohibitContextmenu();
+        });
       },
       info(id){
           let routeData = this.$router.resolve({

@@ -31,5 +31,7 @@ export default {
 body {
       margin: 0;
       height: 100%;
+      font-family:"华文细黑";
+      /* font-weight: bold; */
     }
 </style>

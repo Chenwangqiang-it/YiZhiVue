@@ -433,22 +433,22 @@
                     </span>
                 </div>
                 <div v-if="interimPayment">
-                    <el-form ref="form" :model="form" style="width:400px" :rules="saveRules2" label-width="80px">
+                    <el-form ref="list" :model="list" style="width:400px" :rules="interimRules" label-width="80px">
                         <div class="li">
                             <h3>中期到款</h3>
                         </div>
-                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidfirstAmount" v-if="list.type==1">
-                            <el-input v-model="form.sumPaidfirstAmount" placeholder="请输入到款金额" name="sumPaidfirstAmount"></el-input>
+                        <el-form-item label="到款金额"   style="margin-bottom:0px;margin-top:20px;" prop="sumPaidInterimAmount" v-if="list.type==1">
+                            <el-input v-model="list.sumPaidInterimAmount" placeholder="请输入到款金额" name="sumPaidInterimAmount"></el-input>
                         </el-form-item>
-                        <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidFirstAmount" v-else>
-                            <el-input v-model="form.paidFirstAmount" placeholder="请输入到款金额" name="paidFirstAmount"></el-input>
+                        <el-form-item label="到款金额"  style="margin-bottom:0px;margin-top:20px;" prop="paidInterimAmount" v-else>
+                            <el-input v-model="list.paidInterimAmount" placeholder="请输入到款金额" name="paidInterimAmount"></el-input>
                         </el-form-item>
-                        <span style="font-size:10px;margin-left:245px">到款金额应为:{{list.firstAmount}}</span>
-                        <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentFirstAmount">
-                            <el-input v-model="form.paymentFirstAmount" name="paymentFirstAmount" placeholder="请输入打款单位"></el-input>
+                        <span style="font-size:10px;margin-left:245px">到款金额应为:{{list.interimAmount}}</span>
+                        <el-form-item label="打款单位"  style="margin-top:10px;" prop="paymentInterimAmount">
+                            <el-input v-model="list.paymentInterimAmount" name="paymentInterimAmount" placeholder="请输入打款单位"></el-input>
                         </el-form-item>
-                        <el-form-item label="收款单位"  prop="gatheringFirstAmount">
-                            <el-select v-model="form.gatheringFirstAmount"  name="gatheringFirstAmount" placeholder="请输入收款单位">
+                        <el-form-item label="收款单位"  prop="gatheringInterimAmount">
+                            <el-select v-model="list.gatheringInterimAmount"  name="gatheringInterimAmount" placeholder="请输入收款单位">
                                     <el-option
                                     v-for="item in company"
                                     :key="item.value"
@@ -457,21 +457,20 @@
                                     </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="到款日期" prop="paidFirstAmountDate">
+                        <el-form-item label="到款日期" prop="paidInterimAmountDate">
                             <el-date-picker
-                            v-model="form.paidFirstAmountDate"
+                            v-model="list.paidInterimAmountDate"
                             type="date"
                             placeholder="选择开始时间"
                             value-format="yyyy-MM-dd"
-                            name="paidFirstAmountDate"
+                            name="paidInterimAmountDate"
                             >
                             </el-date-picker>
                         </el-form-item>
-                        <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidFirstAmount" v-if="list.type==1">
-                            <el-input v-model="form.paidFirstAmount" name="account" placeholder="请输入项目到款金额"></el-input>
+                        <el-form-item style="margin-bottom:0px" label="项目到款"  prop="paidInterimAmount" v-if="list.type==1">
+                            <el-input v-model="list.paidInterimAmount" name="account" placeholder="请输入项目到款金额"></el-input>
                         </el-form-item>
-                        <span style="font-size:10px;margin-left:245px" v-if="list.lastAmount==0&&list.type==1">项目到款应为:{{list.price}}</span>
-                        <span style="font-size:10px;margin-left:245px" v-else-if="list.type==1">项目到款应为:{{list.pfirstAmount}}</span>
+                        <span style="font-size:10px;margin-left:245px" v-if="list.type==1">项目到款应为:{{list.pinterimAmount}}</span>
                         <el-form-item  label="附件上传" style="width:300px;margin:0;margin-top:20px">
                             <el-upload
                             class="upload-demo"
@@ -493,6 +492,9 @@
                             <el-input type="textarea" v-model="form.a_desc"></el-input>
                         </el-form-item>
                     </el-form>
+                    <span  class="dialog-footer" v-if="list.schedules<12">
+                        <el-button type="primary" style="width:200px;height:45px" @click.native.prevent="interimSubmit" >提 交</el-button>
+                    </span>
                 </div>
             </div>
          </template>
@@ -517,20 +519,51 @@ export default {//定义变量和初始值
         ])
     },
     data(){
-      const valiNotNull = (rule, value, callback) => {
-            if (value=='') {
-               callback()
-            } else {
-                callback()
+    const valiNotNull = (rule, value, callback) => {
+        if (value=='') {
+            callback()
+        } else {
+            callback()
+        }
+    }
+    const valiNotNull2 = (rule, value, callback) => {
+        if (value==''||value==null) {
+            callback(new Error("该字段不能为空"))
+        } else {
+            callback()
+        }
+    }
+    const valiSumPaidInterimAmount = (rule, value, callback) => {
+        if (!value) {
+            callback(new Error("该字段不能为空"))
+        } else {
+            if(value!=this.list.interimAmount){
+                callback(new Error("到款金额不匹配!"))
+            }else{
+                 callback()
             }
-      }
-      const valiNotNull2 = (rule, value, callback) => {
-            if (value==''||value==null) {
-               callback(new Error("该字段不能为空"))
-            } else {
-                callback()
+        }
+    }
+    const valiPaidInterimAmount = (rule, value, callback) => {
+        if (!value) {
+            callback(new Error("该字段不能为空"))
+        } else {
+            if(this.list.type==1){
+                if(value!=this.list.pinterimAmount){
+                    callback(new Error("到款金额不匹配!"))
+                }else{
+                    callback()
+                }
+            }else{
+                if(value!=this.list.interimAmount){
+                    callback(new Error("到款金额不匹配!"))
+                }else{
+                    callback()
+                }
             }
-      }
+            
+        }
+    }
     return{
         isChange:false,
         interimPayment:false,
@@ -613,6 +646,13 @@ export default {//定义变量和初始值
         message:{},
         schedu:'',
         agentId2:'',
+        interimRules: {
+            sumPaidInterimAmount:[{ required: true, trigger: 'blur', validator: valiSumPaidInterimAmount}],
+            paidInterimAmount:[{ required: true, trigger: 'blur', validator: valiPaidInterimAmount}],
+            paymentInterimAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
+            gatheringInterimAmount:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
+            paidInterimAmountDate:[{ required: true, trigger: 'blur', validator: valiNotNull2}],
+        },
         saveRules: {
             inven:[{ required: true, trigger: 'blur', validator: valiNotNull}],
             declara:[{ required: true, trigger: 'blur', validator: valiNotNull}],
@@ -716,16 +756,41 @@ export default {//定义变量和初始值
                 }
                 this.filesw()
                 this.notoper()
-                 this.showChange()
+                this.showChange()
                 this.isfileupdate=false
             })
         },
         showChange(){
-            if(this.roles.jurisdiction==0||this.roles.jurisdiction==5||this.roles.jurisdiction==6){
-                if(this.list.schedules>=2&&this.list.schedules<=8){
-                    this.isChange=true
+            if(this.roles.jurisdiction==0){
+                if(this.list.schedules>=2&&this.list.schedules<=10){
+                    if((this.list.paidInterimAmount==0||!this.list.paidInterimAmount)&&this.list.interimAmount!=0){
+                        this.isChange=true
+                    }else{
+                        this.isChange=false
+                    }
                 }else{
                     this.isChange=false
+                }
+            }else{
+                this.isChange=false
+            }
+            if(this.roles.jurisdiction==6){
+                if(this.list.schedules==2||this.list.schedules==9){
+                    if((this.list.paidInterimAmount==0||!this.list.paidInterimAmount)&&this.list.interimAmount!=0){
+                        this.isChange=true
+                    }else{
+                        this.isChange=false
+                    }
+                }else{
+                    this.isChange=false
+                }
+                if(this.list.schedules>=2&&this.list.schedules<=10&&this.list.interimAmount!=0&&(this.list.paidInterimAmount==0||!this.list.paidInterimAmount)){
+                    this.interimPayment=true
+                }
+            }
+            if(this.roles.jurisdiction==5){
+                if(this.list.schedules>=2&&this.list.schedules<=10&&this.list.interimAmount!=0&&(this.list.paidInterimAmount==0||!this.list.paidInterimAmount)){
+                    this.interimPayment=true
                 }
             }
         },
@@ -985,6 +1050,13 @@ export default {//定义变量和初始值
                 }
             }
             if(this.list.schedules==10){
+                if((this.list.paidInterimAmount==0||!this.list.paidInterimAmount)&&this.list.interimAmount!=0){
+                    this.$message({
+                    type:'warning',
+                    message:'改项目为三期付款，中期付款未确认，请流程确认！'
+                    })
+                    return false
+                }
                 if(!this.form.signature){
                     this.$message({
                     type:'warning',
@@ -1081,6 +1153,42 @@ export default {//定义变量和初始值
             this.flow.gatheringLastAmount=this.form.gatheringLastAmount  
             this.flow.bulletinTime=this.form.bulletinTime
         },
+        interimSubmit(){
+            this.$refs.list.validate(valid => {
+                if (valid) {
+                    this.flow=this.list
+                    if(this.fileList2.length!=0){
+                        this.flow.inventory.push(this.fileList2)
+                    }
+                    this.flow.inventory=JSON.stringify(this.flow.inventory)
+                    flow.updateFlow(this.flow)
+                    .then(res=>{
+                        this.$message({
+                            type:'success',
+                            message:'提交成功'
+                        })
+                        //调用父窗口方法
+                        window.opener.logoClickBtn()
+                        this.getList(this.flow.fid)
+                        this.isfileupdate=false
+                        let historys=[]
+                        let account={}
+                        account.isUpdate=0
+                        account.uid=this.roles.uid
+                        account.fid=this.list.fid
+                        account.schedules=13
+                        account.result=this.flow.schedules
+                        account.describes=this.form.a_desc
+                        historys.push(account)
+                        history.addHistory(historys)
+                        .then(res=>{
+                            this.fileList2=[]
+                            window.close()
+                        })
+                    })
+                }
+            })
+        },
         submit(){
             this.$refs.form.validate(valid => {
             if (valid) {
@@ -1109,7 +1217,6 @@ export default {//定义变量和初始值
                             message:'提交成功'
                         })
                         //调用父窗口方法
-                        window.opener.logoClickBtn()
                         this.getList(this.flow.fid)
                         this.isfileupdate=false
                         let messages=this.msg(this.flow.cid,0,this.flow.schedules)
@@ -1119,6 +1226,7 @@ export default {//定义变量和初始值
                             message.addMessages(messages)
                             .then(res=>{
                                 this.fileList2=[]
+                                window.opener.logoClickBtn()
                                 window.close()
                             })
                         })

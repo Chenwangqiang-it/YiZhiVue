@@ -8,6 +8,7 @@
         @change='getList'
         inactive-text="只显示未读">
         </el-switch>
+        <el-button type="primary" @click="readAll" size="mini" style="margin-left:10px" icon="el-icon-position">一键阅读</el-button>
         <el-button type="primary" style="float:right;width:70px;margin-top:10px" @click="getList()">搜索</el-button>
         <el-input v-model="messsageQuery.msg" placeholder="请输入内容" style="float:right;width:200px;margin-right:10px" @click="getList()"></el-input>
     </el-header>
@@ -57,6 +58,7 @@
         </template>
         </el-table-column>
     </el-table>
+    
       <!-- <el-collapse >
             <el-badge value="new" 
             class="item" 
@@ -125,6 +127,16 @@ export default {
             val.isRead='1'
             val.openid=this.roles.openid
             message.updateMessage(val);
+        },
+        readAll(){
+            message.readAll(this.roles.uid)
+            .then(res=>{
+                this.getList()
+                this.$message({
+                    message: '操作成功',
+                    type: 'success'
+                });
+            })
         }
     }
 }

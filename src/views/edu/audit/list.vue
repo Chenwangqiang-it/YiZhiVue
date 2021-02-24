@@ -4,17 +4,17 @@
         <div v-if="roles.jurisdiction<2" >所有合同</div>
          <template>
             <el-form :inline="true" style="text-align:center;" class="demo-form-inline" align="center">
-                <el-form-item >
+                <el-form-item style="width:150px">
                     <el-input v-model="stateQuery.serialNum" placeholder="合同编号"></el-input>
                 </el-form-item>
                 <el-form-item >
-                    <el-input v-model="stateQuery.companyName" placeholder="客户名称"></el-input>
+                    <el-input style="width:220px" v-model="stateQuery.companyName" placeholder="客户名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-input v-model="stateQuery.brandName" placeholder="项目名称"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-select v-model="stateQuery.sstate" placeholder="合同状态">
+                    <el-select style="width:120px" v-model="stateQuery.sstate" placeholder="合同状态">
                         <el-option label="待审核" value="0"></el-option>
                         <el-option label="被驳回" value="1"></el-option>
                         <el-option label="待签订" value="2"></el-option>
@@ -22,8 +22,19 @@
                         <el-option label="已立案" value="4"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item v-if="roles.jurisdiction!=3">
+                    <el-select style="width:110px" v-model="stateQuery.uid" placeholder="顾问名称">
+                        <el-option
+                        v-for="item in counselor"
+                        :key="item.value"
+                        :label="item.uname"
+                        :value="item.uid">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="添加时间">
                 <el-date-picker
+                style="width:180px"
                 v-model="stateQuery.begin"
                 type="datetime"
                 placeholder="选择开始时间"
@@ -35,6 +46,7 @@
                 <el-date-picker
                 v-model="stateQuery.end"
                 type="datetime"
+                style="width:180px"
                 placeholder="选择截至时间"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 default-time="00:00:00"
@@ -51,55 +63,60 @@
             border
             v-loading="loading"
             :span-method="objectSpanMethod"
+            @cell-contextmenu="cellClick"
+            @cell-dblclick="cellClick"
             element-loading-text="数据加载中"
             @selection-change="handleSelectionChange"
             style="width: 100%">
             <el-table-column
+                v-if="!this.stateQuery.isDrafts"
+                key="1"
                 align="center"
                 type="selection"
                 width="55">
             </el-table-column>
             <el-table-column
                 label="序号"
+                key="2"
                 width="60"
                 align="center">
                 <tempate slot-scope="scope">
                     {{(page-1)*limit+scope.$index+1}}
                 </tempate>
             </el-table-column>
-            <el-table-column width="130" align="center"  label="合同编号">
+            <el-table-column key="3" width="130" align="center"  label="合同编号">
                  <template slot-scope="scope">
                     <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.serialNum}}</el-link>
                     <el-link @click="projectInfo(scope.row.cid)" v-else>{{scope.row.serialNum}}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column width="80" align="center" prop="fullAmount" label="合同金额"></el-table-column>
-            <el-table-column width="100" align="center" prop="lastAmount" label="付款方式">
+            <el-table-column key="4" width="90" align="center" prop="fullAmount" label="合同金额"></el-table-column>
+            <el-table-column key="5" width="100" align="center" prop="lastAmount" label="付款方式">
                 <template slot-scope="scope">
                     <span v-if="scope.row.lastAmount==0" >全款支付</span>
                     <span v-else>分期支付</span>
                 </template>
             </el-table-column>
-            <el-table-column width="80" align="center" label="已付金额">
+            <el-table-column key="6" width="90" align="center" label="已付金额">
                 <tempate slot-scope="scope">
-                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount}}
+                    {{scope.row.paidFirstAmount+scope.row.paidLastAmount+scope.row.paidInterimAmount}}
                 </tempate>
             </el-table-column>
-            <el-table-column width="230" align="center"  label="客户名称">
+            <el-table-column key="7" width="230"  header-align="center" align="left" show-overflow-tooltip="true"  label="客户名称">
                 <template slot-scope="scope">
-                    <el-link style="width:220px" @click="info(scope.row.cid)"  v-if="scope.row.type!=1">{{scope.row.companyName}}</el-link>
-                    <el-link style="width:210px" @click="projectInfo(scope.row.cid)" v-else>{{scope.row.companyName}}</el-link>
+                    <el-link  @click="info(scope.row.cid)"  v-if="scope.row.type!=1">{{scope.row.companyName}}</el-link>
+                    <el-link @click="projectInfo(scope.row.cid)" v-else>{{scope.row.companyName}}</el-link>
                 </template>
             </el-table-column>
-            <el-table-column width="150" align="center" label="项目名称">
+            <el-table-column key="8" width="150" header-align="center" align="left" show-overflow-tooltip="true" label="项目名称">
                 <template slot-scope="scope">
                     <!-- {{scope.row}} -->
                     <el-link @click="info(scope.row.cid)" v-if="scope.row.type!=1">{{scope.row.brandName}}</el-link>
                     <el-link @click="projectInfo(scope.row.cid)" v-else>查看更多</el-link>
                 </template>
             </el-table-column>
-            <el-table-column width="78" align="center" prop="uname" label="顾问"></el-table-column>
-            <el-table-column width="80" align="center" prop="sstate" label="状态" >
+            <el-table-column key="9" width="78" align="center" prop="uname" label="顾问"></el-table-column>
+            <el-table-column key="10" width="80" v-if="!this.stateQuery.isDrafts" align="center" prop="sstate" label="状态" >
                 <template slot-scope="scope">
                     <span v-if="scope.row.sstate==0" style="color:#17a05d">待审核</span>
                     <el-popover
@@ -122,7 +139,12 @@
                     </el-popover>  
                 </template>
             </el-table-column>
-            <el-table-column width="130" align="center" label="合同下载">
+            <el-table-column key="11" v-else width="80" align="center" prop="sstate" label="状态" >
+                <template slot-scope="scope">
+                    <span style="color:#17a05d">待完成</span> 
+                </template>
+            </el-table-column>
+            <el-table-column key="12" width="130" align="center" label="合同下载">
                 <template slot-scope="scope">
                     <a :href="scope.row.url" download target="_blank" style="text-decoration:underline;color:#4d90fe" v-if="JSON.stringify(scope.row.url).indexOf('[{')<0">点击下载合同</a>
                     <el-popover
@@ -143,10 +165,11 @@
                     </el-popover>
                 </template>
             </el-table-column>
-            <el-table-column width="170" align="center" prop="gmtCreate" label="创建时间" ></el-table-column>
-            <el-table-column width="360" label="操作" align="right">
+            <el-table-column key="13" align="center" show-overflow-tooltip="true" prop="gmtCreate" label="创建时间" ></el-table-column>
+            <el-table-column key="14" align="center" v-if="this.stateQuery.isDrafts" show-overflow-tooltip="true" prop="gmtModified" label="修改时间" ></el-table-column>
+            <el-table-column key="15" width="375" label="操作" v-if="!this.stateQuery.isDrafts" align="right">
                 <template slot-scope="scope">
-                    <router-link :to="{path:'/audit/update/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:2}}" v-if="scope.row.sstate<3&&(roles.jurisdiction==3||roles.jurisdiction==0)">
+                    <router-link :to="{path:'/audit/update/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:2,state:scope.row.sstate}}" v-if="scope.row.sstate<4&&(roles.jurisdiction==3||roles.jurisdiction==0)">
                         <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
                     </router-link>
                     <router-link  :to="{path:'/audit/audit/',query: {id:scope.row.sid,cid:scope.row.cid,url:scope.row.url,isaudit:1}}" v-if="roles.jurisdiction<2&&scope.row.sstate==0&&scope.row.type==0">
@@ -159,7 +182,7 @@
 
                     <el-button type="primary" size="mini" v-if="scope.row.sstate==3&&(roles.jurisdiction==3||roles.jurisdiction==0)&&scope.row.type!=1" @click="open(scope.row.sid,scope.row.uid,scope.row.cid,scope.row.fid,scope.row.serialNum)">发起立案</el-button>
                     <el-button type="primary" size="mini" v-if="scope.row.sstate==3&&(roles.jurisdiction==3||roles.jurisdiction==0)&&scope.row.type==1" @click="open2(scope.row.sid,scope.row.uid,scope.row.cid,scope.row.serialNum)">发起立案</el-button>
-                    <el-button type="primary" size="mini"  @click="browse(scope.row.url)" v-if="JSON.stringify(scope.row.url).indexOf('[{')<0">浏览</el-button>
+                    <el-button type="primary" size="mini" icon="el-icon-reading"  @click="browse(scope.row.url)" v-if="JSON.stringify(scope.row.url).indexOf('[{')<0">浏览</el-button>
                     <el-popover
                         placement="right"
                         width="200"
@@ -173,10 +196,37 @@
                                 </template>
                             </el-table-column>
                         </el-table>
-                        <el-button slot="reference" type="primary" size="mini">浏览</el-button>
+                        <el-button slot="reference" icon="el-icon-reading" type="primary" size="mini">浏览</el-button>
                     </el-popover>
                     <el-button type="primary" @click="to(scope.row.cid,scope.row.sstate,'/audit/schedule/')" size="mini">记录</el-button>
                     <el-button type="danger" icon="el-icon-delete" size="mini"  @click="removeDataById(scope.row.sid,scope.row.cid)" v-if="scope.row.sstate<3&&(roles.jurisdiction==3||roles.jurisdiction==0)">删除</el-button>
+                </template>
+            </el-table-column>
+            <el-table-column key="16" width="190" label="操作" v-else align="center">
+                <template slot-scope="scope">
+                    <router-link :to="{path:'/contract/projectUpdate/'+scope.row.cid}" v-if="scope.row.type==1">
+                        <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
+                    </router-link>
+                    <router-link :to="{path:'/contract/defaultUpdate/'+scope.row.cid}" v-else>
+                        <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
+                    </router-link>
+                    <el-button type="primary" size="mini"  @click="browse(scope.row.url)" icon="el-icon-reading" v-if="JSON.stringify(scope.row.url).indexOf('[{')<0">浏览</el-button>
+                    <el-popover
+                        placement="right"
+                        width="200"
+                        trigger="click"
+                        v-else
+                        >
+                        <el-table :data="scope.row.url">
+                            <el-table-column width="200"  label="点击选择文件浏览">
+                                <template slot-scope="scop">
+                                   <span style="cursor:pointer" @click="browse(scop.row.url)" >{{scop.row.name}}</span>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <el-button slot="reference" icon="el-icon-reading" type="primary" size="mini">浏览</el-button>
+                    </el-popover>
+                    <!-- <el-button type="danger" icon="el-icon-delete" size="mini"  @click="removeDataById(scope.row.sid,scope.row.cid)" v-if="scope.row.sstate<3&&(roles.jurisdiction==3||roles.jurisdiction==0)">删除</el-button> -->
                 </template>
             </el-table-column>
             </el-table>
@@ -228,11 +278,13 @@ export default {//定义变量和初始值
             stateQuery:{},//条件封装
             flow:{},
             state,
+            counselor:[],
             loading:false
         }
     },
     created() {//页面渲染之前执行，调用methods定义的方法
         this.init()
+        this.getCounselor()
     },
     watch:{//监听
         $route(to,from){//路由变化的方式，路由一变化就执行
@@ -249,6 +301,35 @@ export default {//定义变量和初始值
                 this.divisionMsg=value
                 this.division(sid,uid,cid,fid,serialNum)
             })
+        },
+        prohibitContextmenu(){
+            //禁止浏览器默认右键事件
+            let table=document.getElementsByClassName("el-table")[0]
+            table.oncontextmenu = function(){
+            　　return false;
+            }
+        },
+        cellClick(row, column, cell, event){
+            this.copy(event.srcElement.innerText)
+        },
+        getCounselor(){
+            user.getCounselor()
+            .then(res=>{
+                this.counselor=res.data.counselor
+            })
+        },
+        copy(data){
+            let url = data;
+            let oInput = document.createElement('input');
+            oInput.value = url;
+            document.body.appendChild(oInput);
+            oInput.select(); // 选择对象;
+            document.execCommand("Copy"); // 执行浏览器复制命令
+            this.$message({
+            message: '复制成功',
+            type: 'success'
+            });
+            oInput.remove()
         },
         open2(sid,uid,cid,serialNum) {
             this.$prompt('', '描述（可选）', {
@@ -305,6 +386,11 @@ export default {//定义变量和初始值
             }
             this.getList()
             this.getFinance()
+            this.$nextTick(()=>{
+                //浏览器加载完成之后执行
+                // 禁止表格右键浏览器默认菜单
+                this.prohibitContextmenu();
+            });
         },
         info(id){
             let routeData = this.$router.resolve({
@@ -502,6 +588,11 @@ export default {//定义变量和初始值
             if(id!=undefined&&id.length==19){
                 this.getUntreated(page)
             }else{
+                if(this.$route.path=="/audit/drafts"){
+                    this.stateQuery.isDrafts=true//草稿箱
+                }else{
+                    this.stateQuery.isDrafts=false
+                }
                 this.loading=true
                 this.page=page
                 if(this.roles.jurisdiction>=2&&this.roles.jurisdiction!=5){
